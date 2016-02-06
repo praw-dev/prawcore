@@ -1,17 +1,19 @@
+after_success: coveralls
+cache: pip
+install: pip install coveralls flake8 pep257
 language: python
+matrix:
+  allow_failures:
+    - python: nightly
+  fast_finish: true
 python:
   - 2.7
   - 3.3
   - 3.4
   - 3.5
   - nightly
-matrix:
-  allow_failures:
-    - python: nightly
-sudo: false
-install: pip install coveralls flake8 pep257
 script:
   - flake8 .
   - pep257 .
   - coverage run --source=prawcore setup.py test
-after_success: coveralls
+sudo: false
