@@ -1,7 +1,9 @@
 """prawcore: Low-level communication layer for PRAW 4+."""
 
 import logging
+from .auth import Authenticator, Authorizer  # noqa
 from .const import __version__  # noqa
+from .exceptions import InvalidInvocation, PrawcoreException  # noqa
 from .sessions import Session, session  # noqa
 
 
