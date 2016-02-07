@@ -1,8 +1,6 @@
 """Provides Authentication and Authorization classes."""
-
-import requests
 import time
-from . import const
+from . import const, util
 from .exceptions import InvalidInvocation, RequestException
 from requests.status_codes import codes
 
@@ -33,8 +31,7 @@ class Authorizer(object):
 
         """
         self._expiration_timestamp = None
-        self._session = requests.session()
-        self._session.headers['User-Agent'] = const.USER_AGENT
+        self._session = util.http
 
         self.authenticator = authenticator
         self.access_token = None

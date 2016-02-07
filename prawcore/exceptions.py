@@ -21,3 +21,11 @@ class RequestException(PrawcoreException):
         self.response = response
         super(RequestException, self).__init__('error processing request ({})'
                                                .format(response.status_code))
+
+
+class InsufficientScope(RequestException):
+    """Indicate that the request requires a different scope."""
+
+
+class InvalidToken(RequestException):
+    """Indicate that the request used an invalid access token."""
