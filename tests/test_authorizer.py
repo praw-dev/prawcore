@@ -24,6 +24,12 @@ class AuthorizerTest(unittest.TestCase):
         self.assertIsInstance(authorizer.scopes, set)
         self.assertTrue(len(authorizer.scopes) > 0)
 
+    def test_refresh__with_invalid_token(self):
+        authorizer = prawcore.Authorizer(self.authentication, 'INVALID_TOKEN')
+        with Betamax(authorizer._session).use_cassette(
+                'Authorizer_refresh__with_invalid_token'):
+            self.assertRaises(prawcore.RequestException, authorizer.refresh)
+
     def test_refresh__without_refresh_token(self):
         authorizer = prawcore.Authorizer(self.authentication)
         self.assertRaises(prawcore.InvalidInvocation, authorizer.refresh)

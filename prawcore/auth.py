@@ -3,7 +3,8 @@
 import requests
 import time
 from . import const
-from .exceptions import InvalidInvocation
+from .exceptions import InvalidInvocation, RequestException
+from requests.status_codes import codes
 
 
 class Authenticator(object):
@@ -47,12 +48,14 @@ class Authorizer(object):
         auth = (self.authenticator.client_id, self.authenticator.client_secret)
         data = {'grant_type': 'refresh_token',
                 'refresh_token': self.refresh_token}
-        try:
-            data = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
-                                      data=data).json()
-        except:
-            raise
 
-        self.access_token = data['access_token']
-        self.expiration = time.time() + data['expires_in']
-        self.scopes = set(data['scope'].split(' '))
+        response = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
+                                      data=data)
+        if response.status_code != codes['ok']:
+            raise RequestException(response)
+
+        payload = response.json()
+
+        self.access_token = payload['access_token']
+        self.expiration = time.time() + payload['expires_in']
+        self.scopes = set(payload['scope'].split(' '))
