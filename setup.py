@@ -10,7 +10,7 @@ PACKAGE_NAME = 'prawcore'
 HERE = path.abspath(path.dirname(__file__))
 with open(path.join(HERE, 'README.rst'), encoding='utf-8') as fp:
     README = fp.read()
-with open(path.join(HERE, PACKAGE_NAME, '__init__.py'),
+with open(path.join(HERE, PACKAGE_NAME, 'const.py'),
           encoding='utf-8') as fp:
     VERSION = re.search("__version__ = '([^']+)'", fp.read()).group(1)
 
@@ -36,7 +36,8 @@ setup(name=PACKAGE_NAME,
       license='Simplified BSD License',
       long_description=README,
       packages=[PACKAGE_NAME],
-      tests_require=[],
+      tests_require=['betamax >=0.5.1, <0.6',
+                     'betamax-serializers >=0.1.1, <0.2'],
       test_suite='tests',
       url='https://github.com/praw-dev/prawcore',
       version=VERSION)
