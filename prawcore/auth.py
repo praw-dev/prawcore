@@ -32,14 +32,24 @@ class Authorizer(object):
             authorization.
 
         """
+        self._expiration_timestamp = None
         self._session = requests.session()
         self._session.headers['User-Agent'] = const.USER_AGENT
 
         self.authenticator = authenticator
         self.access_token = None
-        self.expiration = None
         self.refresh_token = refresh_token
         self.scopes = None
+
+    def is_valid(self):
+        """Return whether or not the Authorizer is ready to authorize requests.
+
+        A ``True`` return value does not guarantee that the access_token is
+        actually valid on the server side.
+
+        """
+        return self.access_token is not None \
+            and time.time() < self._expiration_timestamp
 
     def refresh(self):
         """Obtain a new access token from the refresh_token."""
@@ -56,6 +66,6 @@ class Authorizer(object):
 
         payload = response.json()
 
+        self._expiration_timestamp = time.time() + payload['expires_in']
         self.access_token = payload['access_token']
-        self.expiration = time.time() + payload['expires_in']
         self.scopes = set(payload['scope'].split(' '))
