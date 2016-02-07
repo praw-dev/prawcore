@@ -31,6 +31,9 @@ class Authorizer(object):
             authorization.
 
         """
+        self._session = requests.session()
+        self._session.headers['User-Agent'] = const.USER_AGENT
+
         self.authenticator = authenticator
         self.access_token = None
         self.expiration = None
@@ -45,9 +48,8 @@ class Authorizer(object):
         data = {'grant_type': 'refresh_token',
                 'refresh_token': self.refresh_token}
         try:
-            data = requests.post(
-                const.ACCESS_TOKEN_URL, auth=auth, data=data,
-                headers={'User-Agent': const.USER_AGENT}).json()
+            data = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
+                                      data=data).json()
         except:
             raise
 
