@@ -28,6 +28,15 @@ class SessionTest(unittest.TestCase):
         with self.session as session:
             self.assertIsInstance(session, prawcore.Session)
 
+    def test_request(self):
+        with Betamax(prawcore.util.http).use_cassette(
+                'Session_request'):
+            self.session.authorizer = valid_authorizer()
+            data = self.session.request(
+                'GET', 'https://oauth.reddit.com/api/v1/me')
+        self.assertIsInstance(data, dict)
+        self.assertTrue('name' in data)
+
     def test_request__with_insufficent_scope(self):
         with Betamax(prawcore.util.http).use_cassette(
                 'Session_request__with_insufficient_scope'):

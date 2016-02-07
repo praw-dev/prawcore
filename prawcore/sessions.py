@@ -1,6 +1,6 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
 from . import util
-from .exceptions import InvalidInvocation, RequestException
+from .exceptions import InvalidInvocation
 from .util import authorization_error_class
 from requests.status_codes import codes
 
@@ -46,8 +46,9 @@ class Session(object):
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
-        if response.status_code != codes['ok']:
-            raise RequestException(response)
+        assert response.status_code == codes['ok'], \
+            'Unexpected status code: {}'.format(response.status_code)
+        return response.json()
 
 
 def session(authorizer=None):
