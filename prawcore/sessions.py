@@ -1,6 +1,8 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
-
-import requests
+from . import util
+from .exceptions import InvalidInvocation, RequestException
+from .util import authorization_error_class
+from requests.status_codes import codes
 
 
 class Session(object):
@@ -13,7 +15,7 @@ class Session(object):
 
         """
         self.authorizer = authorizer
-        self._session = requests.Session()
+        self._session = util.http
 
     def __enter__(self):
         """Allow this object to be used as a context manager."""
@@ -26,6 +28,26 @@ class Session(object):
     def close(self):
         """Close the session and perform any clean up."""
         self._session.close()
+
+    def request(self, method, url):
+        """Return the json content from the resource at ``url``.
+
+        :param url: The URL of the request.
+
+        """
+        if self.authorizer is None:
+            raise InvalidInvocation('authorizer has not been set')
+        elif not self.authorizer.is_valid():
+            raise InvalidInvocation('authorizer does not have a valid token')
+
+        headers = {'Authorization': 'bearer {}'
+                   .format(self.authorizer.access_token)}
+        response = self._session.request(method, url, headers=headers)
+
+        if response.status_code in (codes['forbidden'], codes['unauthorized']):
+            raise authorization_error_class(response)
+        if response.status_code != codes['ok']:
+            raise RequestException(response)
 
 
 def session(authorizer=None):
