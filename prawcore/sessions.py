@@ -1,5 +1,6 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
 from . import util
+from .rate_limit import RateLimiter
 from .exceptions import InvalidInvocation
 from .util import authorization_error_class
 from requests.status_codes import codes
@@ -15,6 +16,7 @@ class Session(object):
 
         """
         self.authorizer = authorizer
+        self._rate_limiter = RateLimiter()
         self._session = util.http
 
     def __enter__(self):
@@ -42,7 +44,8 @@ class Session(object):
 
         headers = {'Authorization': 'bearer {}'
                    .format(self.authorizer.access_token)}
-        response = self._session.request(method, url, headers=headers)
+        response = self._rate_limiter.call(self._session.request, method, url,
+                                           headers=headers)
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
