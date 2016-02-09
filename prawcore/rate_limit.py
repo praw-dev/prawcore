@@ -12,7 +12,7 @@ class RateLimiter(object):
     def __init__(self):
         """Create an instance of the RateLimit class."""
         self.remaining = None
-        self.reset_timestamp = None
+        self.next_request_timestamp = None
         self.used = None
 
     def call(self, request_function, *args, **kwargs):
@@ -31,12 +31,12 @@ class RateLimiter(object):
 
     def delay(self):
         """Sleep for an amount of time to remain under the rate limit."""
-        if self.remaining is None:
+        if self.next_request_timestamp is None:
             return
-        print(self.remaining)
-        print(self.reset_timestamp)
-        print(self.used)
-        print('---')
+        sleep_seconds = self.next_request_timestamp - time.time()
+        if sleep_seconds <= 0:
+            return
+        time.sleep(sleep_seconds)
 
     def update(self, response_headers):
         """Update the state of the rate limiter based on the response headers.
@@ -54,7 +54,20 @@ class RateLimiter(object):
                 self.used += 1
             return
 
+        now = time.time()
+        prev_remaining = self.remaining
+
         self.remaining = float(response_headers['x-ratelimit-remaining'])
-        self.reset_timestamp = (time.time() +
-                                int(response_headers['x-ratelimit-reset']))
         self.used = int(response_headers['x-ratelimit-used'])
+        seconds_to_reset = int(response_headers['x-ratelimit-reset'])
+
+        if prev_remaining is not None and prev_remaining > self.remaining:
+            estimated_clients = prev_remaining - self.remaining
+        else:
+            estimated_clients = 1.0
+
+        if self.remaining == 0:
+            self.next_request_timestamp = now + seconds_to_reset
+        else:
+            self.next_request_timestamp = now + (
+                estimated_clients * seconds_to_reset / self.remaining)
