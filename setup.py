@@ -38,7 +38,7 @@ setup(name=PACKAGE_NAME,
       packages=[PACKAGE_NAME],
       tests_require=['betamax >=0.5.1, <0.6',
                      'betamax-serializers >=0.1.1, <0.2',
-                     'mock >=1.3.0, <1.4'],
+                     'mock ==1.0.1'],
       test_suite='tests',
       url='https://github.com/praw-dev/prawcore',
       version=VERSION)
