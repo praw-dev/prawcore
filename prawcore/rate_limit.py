@@ -61,13 +61,14 @@ class RateLimiter(object):
         self.used = int(response_headers['x-ratelimit-used'])
         seconds_to_reset = int(response_headers['x-ratelimit-reset'])
 
+        if self.remaining <= 0:
+            self.next_request_timestamp = now + seconds_to_reset
+            return
+
         if prev_remaining is not None and prev_remaining > self.remaining:
             estimated_clients = prev_remaining - self.remaining
         else:
             estimated_clients = 1.0
 
-        if self.remaining == 0:
-            self.next_request_timestamp = now + seconds_to_reset
-        else:
-            self.next_request_timestamp = now + (
-                estimated_clients * seconds_to_reset / self.remaining)
+        self.next_request_timestamp = now + (
+            estimated_clients * seconds_to_reset / self.remaining)
