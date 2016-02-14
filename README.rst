@@ -15,11 +15,87 @@ is removed.
 prawcore is a low-level communication layer for PRAW 4+.
 
 
-Installation and Execution
---------------------------
+Installation
+------------
 
-prawcore is easiest to install using ``pip``:
+Install prawcore using ``pip`` via:
 
-.. code-block:: bash
+.. code-block:: bashsession
 
-    $ pip install prawcore
+    pip install prawcore
+
+
+Execution Example
+-----------------
+
+The following example demonstrates how to use prawcore to obtain the list of
+trophies for a given user. This example assumes you have the environment
+variables ``PRAWCORE_CLIENT_ID`` and ``PRAWCORE_CLIENT_SECRET`` set to the
+appropriate values for your application.
+
+.. code-block:: python
+
+   #!/usr/bin/env python
+   import os
+   import prawcore
+   import sys
+   from pprint import pprint
+
+
+   def main():
+       if len(sys.argv) != 2:
+           print('Usage: {} USERNAME'.format(sys.argv[0]))
+           return 1
+       user = sys.argv[1]
+
+       authenticator = prawcore.Authenticator(
+           os.environ.get('PRAWCORE_CLIENT_ID'),
+           os.environ.get('PRAWCORE_CLIENT_SECRET'))
+
+       url = 'https://oauth.reddit.com/api/v1/user/{}/trophies'.format(user)
+       authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+       authorizer.refresh()
+
+       with prawcore.session(authorizer) as session:
+           pprint(session.request('GET', url))
+
+       return 0
+
+
+   if __name__ == '__main__':
+       sys.exit(main())
+
+Save the above as ``trophies.py`` and then run via:
+
+.. code-block:: bashsession
+
+   python trophies.py USERNAME
+
+
+Depending on prawcore
+---------------------
+
+prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
+that deprecations will not be preceded by a minor release. In essense, expect
+only major versions to introduce breaking changes to prawcore's public
+interface. As a result, if you depend on prawcore then it is a good idea to
+specify not only the minimum version of prawcore your package requires, but to
+also limit the major version.
+
+Below are two examples of how you may want to specify your prawcore dependency:
+
+setup.py
+~~~~~~~~
+
+.. code-block:: python
+
+   setup(...,
+         install_requires=['prawcore >=0.1, <1'],
+         ...)
+
+requirements.txt
+~~~~~~~~~~~~~~~~
+
+.. code-block:: text
+
+   prawcore >=1.5.1, <2
