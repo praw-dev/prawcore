@@ -15,15 +15,14 @@ is removed.
 prawcore is a low-level communication layer for PRAW 4+.
 
 
-Installation and Execution
---------------------------
+Installation
+------------
 
-prawcore is easiest to install using ``pip``:
+Install prawcore using ``pip`` via:
 
 .. code-block:: bashsession
 
     pip install prawcore
-
 
 Depending on prawcore
 ---------------------
