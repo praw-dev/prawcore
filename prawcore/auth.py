@@ -1,7 +1,7 @@
 """Provides Authentication and Authorization classes."""
 import time
 from . import const, util
-from .exceptions import InvalidInvocation, RequestException
+from .exceptions import InvalidInvocation, OAuthException, RequestException
 from requests.status_codes import codes
 
 
@@ -46,6 +46,10 @@ class Authorizer(object):
 
         payload = response.json()
 
+        if 'error' in payload:  # Why are these OKAY responses?
+            raise OAuthException(response, payload['error'],
+                                 payload.get('error_description'))
+
         self._expiration_timestamp = time.time() + payload['expires_in']
         self.access_token = payload['access_token']
         self.scopes = set(payload['scope'].split(' '))
@@ -79,3 +83,30 @@ class ReadOnlyAuthorizer(Authorizer):
     def refresh(self):
         """Obtain a new ReadOnly access token."""
         self._request_token(grant_type='client_credentials')
+
+
+class ScriptAuthorizer(Authorizer):
+    """Manages personal-use script type authorizations.
+
+    Only users who are listed as developers for the application will be
+    granted access tokens.
+
+    """
+
+    def __init__(self, authenticator, username, password):
+        """Represent a single personal-use authorization to reddit's API.
+
+        :param authenticator: An instance of :class:`Authenticator`.
+        :param username: The reddit username of one of the application's
+            developers.
+        :param password: The password associated with ``username``.
+
+        """
+        super(ScriptAuthorizer, self).__init__(authenticator)
+        self._username = username
+        self._password = password
+
+    def refresh(self):
+        """Obtain a new personal-use script type access token."""
+        self._request_token(grant_type='password', username=self._username,
+                            password=self._password)
