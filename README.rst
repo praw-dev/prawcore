@@ -37,39 +37,27 @@ appropriate values for your application.
 
    #!/usr/bin/env python
    import os
+   import pprint
    import prawcore
-   import sys
-   from pprint import pprint
 
+   authenticator = prawcore.Authenticator(
+       os.environ.get('PRAWCORE_CLIENT_ID'),
+       os.environ.get('PRAWCORE_CLIENT_SECRET'))
+   authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+   authorizer.refresh()
 
-   def main():
-       if len(sys.argv) != 2:
-           print('Usage: {} USERNAME'.format(sys.argv[0]))
-           return 1
-       user = sys.argv[1]
+   url = 'https://oauth.reddit.com/api/v1/user/bboe/trophies'
+   with prawcore.session(authorizer) as session:
+       pprint.pprint(session.request('GET', url))
 
-       authenticator = prawcore.Authenticator(
-           os.environ.get('PRAWCORE_CLIENT_ID'),
-           os.environ.get('PRAWCORE_CLIENT_SECRET'))
-
-       url = 'https://oauth.reddit.com/api/v1/user/{}/trophies'.format(user)
-       authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
-       authorizer.refresh()
-
-       with prawcore.session(authorizer) as session:
-           pprint(session.request('GET', url))
-
-       return 0
-
-
-   if __name__ == '__main__':
-       sys.exit(main())
-
-Save the above as ``trophies.py`` and then run via:
+Save the above as ``trophies.py`` and then execute via:
 
 .. code-block:: bashsession
 
-   python trophies.py USERNAME
+   python trophies.py
+
+Additional examples can be found at:
+https://github.com/praw-dev/prawcore/tree/master/examples
 
 
 Depending on prawcore
