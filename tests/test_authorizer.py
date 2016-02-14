@@ -2,12 +2,65 @@
 from betamax import Betamax
 import prawcore
 import unittest
-from .config import CLIENT_ID, CLIENT_SECRET, PASSWORD, REFRESH_TOKEN, USERNAME
+from .config import (CLIENT_ID, CLIENT_SECRET, PASSWORD, PERMANENT_GRANT_CODE,
+                     REDIRECT_URI, REFRESH_TOKEN, TEMPORARY_GRANT_CODE,
+                     USERNAME)
 
 
-class AuthorizerTest(unittest.TestCase):
+class AuthorizerTestBase(unittest.TestCase):
     def setUp(self):
         self.authentication = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
+
+
+class AuthorizerTest(AuthorizerTestBase):
+    def test_authorize__with_permanent_grant(self):
+        self.authentication.redirect_uri = REDIRECT_URI
+        authorizer = prawcore.Authorizer(self.authentication)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(authorizer._session).use_cassette(
+                'Authorizer_authorize__with_permanent_grant'):
+            authorizer.authorize(PERMANENT_GRANT_CODE)
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertIsNotNone(authorizer.refresh_token)
+        self.assertIsInstance(authorizer.scopes, set)
+        self.assertTrue(len(authorizer.scopes) > 0)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_authorize__with_temporary_grant(self):
+        self.authentication.redirect_uri = REDIRECT_URI
+        authorizer = prawcore.Authorizer(self.authentication)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(authorizer._session).use_cassette(
+                'Authorizer_authorize__with_temporary_grant'):
+            authorizer.authorize(TEMPORARY_GRANT_CODE)
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertIsNone(authorizer.refresh_token)
+        self.assertIsInstance(authorizer.scopes, set)
+        self.assertTrue(len(authorizer.scopes) > 0)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_authorize__with_invalid_code(self):
+        self.authentication.redirect_uri = REDIRECT_URI
+        authorizer = prawcore.Authorizer(self.authentication)
+        with Betamax(authorizer._session).use_cassette(
+                'Authorizer_authorize__with_invalid_code'):
+            self.assertRaises(prawcore.OAuthException, authorizer.authorize,
+                              'invalid code')
+        self.assertFalse(authorizer.is_valid())
+
+    def test_authorize__fail_without_redirect_uri(self):
+        authorizer = prawcore.Authorizer(self.authentication)
+        self.assertRaises(prawcore.InvalidInvocation, authorizer.authorize,
+                          'dummy code')
+        self.assertFalse(authorizer.is_valid())
 
     def test_refresh(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
@@ -36,7 +89,7 @@ class AuthorizerTest(unittest.TestCase):
         self.assertFalse(authorizer.is_valid())
 
 
-class ReadOnlyAuthorizerTest(AuthorizerTest):
+class ReadOnlyAuthorizerTest(AuthorizerTestBase):
     def test_refresh(self):
         authorizer = prawcore.ReadOnlyAuthorizer(self.authentication)
         self.assertIsNone(authorizer.access_token)
@@ -52,7 +105,7 @@ class ReadOnlyAuthorizerTest(AuthorizerTest):
         self.assertTrue(authorizer.is_valid())
 
 
-class ScriptAuthorizerTest(AuthorizerTest):
+class ScriptAuthorizerTest(AuthorizerTestBase):
     def test_refresh(self):
         authorizer = prawcore.ScriptAuthorizer(self.authentication, USERNAME,
                                                PASSWORD)
