@@ -23,6 +23,24 @@ class RequestException(PrawcoreException):
                                                .format(response.status_code))
 
 
+class OAuthException(PrawcoreException):
+    """Indicate that there was an OAuth2 related error with the request."""
+
+    def __init__(self, response, error, description):
+        """OAuthException instances contain the failing response.
+
+        :param response: A requests.response instance.
+        :param error: The error type returned by reddit.
+        :param description: A description of the error when provided.
+
+        """
+        self.error = error
+        self.description = description
+        self.response = response
+        PrawcoreException.__init__(self, '{} error processing request ({})'
+                                   .format(error, description))
+
+
 class InsufficientScope(RequestException):
     """Indicate that the request requires a different scope."""
 

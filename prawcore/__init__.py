@@ -1,7 +1,8 @@
 """prawcore: Low-level communication layer for PRAW 4+."""
 
 import logging
-from .auth import Authenticator, Authorizer, ReadOnlyAuthorizer  # noqa
+from .auth import (Authenticator, Authorizer, ReadOnlyAuthorizer,  # noqa
+                   ScriptAuthorizer)
 from .const import __version__  # noqa
 from .exceptions import *  # noqa
 from .sessions import Session, session  # noqa

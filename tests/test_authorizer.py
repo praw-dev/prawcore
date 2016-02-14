@@ -2,7 +2,7 @@
 from betamax import Betamax
 import prawcore
 import unittest
-from .config import CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
+from .config import CLIENT_ID, CLIENT_SECRET, PASSWORD, REFRESH_TOKEN, USERNAME
 
 
 class AuthorizerTest(unittest.TestCase):
@@ -50,3 +50,28 @@ class ReadOnlyAuthorizerTest(AuthorizerTest):
         self.assertIsNotNone(authorizer.access_token)
         self.assertEqual(set(['*']), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
+
+
+class ScriptAuthorizerTest(AuthorizerTest):
+    def test_refresh(self):
+        authorizer = prawcore.ScriptAuthorizer(self.authentication, USERNAME,
+                                               PASSWORD)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(authorizer._session).use_cassette(
+                'ScriptAuthorizer_refresh'):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(['*']), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_refresh__with_invalid_username_or_password(self):
+        authorizer = prawcore.ScriptAuthorizer(self.authentication, USERNAME,
+                                               'invalidpassword')
+        with Betamax(authorizer._session).use_cassette(
+                'ScriptAuthorizer_refresh__with_invalid_username_or_password'):
+            self.assertRaises(prawcore.OAuthException, authorizer.refresh)
+            self.assertFalse(authorizer.is_valid())
