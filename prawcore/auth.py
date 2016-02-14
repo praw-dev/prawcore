@@ -12,11 +12,12 @@ class Authenticator(object):
     def __init__(self, client_id, client_secret, redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
-        :param client_id: The OAuth2 client id to use with the session.
+        :param client_id: The OAuth2 client ID to use with the session.
         :param client_secret: The OAuth2 client secret to use with the session.
         :param redirect_uri: (optional) The redirect URI exactly as specified
             in your OAuth application settings on reddit. This parameter is
-            only required if you want to use the ``authorize_url`` method.
+            required if you want to use the ``authorize_url`` method, or the
+            ``authorize`` method of the ``Authorizer`` class.
 
         """
         self.client_id = client_id
@@ -58,7 +59,7 @@ class Authorizer(object):
             authorization.
 
         """
-        self._auth = (authenticator.client_id, authenticator.client_secret)
+        self._authenticator = authenticator
         self._expiration_timestamp = None
         self._session = util.http
 
@@ -67,20 +68,35 @@ class Authorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        response = self._session.post(const.ACCESS_TOKEN_URL, auth=self._auth,
+        auth = (self._authenticator.client_id,
+                self._authenticator.client_secret)
+        response = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
                                       data=data)
         if response.status_code != codes['ok']:
             raise RequestException(response)
 
         payload = response.json()
-
         if 'error' in payload:  # Why are these OKAY responses?
             raise OAuthException(response, payload['error'],
                                  payload.get('error_description'))
 
         self._expiration_timestamp = time.time() + payload['expires_in']
         self.access_token = payload['access_token']
+        if 'refresh_token' in payload:
+            self.refresh_token = payload['refresh_token']
         self.scopes = set(payload['scope'].split(' '))
+
+    def authorize(self, code):
+        """Obtain and set authorization tokens based on ``code``.
+
+        :param code: The code obtained by an out-of-band authorization request
+            to reddit.
+
+        """
+        if self._authenticator.redirect_uri is None:
+            raise InvalidInvocation('redirect URI not provided')
+        self._request_token(code=code, grant_type='authorization_code',
+                            redirect_uri=self._authenticator.redirect_uri)
 
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
