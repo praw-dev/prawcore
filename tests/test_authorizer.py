@@ -16,10 +16,6 @@ class AuthorizerTest(AuthorizerTestBase):
     def test_authorize__with_permanent_grant(self):
         self.authentication.redirect_uri = REDIRECT_URI
         authorizer = prawcore.Authorizer(self.authentication)
-        self.assertIsNone(authorizer.access_token)
-        self.assertIsNone(authorizer.scopes)
-        self.assertFalse(authorizer.is_valid())
-
         with Betamax(self.authentication._session).use_cassette(
                 'Authorizer_authorize__with_permanent_grant'):
             authorizer.authorize(PERMANENT_GRANT_CODE)
@@ -33,10 +29,6 @@ class AuthorizerTest(AuthorizerTestBase):
     def test_authorize__with_temporary_grant(self):
         self.authentication.redirect_uri = REDIRECT_URI
         authorizer = prawcore.Authorizer(self.authentication)
-        self.assertIsNone(authorizer.access_token)
-        self.assertIsNone(authorizer.scopes)
-        self.assertFalse(authorizer.is_valid())
-
         with Betamax(self.authentication._session).use_cassette(
                 'Authorizer_authorize__with_temporary_grant'):
             authorizer.authorize(TEMPORARY_GRANT_CODE)
@@ -62,12 +54,22 @@ class AuthorizerTest(AuthorizerTestBase):
                           'dummy code')
         self.assertFalse(authorizer.is_valid())
 
-    def test_refresh(self):
+    def test_initialize(self):
+        authorizer = prawcore.Authorizer(self.authentication)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertIsNone(authorizer.refresh_token)
+        self.assertFalse(authorizer.is_valid())
+
+    def test_initialize__with_refresh_token(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
         self.assertIsNone(authorizer.access_token)
         self.assertIsNone(authorizer.scopes)
+        self.assertEqual(REFRESH_TOKEN, authorizer.refresh_token)
         self.assertFalse(authorizer.is_valid())
 
+    def test_refresh(self):
+        authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
         with Betamax(self.authentication._session).use_cassette(
                 'Authorizer_refresh'):
             authorizer.refresh()
