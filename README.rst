@@ -24,6 +24,54 @@ Install prawcore using ``pip`` via:
 
     pip install prawcore
 
+
+Execution Example
+-----------------
+
+The following example demonstrates how to use prawcore to obtain the list of
+trophies for a given user. This example assumes you have the environment
+variables ``PRAWCORE_CLIENT_ID`` and ``PRAWCORE_CLIENT_SECRET`` set to the
+appropriate values for your application.
+
+.. code-block:: python
+
+   #!/usr/bin/env python
+   import os
+   import prawcore
+   import sys
+   from pprint import pprint
+
+
+   def main():
+       if len(sys.argv) != 2:
+           print('Usage: {} USERNAME'.format(sys.argv[0]))
+           return 1
+       user = sys.argv[1]
+
+       authenticator = prawcore.Authenticator(
+           os.environ.get('PRAWCORE_CLIENT_ID'),
+           os.environ.get('PRAWCORE_CLIENT_SECRET'))
+
+       url = 'https://oauth.reddit.com/api/v1/user/{}/trophies'.format(user)
+       authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+       authorizer.refresh()
+
+       with prawcore.session(authorizer) as session:
+           pprint(session.request('GET', url))
+
+       return 0
+
+
+   if __name__ == '__main__':
+       sys.exit(main())
+
+Save the above as ``trophies.py`` and then run via:
+
+.. code-block:: bashsession
+
+   python trophies.py USERNAME
+
+
 Depending on prawcore
 ---------------------
 
