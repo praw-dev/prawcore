@@ -66,8 +66,10 @@ def main():
         send_message(client, params['error'])
         return 1
 
-    # TODO: Use the access code to obtain and then output the refresh token.
-    send_message(client, 'Access code: {}'.format(params['code']))
+    authorizer = prawcore.Authorizer(authenticator)
+    authorizer.authorize(params['code'])
+
+    send_message(client, 'Refresh token: {}'.format(authorizer.refresh_token))
     return 0
 
 
