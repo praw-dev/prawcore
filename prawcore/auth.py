@@ -30,13 +30,25 @@ class Authorizer(object):
             authorization.
 
         """
+        self._auth = (authenticator.client_id, authenticator.client_secret)
         self._expiration_timestamp = None
         self._session = util.http
 
-        self.authenticator = authenticator
         self.access_token = None
         self.refresh_token = refresh_token
         self.scopes = None
+
+    def _request_token(self, **data):
+        response = self._session.post(const.ACCESS_TOKEN_URL, auth=self._auth,
+                                      data=data)
+        if response.status_code != codes['ok']:
+            raise RequestException(response)
+
+        payload = response.json()
+
+        self._expiration_timestamp = time.time() + payload['expires_in']
+        self.access_token = payload['access_token']
+        self.scopes = set(payload['scope'].split(' '))
 
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
@@ -52,17 +64,18 @@ class Authorizer(object):
         """Obtain a new access token from the refresh_token."""
         if self.refresh_token is None:
             raise InvalidInvocation('refresh token not provided')
-        auth = (self.authenticator.client_id, self.authenticator.client_secret)
-        data = {'grant_type': 'refresh_token',
-                'refresh_token': self.refresh_token}
+        self._request_token(grant_type='refresh_token',
+                            refresh_token=self.refresh_token)
 
-        response = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
-                                      data=data)
-        if response.status_code != codes['ok']:
-            raise RequestException(response)
 
-        payload = response.json()
+class ReadOnlyAuthorizer(Authorizer):
+    """Manages authorizations that are not associated with a reddit account.
 
-        self._expiration_timestamp = time.time() + payload['expires_in']
-        self.access_token = payload['access_token']
-        self.scopes = set(payload['scope'].split(' '))
+    While the '*' scope will be available, some endpoints simply will not work
+    due to the lack of an associated reddit account.
+
+    """
+
+    def refresh(self):
+        """Obtain a new ReadOnly access token."""
+        self._request_token(grant_type='client_credentials')
