@@ -13,7 +13,7 @@ import sys
 
 
 def main():
-    """main is the program's entry point when directly executed."""
+    """Provide the program's entry point when directly executed."""
     authenticator = prawcore.Authenticator(
         os.environ['PRAWCORE_CLIENT_ID'],
         os.environ['PRAWCORE_CLIENT_SECRET'])

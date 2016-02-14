@@ -13,7 +13,7 @@ class RequestException(PrawcoreException):
     """Indicate that there was an error with the HTTP request."""
 
     def __init__(self, response):
-        """RequestException instances contain the failing response.
+        """Initialize a RequestException instance..
 
         :param response: A requests.response instance.
 
@@ -27,7 +27,7 @@ class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
     def __init__(self, response, error, description):
-        """OAuthException instances contain the failing response.
+        """Intialize a OAuthException instance.
 
         :param response: A requests.response instance.
         :param error: The error type returned by reddit.

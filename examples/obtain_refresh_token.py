@@ -38,7 +38,7 @@ def send_message(client, message):
 
 
 def main():
-    """main is the program's entry point when directly executed."""
+    """Provide the program's entry point when directly executed."""
     if len(sys.argv) < 2:
         print('Usage: {} SCOPE...'.format(sys.argv[0]))
         return 1
