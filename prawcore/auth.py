@@ -20,9 +20,17 @@ class Authenticator(object):
             ``authorize`` method of the ``Authorizer`` class.
 
         """
+        self._session = util.http
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
+
+    def _post(self, url, success_status=codes['ok'], **data):
+        auth = (self.client_id, self.client_secret)
+        response = self._session.post(url, auth=auth, data=data)
+        if response.status_code != success_status:
+            raise RequestException(response)
+        return response
 
     def authorize_url(self, duration, scopes, state):
         """Return URL the used out-of-band to grant access to your application.
@@ -47,6 +55,21 @@ class Authenticator(object):
         request = Request('GET', const.AUTHORIZATION_URL, params=params)
         return request.prepare().url
 
+    def revoke_token(self, token, token_type=None):
+        """Ask reddit to revoke the provided token.
+
+        :param token: The access or refresh token to revoke.
+        :param token_type: (Optional) When provided, hint to reddit what the
+            token type is for a possible efficiency gain. The value can be
+            either ``access_token`` or ``refresh_token``.
+
+        """
+        data = {'token': token}
+        if token_type is not None:
+            data['token_type_hint'] = token_type
+        self._post(const.REVOKE_TOKEN_URL, success_status=codes['no_content'],
+                   **data)
+
 
 class Authorizer(object):
     """Manages OAuth2 authorization tokens and scopes."""
@@ -60,21 +83,16 @@ class Authorizer(object):
 
         """
         self._authenticator = authenticator
-        self._expiration_timestamp = None
-        self._session = util.http
-
-        self.access_token = None
         self.refresh_token = refresh_token
+        self._clear_access_token()
+
+    def _clear_access_token(self):
+        self._expiration_timestamp = None
+        self.access_token = None
         self.scopes = None
 
     def _request_token(self, **data):
-        auth = (self._authenticator.client_id,
-                self._authenticator.client_secret)
-        response = self._session.post(const.ACCESS_TOKEN_URL, auth=auth,
-                                      data=data)
-        if response.status_code != codes['ok']:
-            raise RequestException(response)
-
+        response = self._authenticator._post(const.ACCESS_TOKEN_URL, **data)
         payload = response.json()
         if 'error' in payload:  # Why are these OKAY responses?
             raise OAuthException(response, payload['error'],
