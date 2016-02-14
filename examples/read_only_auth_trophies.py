@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""trophies.py is a simple program to obtain a user's list of trophies.
+"""This example outputs a user's list of trophies.
 
 This program demonstrates the use of ``prawcore.ReadOnlyAuthorizer`` that does
 not require an access token to make authenticated requests to reddit.
