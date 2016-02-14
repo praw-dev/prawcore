@@ -34,3 +34,19 @@ class AuthorizerTest(unittest.TestCase):
         authorizer = prawcore.Authorizer(self.authentication)
         self.assertRaises(prawcore.InvalidInvocation, authorizer.refresh)
         self.assertFalse(authorizer.is_valid())
+
+
+class ReadOnlyAuthorizerTest(AuthorizerTest):
+    def test_refresh(self):
+        authorizer = prawcore.ReadOnlyAuthorizer(self.authentication)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(authorizer._session).use_cassette(
+                'ReadOnlyAuthorizer_refresh'):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(['*']), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
