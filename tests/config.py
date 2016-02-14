@@ -8,6 +8,7 @@ from betamax_serializers import pretty_json
 CLIENT_ID = os.environ.get('PRAWCORE_CLIENT_ID', 'fake_client_id')
 CLIENT_SECRET = os.environ.get('PRAWCORE_CLIENT_SECRET', 'fake_client_secret')
 PASSWORD = os.environ.get('PRAWCORE_PASSWORD', 'fake_password')
+REDIRECT_URI = os.environ.get('PRAWCORE_REDIRECT_URI', 'http://localhost:8080')
 REFRESH_TOKEN = os.environ.get('PRAWCORE_REFRESH_TOKEN', 'fake_refresh_token')
 USERNAME = os.environ.get('PRAWCORE_USERNAME', 'fake_username')
 

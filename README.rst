@@ -41,8 +41,8 @@ appropriate values for your application.
    import prawcore
 
    authenticator = prawcore.Authenticator(
-       os.environ.get('PRAWCORE_CLIENT_ID'),
-       os.environ.get('PRAWCORE_CLIENT_SECRET'))
+       os.environ['PRAWCORE_CLIENT_ID'],
+       os.environ['PRAWCORE_CLIENT_SECRET'])
    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
    authorizer.refresh()
 

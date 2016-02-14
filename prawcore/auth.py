@@ -2,21 +2,49 @@
 import time
 from . import const, util
 from .exceptions import InvalidInvocation, OAuthException, RequestException
+from requests import Request
 from requests.status_codes import codes
 
 
 class Authenticator(object):
     """Stores OAuth2 authentication credentials."""
 
-    def __init__(self, client_id, client_secret):
+    def __init__(self, client_id, client_secret, redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
         :param client_id: The OAuth2 client id to use with the session.
         :param client_secret: The OAuth2 client secret to use with the session.
+        :param redirect_uri: (optional) The redirect URI exactly as specified
+            in your OAuth application settings on reddit. This parameter is
+            only required if you want to use the ``authorize_url`` method.
 
         """
         self.client_id = client_id
         self.client_secret = client_secret
+        self.redirect_uri = redirect_uri
+
+    def authorize_url(self, duration, scopes, state):
+        """Return URL the used out-of-band to grant access to your application.
+
+        :param duration: Either ``permanent`` or ``temporary``. ``temporary``
+            authorizations generate access tokens that last only 1
+            hour. ``permanent`` authorizations additionally generate a refresh
+            token that can be indefinetly used to generate new hour-long access
+            tokens.
+        :param scopes: A list of OAuth scopes to request authorization for.
+        :param state: A string that will be reflected in the callback to
+            ``redirect_uri``. This value should be temporarily unique to client
+            for whom the URL was generated for.
+
+        """
+        if self.redirect_uri is None:
+            raise InvalidInvocation('redirect URI not provided')
+
+        params = {'client_id': self.client_id, 'duration': duration,
+                  'redirect_uri': self.redirect_uri, 'response_type': 'code',
+                  'scope': ' '.join(scopes), 'state': state}
+        request = Request('GET', const.AUTHORIZATION_URL, params=params)
+        return request.prepare().url
 
 
 class Authorizer(object):
