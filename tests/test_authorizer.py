@@ -1,4 +1,4 @@
-"""Test for prawcore.auth.Authorizer class."""
+"""Test for prawcore.auth.Authorizer classes."""
 from betamax import Betamax
 import prawcore
 import unittest
