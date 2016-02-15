@@ -133,6 +133,28 @@ class Authorizer(object):
         self._request_token(grant_type='refresh_token',
                             refresh_token=self.refresh_token)
 
+    def revoke(self, only_access=False):
+        """Revoke the current Authorization.
+
+        :param only_access: (Optional) When explicitly set to True, do not
+            evict the refresh token if one is set.
+
+        Revoking a refresh token will in-turn revoke all access tokens
+        associated with that authorization.
+
+        """
+        if self.refresh_token is not None and not only_access:
+            self._authenticator.revoke_token(self.refresh_token,
+                                             'refresh_token')
+        elif self.access_token is not None:
+            self._authenticator.revoke_token(self.access_token, 'access_token')
+        else:
+            raise InvalidInvocation('no token available to revoke')
+
+        self._clear_access_token()
+        if not only_access:
+            self.refresh_token = None
+
 
 class ReadOnlyAuthorizer(Authorizer):
     """Manages authorizations that are not associated with a reddit account.
