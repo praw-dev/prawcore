@@ -43,6 +43,16 @@ class SessionTest(unittest.TestCase):
         self.assertIsInstance(data, dict)
         self.assertEqual('Listing', data['kind'])
 
+    def test_request__raw_json(self):
+        with Betamax(prawcore.util.http).use_cassette(
+                'Session_request__raw_json'):
+            self.session.authorizer = readonly_authorizer()
+            data = self.session.request(
+                'GET', ('https://oauth.reddit.com/r/reddit'
+                        '_api_test/comments/45xjdr/want_raw_json_test/'))
+        self.assertEqual('WANT_RAW_JSON test: < > &',
+                         data[0]['data']['children'][0]['data']['title'])
+
     def test_request__with_insufficent_scope(self):
         with Betamax(prawcore.util.http).use_cassette(
                 'Session_request__with_insufficient_scope'):
