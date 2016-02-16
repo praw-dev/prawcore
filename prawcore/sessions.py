@@ -44,8 +44,9 @@ class Session(object):
 
         headers = {'Authorization': 'bearer {}'
                    .format(self.authorizer.access_token)}
+        params = {'raw_json': '1'}
         response = self._rate_limiter.call(self._session.request, method, url,
-                                           headers=headers)
+                                           headers=headers, params=params)
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
