@@ -1,18 +1,18 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2016-02-07T06:06:12",
+      "recorded_at": "2016-02-16T01:20:45",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
+          "string": "grant_type=client_credentials"
         },
         "headers": {
           "Accept": "*/*",
           "Accept-Encoding": "gzip, deflate",
           "Authorization": "Basic <BASIC_AUTH>",
           "Connection": "keep-alive",
-          "Content-Length": "66",
+          "Content-Length": "29",
           "Content-Type": "application/x-www-form-urlencoded",
           "Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972",
           "User-Agent": "prawcore/0.0.1a1"
@@ -22,16 +22,16 @@
       },
       "response": {
         "body": {
-          "base64_string": "H4sIAAAAAAAAA6tWSkxOTi0uji/Jz07NU7JSUDI3NjCyMDPXNS02do8yqzRITC9NdcwsLPQ2MyxNzclxitdNVtJRUAKrjy+pLEgFaUpKTSxKLQKJp1YUZBalFsdnggwzNjMw0FFQKk7OhyjLTEnNK8ksqVSqBQBFfSD9eAAAAA==",
+          "base64_string": "H4sIAAAAAAAAA6tWSkxOTi0uji/Jz07NU7JSUNJ1Ts3T9TP08QxKqsoqLnRytCjP8k3Ps8gz9chX0lFQAiuML6ksSAWpTkpNLEotAomnVhRkFqUWx2eCTDE2MzDQUVAqTs6HKNNSqgUAvqp/b2oAAAA=",
           "encoding": "UTF-8",
           "string": ""
         },
         "headers": {
-          "CF-RAY": "270ce84779cf39b2-PHX",
+          "CF-RAY": "27556e8d569b3988-PHX",
           "Connection": "keep-alive",
           "Content-Encoding": "gzip",
           "Content-Type": "application/json; charset=UTF-8",
-          "Date": "Sun, 07 Feb 2016 06:06:11 GMT",
+          "Date": "Tue, 16 Feb 2016 01:20:45 GMT",
           "Server": "cloudflare-nginx",
           "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
           "Transfer-Encoding": "chunked",
@@ -49,7 +49,7 @@
       }
     },
     {
-      "recorded_at": "2016-02-07T06:06:12",
+      "recorded_at": "2016-02-16T01:20:46",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -58,13 +58,13 @@
         "headers": {
           "Accept": "*/*",
           "Accept-Encoding": "gzip, deflate",
-          "Authorization": "bearer 7302867-5s3GZ6y0agueAiqqK61uellB_-cinvalid",
+          "Authorization": "bearer -Cen-N1LIRbzjsqBA8wjMgn8n5Hoinvalid",
           "Connection": "keep-alive",
           "Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972",
           "User-Agent": "prawcore/0.0.1a1"
         },
         "method": "GET",
-        "uri": "https://oauth.reddit.com/.json"
+        "uri": "https://oauth.reddit.com/?raw_json=1"
       },
       "response": {
         "body": {
@@ -72,11 +72,11 @@
           "string": "{\"error\": 401}"
         },
         "headers": {
-          "CF-RAY": "270ce848e57639be-PHX",
+          "CF-RAY": "27556e8e03533982-PHX",
           "Connection": "keep-alive",
           "Content-Length": "14",
           "Content-Type": "application/json; charset=UTF-8",
-          "Date": "Sun, 07 Feb 2016 06:06:11 GMT",
+          "Date": "Tue, 16 Feb 2016 01:20:46 GMT",
           "Server": "cloudflare-nginx",
           "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
           "X-Moose": "majestic",
@@ -86,7 +86,7 @@
           "www-authenticate": "Bearer realm=\"reddit\", error=\"invalid_token\"",
           "x-content-type-options": "nosniff",
           "x-frame-options": "SAMEORIGIN",
-          "x-reddit-tracking": "https://pixel.redditmedia.com/pixel/of_destiny.png?v=jmr2zEolOa0Q4wt%2BWkESV0t2RAFtr7GWxCLLJ3CHAjJbJYHBJUnA2BUP5nC%2Fe7e1cQz67ujaa0smUbvs8Xr3BPK7%2BszBOdtY",
+          "x-reddit-tracking": "https://pixel.redditmedia.com/pixel/of_destiny.png?v=aEP1d6ec63%2Bkh0UX%2BuLcmukE4MSF2GGFmt1Hae2P0RrrwuQw%2BpxyRVNWJXPHvpGeGTjlZFcKJGL3P5laYED2QqNXIwtdtonG",
           "x-ua-compatible": "IE=edge",
           "x-xss-protection": "1; mode=block"
         },
@@ -94,7 +94,7 @@
           "code": 401,
           "message": "Unauthorized"
         },
-        "url": "https://oauth.reddit.com/.json"
+        "url": "https://oauth.reddit.com/?raw_json=1"
       }
     }
   ],

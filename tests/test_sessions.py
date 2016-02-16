@@ -10,6 +10,13 @@ class InvalidAuthorizer(object):
         return False
 
 
+def readonly_authorizer():
+    authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
+    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+    authorizer.refresh()
+    return authorizer
+
+
 def valid_authorizer():
     authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
@@ -31,26 +38,25 @@ class SessionTest(unittest.TestCase):
     def test_request(self):
         with Betamax(prawcore.util.http).use_cassette(
                 'Session_request'):
-            self.session.authorizer = valid_authorizer()
-            data = self.session.request(
-                'GET', 'https://oauth.reddit.com/api/v1/me')
+            self.session.authorizer = readonly_authorizer()
+            data = self.session.request('GET', 'https://oauth.reddit.com')
         self.assertIsInstance(data, dict)
-        self.assertTrue('name' in data)
+        self.assertEqual('Listing', data['kind'])
 
     def test_request__with_insufficent_scope(self):
         with Betamax(prawcore.util.http).use_cassette(
                 'Session_request__with_insufficient_scope'):
             self.session.authorizer = valid_authorizer()
             self.assertRaises(prawcore.InsufficientScope, self.session.request,
-                              'GET', 'https://oauth.reddit.com/.json')
+                              'GET', 'https://oauth.reddit.com/api/v1/me')
 
     def test_request__with_invalid_access_token(self):
         with Betamax(prawcore.util.http).use_cassette(
                 'Session_request__with_invalid_access_token'):
-            self.session.authorizer = valid_authorizer()
+            self.session.authorizer = readonly_authorizer()
             self.session.authorizer.access_token += 'invalid'
             self.assertRaises(prawcore.InvalidToken, self.session.request,
-                              'GET', 'https://oauth.reddit.com/.json')
+                              'GET', 'https://oauth.reddit.com')
 
     def test_request__with_invalid_authorizer(self):
         self.session.authorizer = InvalidAuthorizer()
