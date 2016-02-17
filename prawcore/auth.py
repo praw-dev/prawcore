@@ -86,6 +86,10 @@ class Authorizer(object):
             authorization.
 
         """
+        if not isinstance(authenticator, Authenticator):
+            raise InvalidInvocation('invalid Authenticator: {}'
+                                    .format(authenticator))
+
         self._authenticator = authenticator
         self.refresh_token = refresh_token
         self._clear_access_token()

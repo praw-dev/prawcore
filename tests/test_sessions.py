@@ -7,6 +7,11 @@ from prawcore.auth import Authorizer
 
 
 class InvalidAuthorizer(Authorizer):
+    def __init__(self):
+        super(InvalidAuthorizer, self).__init__(
+            prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
+                                   requestor=REQUESTOR))
+
     def is_valid(self):
         return False
 
@@ -18,10 +23,6 @@ def readonly_authorizer(refresh=True):
     if refresh:
         authorizer.refresh()
     return authorizer
-
-
-def simple_session():
-    return prawcore.Session(readonly_authorizer(refresh=False))
 
 
 def valid_authorizer():
@@ -76,12 +77,12 @@ class SessionTest(unittest.TestCase):
                               'https://oauth.reddit.com')
 
     def test_request__with_invalid_authorizer(self):
-        session = prawcore.Session(InvalidAuthorizer(None))
+        session = prawcore.Session(InvalidAuthorizer())
         self.assertRaises(prawcore.InvalidInvocation, session.request,
                           'get', '')
 
 
 class SessionFunctionTest(unittest.TestCase):
     def test_session(self):
-        self.assertIsInstance(prawcore.session(InvalidAuthorizer(None)),
+        self.assertIsInstance(prawcore.session(InvalidAuthorizer()),
                               prawcore.Session)

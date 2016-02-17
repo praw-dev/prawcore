@@ -62,6 +62,10 @@ class AuthorizerTest(AuthorizerTestBase):
         self.assertIsNone(authorizer.refresh_token)
         self.assertFalse(authorizer.is_valid())
 
+    def test_initialize__with_invalid_authenticator(self):
+        self.assertRaises(prawcore.InvalidInvocation, prawcore.Authorizer,
+                          None)
+
     def test_initialize__with_refresh_token(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
         self.assertIsNone(authorizer.access_token)
