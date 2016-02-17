@@ -5,6 +5,7 @@ from .auth import (Authenticator, Authorizer, ReadOnlyAuthorizer,  # noqa
                    ScriptAuthorizer)
 from .const import __version__  # noqa
 from .exceptions import *  # noqa
+from .requestor import Requestor  # noqa
 from .sessions import Session, session  # noqa
 
 
