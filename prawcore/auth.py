@@ -1,6 +1,6 @@
 """Provides Authentication and Authorization classes."""
 import time
-from . import const, util
+from . import const
 from .exceptions import InvalidInvocation, OAuthException, RequestException
 from requests import Request
 from requests.status_codes import codes
@@ -9,7 +9,8 @@ from requests.status_codes import codes
 class Authenticator(object):
     """Stores OAuth2 authentication credentials."""
 
-    def __init__(self, client_id, client_secret, redirect_uri=None):
+    def __init__(self, client_id, client_secret, redirect_uri=None,
+                 requestor=None):
         """Represent a single authentication to reddit's API.
 
         :param client_id: The OAuth2 client ID to use with the session.
@@ -18,16 +19,19 @@ class Authenticator(object):
             in your OAuth application settings on reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
             ``authorize`` method of the ``Authorizer`` class.
+        :param requestor: (Optional) An instance of :class:`Requestor`.
 
         """
-        self._session = util.http
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
+        self._requestor = requestor
 
     def _post(self, url, success_status=codes['ok'], **data):
+        if self._requestor is None:
+            raise InvalidInvocation('requestor not provided')
         auth = (self.client_id, self.client_secret)
-        response = self._session.post(url, auth=auth, data=data)
+        response = self._requestor.post(url, auth=auth, data=data)
         if response.status_code != success_status:
             raise RequestException(response)
         return response
@@ -82,6 +86,10 @@ class Authorizer(object):
             authorization.
 
         """
+        if not isinstance(authenticator, Authenticator):
+            raise InvalidInvocation('invalid Authenticator: {}'
+                                    .format(authenticator))
+
         self._authenticator = authenticator
         self.refresh_token = refresh_token
         self._clear_access_token()

@@ -4,6 +4,7 @@ import os
 from base64 import b64encode
 from betamax import Betamax
 from betamax_serializers import pretty_json
+from prawcore import Requestor
 
 CLIENT_ID = os.environ.get('PRAWCORE_CLIENT_ID', 'fake_client_id')
 CLIENT_SECRET = os.environ.get('PRAWCORE_CLIENT_SECRET', 'fake_client_secret')
@@ -15,6 +16,9 @@ REFRESH_TOKEN = os.environ.get('PRAWCORE_REFRESH_TOKEN', 'fake_refresh_token')
 TEMPORARY_GRANT_CODE = os.environ.get('PRAWCORE_TEMPORARY_GRANT_CODE',
                                       'fake_temp_code')
 USERNAME = os.environ.get('PRAWCORE_USERNAME', 'fake_username')
+
+
+REQUESTOR = Requestor('prawcore:test (by /u/bboe)')
 
 
 def b64_string(input_string):

@@ -1,10 +1,5 @@
 """Provide utility for the prawcore package."""
-import requests
-from . import const
 from .exceptions import InsufficientScope, InvalidToken
-
-http = requests.Session()
-http.headers['User-Agent'] = const.USER_AGENT
 
 
 _auth_error_mapping = {'insufficient_scope': InsufficientScope,

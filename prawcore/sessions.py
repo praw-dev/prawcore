@@ -1,5 +1,5 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
-from . import util
+from .auth import Authorizer
 from .rate_limit import RateLimiter
 from .exceptions import InvalidInvocation
 from .util import authorization_error_class
@@ -9,15 +9,17 @@ from requests.status_codes import codes
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
-    def __init__(self, authorizer=None):
+    def __init__(self, authorizer):
         """Preprare the connection to reddit's API.
 
         :param authorizer: An instance of :class:`Authorizer`.
 
         """
-        self.authorizer = authorizer
+        if not isinstance(authorizer, Authorizer):
+            raise InvalidInvocation('invalid Authorizer: {}'
+                                    .format(authorizer))
+        self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
-        self._session = util.http
 
     def __enter__(self):
         """Allow this object to be used as a context manager."""
@@ -27,9 +29,13 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
+    @property
+    def _requestor(self):
+        return self._authorizer._authenticator._requestor
+
     def close(self):
         """Close the session and perform any clean up."""
-        self._session.close()
+        self._requestor._http.close()
 
     def request(self, method, url):
         """Return the json content from the resource at ``url``.
@@ -37,16 +43,15 @@ class Session(object):
         :param url: The URL of the request.
 
         """
-        if self.authorizer is None:
-            raise InvalidInvocation('authorizer has not been set')
-        elif not self.authorizer.is_valid():
+        if not self._authorizer.is_valid():
             raise InvalidInvocation('authorizer does not have a valid token')
 
         headers = {'Authorization': 'bearer {}'
-                   .format(self.authorizer.access_token)}
+                   .format(self._authorizer.access_token)}
         params = {'raw_json': '1'}
-        response = self._rate_limiter.call(self._session.request, method, url,
-                                           headers=headers, params=params)
+        response = self._rate_limiter.call(self._requestor._http.request,
+                                           method, url, headers=headers,
+                                           params=params)
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)

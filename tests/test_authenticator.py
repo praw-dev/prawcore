@@ -1,7 +1,7 @@
 """Test for prawcore.auth.Authenticator class."""
 import prawcore
 import unittest
-from .config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+from .config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REQUESTOR
 from betamax import Betamax
 
 
@@ -23,19 +23,26 @@ class AuthenticatorTest(unittest.TestCase):
                           ['identity'], '...')
 
     def test_revoke_token(self):
-        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
-        with Betamax(authenticator._session).use_cassette(
-                'Authenticator_revoke_token'):
+        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
+                                               requestor=REQUESTOR)
+        with Betamax(REQUESTOR).use_cassette('Authenticator_revoke_token'):
             authenticator.revoke_token('dummy token')
 
     def test_revoke_token__with_access_token_hint(self):
-        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
-        with Betamax(authenticator._session).use_cassette(
+        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
+                                               requestor=REQUESTOR)
+        with Betamax(REQUESTOR).use_cassette(
                 'Authenticator_revoke_token__with_access_token_hint'):
             authenticator.revoke_token('dummy token', 'access_token')
 
     def test_revoke_token__with_refresh_token_hint(self):
-        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
-        with Betamax(authenticator._session).use_cassette(
+        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
+                                               requestor=REQUESTOR)
+        with Betamax(REQUESTOR).use_cassette(
                 'Authenticator_revoke_token__with_refresh_token_hint'):
             authenticator.revoke_token('dummy token', 'refresh_token')
+
+    def test_revoke_token__without_requestor(self):
+        authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET)
+        self.assertRaises(prawcore.InvalidInvocation,
+                          authenticator.revoke_token, 'dummy token')
