@@ -19,7 +19,8 @@ def main():
 
     authenticator = prawcore.Authenticator(
         os.environ['PRAWCORE_CLIENT_ID'],
-        os.environ['PRAWCORE_CLIENT_SECRET'])
+        os.environ['PRAWCORE_CLIENT_SECRET'],
+        requestor=prawcore.Requestor('prawcore_read_only_example'))
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     authorizer.refresh()
 
