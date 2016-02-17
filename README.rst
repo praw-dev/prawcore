@@ -40,9 +40,10 @@ appropriate values for your application.
    import pprint
    import prawcore
 
+   requestor = prawcore.Requestor('YOUR_VALID_USER_AGENT')
    authenticator = prawcore.Authenticator(
        os.environ['PRAWCORE_CLIENT_ID'],
-       os.environ['PRAWCORE_CLIENT_SECRET'])
+       os.environ['PRAWCORE_CLIENT_SECRET'], requestor=requestor)
    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
    authorizer.refresh()
 

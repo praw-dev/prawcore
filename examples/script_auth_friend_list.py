@@ -16,7 +16,8 @@ def main():
     """Provide the program's entry point when directly executed."""
     authenticator = prawcore.Authenticator(
         os.environ['PRAWCORE_CLIENT_ID'],
-        os.environ['PRAWCORE_CLIENT_SECRET'])
+        os.environ['PRAWCORE_CLIENT_SECRET'],
+        requestor=prawcore.Requestor('prawcore_script_auth_example'))
     authorizer = prawcore.ScriptAuthorizer(authenticator,
                                            os.environ['PRAWCORE_USERNAME'],
                                            os.environ['PRAWCORE_PASSWORD'])
