@@ -18,16 +18,15 @@ def main():
         return 1
 
     authenticator = prawcore.Authenticator(
+        prawcore.Requestor('prawcore_read_only_example'),
         os.environ['PRAWCORE_CLIENT_ID'],
-        os.environ['PRAWCORE_CLIENT_SECRET'],
-        requestor=prawcore.Requestor('prawcore_read_only_example'))
+        os.environ['PRAWCORE_CLIENT_SECRET'])
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     authorizer.refresh()
 
     user = sys.argv[1]
-    url = 'https://oauth.reddit.com/api/v1/user/{}/trophies'.format(user)
     with prawcore.session(authorizer) as session:
-        data = session.request('GET', url)
+        data = session.request('GET', '/api/v1/user/{}/trophies'.format(user))
 
     for trophy in data['data']['trophies']:
         description = trophy['data']['description']
