@@ -9,16 +9,14 @@ from prawcore.auth import Authorizer
 class InvalidAuthorizer(Authorizer):
     def __init__(self):
         super(InvalidAuthorizer, self).__init__(
-            prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
-                                   requestor=REQUESTOR))
+            prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET))
 
     def is_valid(self):
         return False
 
 
 def readonly_authorizer(refresh=True):
-    authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
-                                           requestor=REQUESTOR)
+    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     if refresh:
         authorizer.refresh()
@@ -26,8 +24,7 @@ def readonly_authorizer(refresh=True):
 
 
 def valid_authorizer():
-    authenticator = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
-                                           requestor=REQUESTOR)
+    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
     authorizer.refresh()
     return authorizer

@@ -9,8 +9,8 @@ from betamax import Betamax
 
 class AuthorizerTestBase(unittest.TestCase):
     def setUp(self):
-        self.authentication = prawcore.Authenticator(CLIENT_ID, CLIENT_SECRET,
-                                                     requestor=REQUESTOR)
+        self.authentication = prawcore.Authenticator(REQUESTOR, CLIENT_ID,
+                                                     CLIENT_SECRET)
 
 
 class AuthorizerTest(AuthorizerTestBase):
