@@ -98,8 +98,8 @@ class Authorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        url = (self._authenticator._requestor.reddit_url
-               + const.ACCESS_TOKEN_PATH)
+        url = (self._authenticator._requestor.reddit_url +
+               const.ACCESS_TOKEN_PATH)
         response = self._authenticator._post(url, **data)
         payload = response.json()
         if 'error' in payload:  # Why are these OKAY responses?
