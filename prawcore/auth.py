@@ -53,7 +53,8 @@ class Authenticator(object):
         params = {'client_id': self.client_id, 'duration': duration,
                   'redirect_uri': self.redirect_uri, 'response_type': 'code',
                   'scope': ' '.join(scopes), 'state': state}
-        request = Request('GET', const.AUTHORIZATION_URL, params=params)
+        url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
+        request = Request('GET', url, params=params)
         return request.prepare().url
 
     def revoke_token(self, token, token_type=None):
@@ -68,8 +69,8 @@ class Authenticator(object):
         data = {'token': token}
         if token_type is not None:
             data['token_type_hint'] = token_type
-        self._post(const.REVOKE_TOKEN_URL, success_status=codes['no_content'],
-                   **data)
+        url = self._requestor.reddit_url + const.REVOKE_TOKEN_PATH
+        self._post(url, success_status=codes['no_content'], **data)
 
 
 class Authorizer(object):
@@ -97,7 +98,9 @@ class Authorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        response = self._authenticator._post(const.ACCESS_TOKEN_URL, **data)
+        url = (self._authenticator._requestor.reddit_url
+               + const.ACCESS_TOKEN_PATH)
+        response = self._authenticator._post(url, **data)
         payload = response.json()
         if 'error' in payload:  # Why are these OKAY responses?
             raise OAuthException(response, payload['error'],

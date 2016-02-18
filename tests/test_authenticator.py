@@ -42,4 +42,3 @@ class AuthenticatorTest(unittest.TestCase):
         with Betamax(REQUESTOR).use_cassette(
                 'Authenticator_revoke_token__with_refresh_token_hint'):
             authenticator.revoke_token('dummy token', 'refresh_token')
-
