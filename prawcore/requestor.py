@@ -11,7 +11,7 @@ class Requestor(object):
 
         :param user_agent: The user-agent for your application. Please follow
             reddit's user-agent guidlines:
-            ttps://github.com/reddit/reddit/wiki/API#rules
+            https://github.com/reddit/reddit/wiki/API#rules
 
         """
         self._http = requests.Session()
