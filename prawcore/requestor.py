@@ -1,6 +1,7 @@
 """Provides the HTTP request handling interface."""
 import requests
-from . import const
+from .const import __version__
+from .exceptions import InvalidInvocation
 
 
 class Requestor(object):
@@ -14,9 +15,12 @@ class Requestor(object):
             https://github.com/reddit/reddit/wiki/API#rules
 
         """
+        if user_agent is None or len(user_agent) < 7:
+            raise InvalidInvocation('user_agent is not descriptive')
+
         self._http = requests.Session()
-        self._http.headers['User-Agent'] = '{} {}'.format(
-            user_agent, const.USER_AGENT)
+        self._http.headers['User-Agent'] = '{} prawcore/{}'.format(
+            user_agent, __version__)
 
     def __getattr__(self, attribute):
         """Pass all undefined attributes to the _http attribute."""
