@@ -40,16 +40,15 @@ appropriate values for your application.
    import pprint
    import prawcore
 
-   requestor = prawcore.Requestor('YOUR_VALID_USER_AGENT')
    authenticator = prawcore.Authenticator(
+       prawcore.Requestor('YOUR_VALID_USER_AGENT'),
        os.environ['PRAWCORE_CLIENT_ID'],
-       os.environ['PRAWCORE_CLIENT_SECRET'], requestor=requestor)
+       os.environ['PRAWCORE_CLIENT_SECRET'])
    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
    authorizer.refresh()
 
-   url = 'https://oauth.reddit.com/api/v1/user/bboe/trophies'
    with prawcore.session(authorizer) as session:
-       pprint.pprint(session.request('GET', url))
+       pprint.pprint(session.request('GET', '/api/v1/user/bboe/trophies'))
 
 Save the above as ``trophies.py`` and then execute via:
 

@@ -9,27 +9,24 @@ from requests.status_codes import codes
 class Authenticator(object):
     """Stores OAuth2 authentication credentials."""
 
-    def __init__(self, client_id, client_secret, redirect_uri=None,
-                 requestor=None):
+    def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
+        :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
         :param client_secret: The OAuth2 client secret to use with the session.
         :param redirect_uri: (optional) The redirect URI exactly as specified
             in your OAuth application settings on reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
             ``authorize`` method of the ``Authorizer`` class.
-        :param requestor: (Optional) An instance of :class:`Requestor`.
 
         """
+        self._requestor = requestor
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
-        self._requestor = requestor
 
     def _post(self, url, success_status=codes['ok'], **data):
-        if self._requestor is None:
-            raise InvalidInvocation('requestor not provided')
         auth = (self.client_id, self.client_secret)
         response = self._requestor.post(url, auth=auth, data=data)
         if response.status_code != success_status:
@@ -56,7 +53,8 @@ class Authenticator(object):
         params = {'client_id': self.client_id, 'duration': duration,
                   'redirect_uri': self.redirect_uri, 'response_type': 'code',
                   'scope': ' '.join(scopes), 'state': state}
-        request = Request('GET', const.AUTHORIZATION_URL, params=params)
+        url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
+        request = Request('GET', url, params=params)
         return request.prepare().url
 
     def revoke_token(self, token, token_type=None):
@@ -71,8 +69,8 @@ class Authenticator(object):
         data = {'token': token}
         if token_type is not None:
             data['token_type_hint'] = token_type
-        self._post(const.REVOKE_TOKEN_URL, success_status=codes['no_content'],
-                   **data)
+        url = self._requestor.reddit_url + const.REVOKE_TOKEN_PATH
+        self._post(url, success_status=codes['no_content'], **data)
 
 
 class Authorizer(object):
@@ -100,7 +98,9 @@ class Authorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        response = self._authenticator._post(const.ACCESS_TOKEN_URL, **data)
+        url = (self._authenticator._requestor.reddit_url +
+               const.ACCESS_TOKEN_PATH)
+        response = self._authenticator._post(url, **data)
         payload = response.json()
         if 'error' in payload:  # Why are these OKAY responses?
             raise OAuthException(response, payload['error'],

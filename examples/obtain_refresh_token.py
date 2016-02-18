@@ -44,10 +44,10 @@ def main():
         return 1
 
     authenticator = prawcore.Authenticator(
+        prawcore.Requestor('prawcore_refresh_token_example'),
         os.environ['PRAWCORE_CLIENT_ID'],
         os.environ['PRAWCORE_CLIENT_SECRET'],
-        os.environ['PRAWCORE_REDIRECT_URI'],
-        requestor=prawcore.Requestor('prawcore_refresh_token_example'))
+        os.environ['PRAWCORE_REDIRECT_URI'])
 
     state = str(random.randint(0, 65000))
     url = authenticator.authorize_url('permanent', sys.argv[1:], state)

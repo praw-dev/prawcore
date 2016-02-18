@@ -1,9 +1,10 @@
-*~
 *.egg
 *.egg-info/
 *.eggs/
 *.pyc
+*~
+.DS_Store
+.coverage
 _build/
 build/
 dist/
-.DS_Store

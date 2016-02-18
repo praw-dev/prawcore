@@ -37,10 +37,11 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor._http.close()
 
-    def request(self, method, url):
-        """Return the json content from the resource at ``url``.
+    def request(self, method, path):
+        """Return the json content from the resource at ``path``.
 
-        :param url: The URL of the request.
+        :param path: The path of the request. This path will be combined with
+            the ``oauth_url`` of the Requestor.
 
         """
         if not self._authorizer.is_valid():
@@ -49,6 +50,7 @@ class Session(object):
         headers = {'Authorization': 'bearer {}'
                    .format(self._authorizer.access_token)}
         params = {'raw_json': '1'}
+        url = self._requestor.oauth_url + path
         response = self._rate_limiter.call(self._requestor._http.request,
                                            method, url, headers=headers,
                                            params=params)
