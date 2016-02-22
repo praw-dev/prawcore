@@ -20,7 +20,7 @@ Installation
 
 Install prawcore using ``pip`` via:
 
-.. code-block:: bashsession
+.. code-block:: console
 
     pip install prawcore
 
@@ -52,7 +52,7 @@ appropriate values for your application.
 
 Save the above as ``trophies.py`` and then execute via:
 
-.. code-block:: bashsession
+.. code-block:: console
 
    python trophies.py
 
