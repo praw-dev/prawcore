@@ -4,8 +4,15 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be preceded by a minor release.
 
-0.0.1 (2016-02-17)
--------------------
+0.0.2 (2016-02-21)
+------------------
+
+**Fixed**
+
+* README.rst for display purposes on pypi.
+
+0.0.1 (2016-02-17) [YANKED]
+---------------------------
 
 **Added**
 
