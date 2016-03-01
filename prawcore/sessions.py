@@ -1,9 +1,15 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
+import logging
+
+from requests.compat import urljoin
+from requests.status_codes import codes
+
 from .auth import Authorizer
 from .rate_limit import RateLimiter
 from .exceptions import InvalidInvocation
 from .util import authorization_error_class
-from requests.status_codes import codes
+
+log = logging.getLogger(__package__)
 
 
 class Session(object):
@@ -37,11 +43,13 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor._http.close()
 
-    def request(self, method, path):
+    def request(self, method, path, params=None):
         """Return the json content from the resource at ``path``.
 
+        :param method: The request verb. E.g., get, post, put.
         :param path: The path of the request. This path will be combined with
             the ``oauth_url`` of the Requestor.
+        :param params: The query parameters to send with the request.
 
         """
         if not self._authorizer.is_valid():
@@ -49,11 +57,20 @@ class Session(object):
 
         headers = {'Authorization': 'bearer {}'
                    .format(self._authorizer.access_token)}
-        params = {'raw_json': '1'}
-        url = self._requestor.oauth_url + path
+        params = params or {}
+        params['raw_json'] = 1
+        url = urljoin(self._requestor.oauth_url, path)
+
+        log.debug('Fetching: {} {}'.format(method, url))
+        log.debug('Headers: {}'.format(headers))
+        log.debug('Params: {}'.format(params))
+
         response = self._rate_limiter.call(self._requestor._http.request,
                                            method, url, headers=headers,
                                            params=params)
+
+        log.debug('Response: {} ({} bytes)'.format(
+            response.status_code, response.headers.get('content-length')))
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
