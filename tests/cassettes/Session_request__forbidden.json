@@ -1,0 +1,106 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2016-03-12T19:46:58",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "Basic <BASIC_AUTH>",
+          "Connection": "keep-alive",
+          "Content-Length": "74",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972",
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.0.3"
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/access_token"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAyWMQQrCMBAAvxL2XCFaaYMf8KYogt5Cki64tjZhs4JR/LtEr8PMvMGFgDlbiSPOsFHQt3plun5h3Oj9a39/RONOaXk+JtneLrsDTWtoFPx8KyVhjTw6Rq4cn4kYs6U6azutGwU5xL92pSyRi6IBZyEpitEN8PkCak6nP4UAAAA=",
+          "encoding": "UTF-8",
+          "string": ""
+        },
+        "headers": {
+          "CF-RAY": "2829c159f3273988-PHX",
+          "Connection": "keep-alive",
+          "Content-Encoding": "gzip",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Sat, 12 Mar 2016 19:46:58 GMT",
+          "Server": "cloudflare-nginx",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "Transfer-Encoding": "chunked",
+          "X-Moose": "majestic",
+          "cache-control": "max-age=0, must-revalidate",
+          "set-cookie": "loid=ol4hwS2uWoHYPNaM8g; Domain=reddit.com; Max-Age=63071999; Path=/; expires=Mon, 12-Mar-2018 19:46:58 GMT; secure",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/access_token"
+      }
+    },
+    {
+      "recorded_at": "2016-03-12T19:46:58",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "bearer 7302867-8akbbzOmuo8aTp1WRptGjXNQil4",
+          "Connection": "keep-alive",
+          "Cookie": "loidcreated=2016-03-12T19%3A46%3A58.292Z; __cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972; loid=ol4hwS2uWoHYPNaM8g",
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.0.3"
+        },
+        "method": "GET",
+        "uri": "https://oauth.reddit.com/user/spez/gilded/given?raw_json=1"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"error\": 403}"
+        },
+        "headers": {
+          "CF-RAY": "2829c15b65ca39e8-PHX",
+          "Connection": "keep-alive",
+          "Content-Length": "14",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Sat, 12 Mar 2016 19:46:58 GMT",
+          "Server": "cloudflare-nginx",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "X-Moose": "majestic",
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "X-Reddit-Tracking, X-Moose",
+          "cache-control": "private, s-maxage=0, max-age=0, must-revalidate",
+          "expires": "-1",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-ratelimit-remaining": "599.0",
+          "x-ratelimit-reset": "182",
+          "x-ratelimit-used": "1",
+          "x-reddit-tracking": "https://pixel.redditmedia.com/pixel/of_destiny.png?v=NLj5vACHfu%2BWvG2emSgJbUYhUkbtAGJiLMfkZSk4wPLDqwpVnn7ABZCp2K2QjzU5NGbJSR0sA0yCiZW%2FA4OIwOyht9vB%2F866",
+          "x-ua-compatible": "IE=edge",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 403,
+          "message": "Forbidden"
+        },
+        "url": "https://oauth.reddit.com/user/spez/gilded/given?raw_json=1"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.5.1"
+}
