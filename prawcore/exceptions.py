@@ -41,6 +41,10 @@ class OAuthException(PrawcoreException):
                                    .format(error, description))
 
 
+class Forbidden(RequestException):
+    """Indicate the authentication is not permitted for the request."""
+
+
 class InsufficientScope(RequestException):
     """Indicate that the request requires a different scope."""
 

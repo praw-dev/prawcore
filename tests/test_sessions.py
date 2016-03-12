@@ -57,6 +57,13 @@ class SessionTest(unittest.TestCase):
         self.assertEqual('WANT_RAW_JSON test: < > &',
                          data[0]['data']['children'][0]['data']['title'])
 
+    def test_request__forbidden(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__forbidden'):
+            session = prawcore.Session(valid_authorizer())
+            self.assertRaises(prawcore.Forbidden, session.request,
+                              'GET', '/user/spez/gilded/given')
+
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):
