@@ -6,7 +6,7 @@ from requests.status_codes import codes
 
 from .auth import Authorizer
 from .rate_limit import RateLimiter
-from .exceptions import InvalidInvocation
+from .exceptions import InvalidInvocation, Redirect
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -66,14 +66,16 @@ class Session(object):
         log.debug('Params: {}'.format(params))
 
         response = self._rate_limiter.call(self._requestor._http.request,
-                                           method, url, headers=headers,
-                                           params=params)
+                                           method, url, allow_redirects=False,
+                                           headers=headers, params=params)
 
         log.debug('Response: {} ({} bytes)'.format(
             response.status_code, response.headers.get('content-length')))
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
+        elif response.status_code == codes['found']:
+            raise Redirect(response)
         assert response.status_code == codes['ok'], \
             'Unexpected status code: {}'.format(response.status_code)
         return response.json()

@@ -1,5 +1,13 @@
 """Provide exception classes for the prawcore package."""
 
+import sys
+
+
+if sys.version_info[0] == 2:
+    from urlparse import urlparse
+else:
+    from urllib.parse import urlparse
+
 
 class PrawcoreException(Exception):
     """Base exception class for exceptions that occur within this package."""
@@ -51,3 +59,24 @@ class InsufficientScope(RequestException):
 
 class InvalidToken(RequestException):
     """Indicate that the request used an invalid access token."""
+
+
+class Redirect(RequestException):
+    """Indicate the request resulted in a redirect.
+
+    This class adds the attribute ``path``, which is the path to which the
+    response redirects.
+
+    """
+
+    def __init__(self, response):
+        """Initialize a Redirect exception instance..
+
+        :param response: A requests.response instance containing a location
+        header.
+
+        """
+        path = urlparse(response.headers['location']).path
+        self.path = path[:-5] if path.endswith('.json') else path
+        self.response = response
+        PrawcoreException.__init__(self, 'Redirect to {}'.format(self.path))
