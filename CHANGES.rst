@@ -2,7 +2,30 @@ Change Log
 ==========
 
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
-that deprecations will not be preceded by a minor release.
+that deprecations will not be announced by a minor release.
+
+0.0.5 (2016-03-12)
+------------------
+
+**Added**
+
+* 302 redirects result in a ``Redirect`` exception.
+
+0.0.4 (2016-03-12)
+------------------
+
+**Added**
+
+* Add a generic ``Forbidden`` exception for 403 responses without the
+  ``www-authenticate`` header.
+
+0.0.3 (2016-02-29)
+------------------
+
+**Added**
+
+* Added ``params`` parameter to ``Session.request``.
+* Log requests to the ``prawcore`` logger in debug mode.
 
 0.0.2 (2016-02-21)
 ------------------

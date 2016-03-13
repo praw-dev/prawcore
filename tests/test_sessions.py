@@ -64,6 +64,14 @@ class SessionTest(unittest.TestCase):
             self.assertRaises(prawcore.Forbidden, session.request,
                               'GET', '/user/spez/gilded/given')
 
+    def test_request__redirect(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__redirect'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.Redirect) as context_manager:
+                session.request('GET', '/r/random')
+            self.assertTrue(context_manager.exception.path.startswith('/r/'))
+
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):
