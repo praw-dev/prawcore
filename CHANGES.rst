@@ -4,6 +4,12 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.0.6 (2016-03-14)
+
+**Fixed**
+
+* prawcore objects can be pickled.
+
 0.0.5 (2016-03-12)
 ------------------
 
