@@ -32,4 +32,6 @@ class Requestor(object):
 
     def __getattr__(self, attribute):
         """Pass all undefined attributes to the _http attribute."""
+        if attribute.startswith('__'):
+            raise AttributeError
         return getattr(self._http, attribute)
