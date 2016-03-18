@@ -43,13 +43,15 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor._http.close()
 
-    def request(self, method, path, params=None):
+    def request(self, method, path, params=None, data=None):
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., get, post, put.
         :param path: The path of the request. This path will be combined with
             the ``oauth_url`` of the Requestor.
         :param params: The query parameters to send with the request.
+        :param data: Dictionary, bytes, or file-like object to send in the body
+            of the request.
 
         """
         if not self._authorizer.is_valid():
@@ -59,15 +61,19 @@ class Session(object):
                    .format(self._authorizer.access_token)}
         params = params or {}
         params['raw_json'] = 1
+        if isinstance(data, dict):
+            data['api_type'] = 'json'
         url = urljoin(self._requestor.oauth_url, path)
 
         log.debug('Fetching: {} {}'.format(method, url))
         log.debug('Headers: {}'.format(headers))
         log.debug('Params: {}'.format(params))
+        log.debug('Data: {}'.format(data))
 
         response = self._rate_limiter.call(self._requestor._http.request,
                                            method, url, allow_redirects=False,
-                                           headers=headers, params=params)
+                                           data=data, headers=headers,
+                                           params=params)
 
         log.debug('Response: {} ({} bytes)'.format(
             response.status_code, response.headers.get('content-length')))
