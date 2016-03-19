@@ -4,7 +4,15 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.0.7 (2016-03-18)
+------------------
+
+**Added**
+
+* Added ``data`` parameter to ``Session.request``.
+
 0.0.6 (2016-03-14)
+------------------
 
 **Fixed**
 

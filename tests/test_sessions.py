@@ -1,7 +1,8 @@
 """Test for prawcore.Sessions module."""
 import prawcore
 import unittest
-from .config import CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR
+from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
+                     PASSWORD, USERNAME)
 from betamax import Betamax
 from prawcore.auth import Authorizer
 
@@ -15,6 +16,13 @@ class InvalidAuthorizer(Authorizer):
         return False
 
 
+def client_authorizer():
+    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
+    authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
+    authorizer.refresh()
+    return authorizer
+
+
 def readonly_authorizer(refresh=True):
     authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
@@ -23,9 +31,9 @@ def readonly_authorizer(refresh=True):
     return authorizer
 
 
-def valid_authorizer():
+def script_authorizer():
     authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
-    authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
+    authorizer = prawcore.ScriptAuthorizer(authenticator, USERNAME, PASSWORD)
     authorizer.refresh()
     return authorizer
 
@@ -41,26 +49,36 @@ class SessionTest(unittest.TestCase):
     def test_init__without_authenticator(self):
         self.assertRaises(prawcore.InvalidInvocation, prawcore.Session, None)
 
-    def test_request(self):
-        with Betamax(REQUESTOR).use_cassette('Session_request'):
+    def test_request__get(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__get'):
             session = prawcore.Session(readonly_authorizer())
-            data = session.request('GET', '/')
-        self.assertIsInstance(data, dict)
-        self.assertEqual('Listing', data['kind'])
+            response = session.request('GET', '/')
+        self.assertIsInstance(response, dict)
+        self.assertEqual('Listing', response['kind'])
+
+    def test_request__post(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__post'):
+            session = prawcore.Session(script_authorizer())
+            data = {'kind': 'self', 'sr': 'reddit_api_test', 'text': 'Test!',
+                    'title': 'A Test from PRAWCORE.'}
+            response = session.request('POST', '/api/submit', data=data)
+            self.assertIn('a_test_from_prawcore',
+                          response['json']['data']['url'])
 
     def test_request__raw_json(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__raw_json'):
             session = prawcore.Session(readonly_authorizer())
-            data = session.request('GET', ('/r/reddit_api_test/comments/'
-                                           '45xjdr/want_raw_json_test/'))
+            response = session.request('GET', ('/r/reddit_api_test/comments/'
+                                               '45xjdr/want_raw_json_test/'))
         self.assertEqual('WANT_RAW_JSON test: < > &',
-                         data[0]['data']['children'][0]['data']['title'])
+                         response[0]['data']['children'][0]['data']['title'])
 
     def test_request__forbidden(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__forbidden'):
-            session = prawcore.Session(valid_authorizer())
+            session = prawcore.Session(script_authorizer())
             self.assertRaises(prawcore.Forbidden, session.request,
                               'GET', '/user/spez/gilded/given')
 
@@ -75,7 +93,7 @@ class SessionTest(unittest.TestCase):
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):
-            session = prawcore.Session(valid_authorizer())
+            session = prawcore.Session(client_authorizer())
             self.assertRaises(prawcore.InsufficientScope, session.request,
                               'GET', '/api/v1/me')
 
