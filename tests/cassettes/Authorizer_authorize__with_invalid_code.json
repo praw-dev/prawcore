@@ -5,7 +5,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8080&code=invalid+code"
+          "string": "code=invalid+code&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8080"
         },
         "headers": {
           "Accept": "*/*",

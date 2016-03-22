@@ -63,6 +63,7 @@ class Session(object):
         params['raw_json'] = 1
         if isinstance(data, dict):
             data['api_type'] = 'json'
+            data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
 
         log.debug('Fetching: {} {}'.format(method, url))

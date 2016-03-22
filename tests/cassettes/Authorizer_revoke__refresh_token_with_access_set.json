@@ -5,7 +5,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "refresh_token=<REFRESH_TOKEN>&grant_type=refresh_token"
+          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
         },
         "headers": {
           "Accept": "*/*",
@@ -53,7 +53,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "token_type_hint=refresh_token&token=<REFRESH_TOKEN>"
+          "string": "token=<REFRESH_TOKEN>&token_type_hint=refresh_token"
         },
         "headers": {
           "Accept": "*/*",

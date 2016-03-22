@@ -33,6 +33,7 @@ with Betamax.configure() as config:
         config.default_cassette_options['record_mode'] = 'none'
     config.cassette_library_dir = 'tests/cassettes'
     config.default_cassette_options['serialize_with'] = 'prettyjson'
+    config.default_cassette_options['match_requests_on'].append('body')
     config.define_cassette_placeholder('<BASIC_AUTH>', b64_string(
         '{}:{}'.format(CLIENT_ID, CLIENT_SECRET)))
     config.define_cassette_placeholder('<CLIENT_ID>', CLIENT_ID)

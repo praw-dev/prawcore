@@ -5,7 +5,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "password=<PASSWORD>&grant_type=password&username=<USERNAME>"
+          "string": "grant_type=password&password=<PASSWORD>&username=<USERNAME>"
         },
         "headers": {
           "Accept": "*/*",
@@ -53,7 +53,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "title=A+Test+from+PRAWCORE.&text=Test%21&kind=self&api_type=json&sr=reddit_api_test"
+          "string": "api_type=json&kind=self&sr=reddit_api_test&text=Test%21&title=A+Test+from+PRAWCORE."
         },
         "headers": {
           "Accept": "*/*",
