@@ -28,7 +28,8 @@ class Authenticator(object):
 
     def _post(self, url, success_status=codes['ok'], **data):
         auth = (self.client_id, self.client_secret)
-        response = self._requestor.post(url, auth=auth, data=data)
+        response = self._requestor.post(url, auth=auth,
+                                        data=sorted(data.items()))
         if response.status_code != success_status:
             raise RequestException(response)
         return response

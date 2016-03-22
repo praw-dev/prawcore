@@ -5,7 +5,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "token_type_hint=refresh_token&token=dummy+token"
+          "string": "token=dummy+token&token_type_hint=refresh_token"
         },
         "headers": {
           "Accept": "*/*",

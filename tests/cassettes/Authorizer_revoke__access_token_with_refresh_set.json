@@ -53,7 +53,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "token_type_hint=access_token&token=7302867-FDxU8bwWC1q0gt6fTPppe-fALIM"
+          "string": "token=7302867-FDxU8bwWC1q0gt6fTPppe-fALIM&token_type_hint=access_token"
         },
         "headers": {
           "Accept": "*/*",

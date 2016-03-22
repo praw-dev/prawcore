@@ -4,6 +4,16 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+
+0.0.8 (2016-03-21)
+------------------
+
+**Added**
+
+* Sort ``Session.request`` ``data`` values. Sorting the values permits betamax
+  body matcher to work as expected.
+
+
 0.0.7 (2016-03-18)
 ------------------
 
