@@ -57,7 +57,7 @@ class Session(object):
         response = self._rate_limiter.call(self._requestor._http.request,
                                            method, url, allow_redirects=False,
                                            data=data, headers=headers,
-                                           params=params)
+                                           params=params, json=json)
 
         log.debug('Response: {} ({} bytes)'.format(
             response.status_code, response.headers.get('content-length')))
@@ -85,7 +85,7 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor._http.close()
 
-    def request(self, method, path, params=None, data=None):
+    def request(self, method, path, params=None, data=None, json=None):
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., get, post, put.
@@ -94,6 +94,8 @@ class Session(object):
         :param params: The query parameters to send with the request.
         :param data: Dictionary, bytes, or file-like object to send in the body
             of the request.
+        :param json: Object serialized to JSON to send in the body of the
+            request.
 
         Automatically refreshes the access token if it becomes invalid and a
         refresh token is available. Raises InvalidInvocation in such a case if
