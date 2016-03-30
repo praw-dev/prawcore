@@ -66,6 +66,15 @@ class SessionTest(unittest.TestCase):
             self.assertIn('a_test_from_prawcore',
                           response['json']['data']['url'])
 
+    def test_request__patch(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__patch'):
+            session = prawcore.Session(script_authorizer())
+            json = {'lang': 'ja', 'num_comments': 123}
+            response = session.request('PATCH', '/api/v1/me/prefs',
+                                       json=json)
+            self.assertEqual('ja', response['lang'])
+            self.assertEqual(123, response['num_comments'])
+
     def test_request__raw_json(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__raw_json'):
