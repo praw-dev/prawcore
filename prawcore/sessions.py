@@ -83,7 +83,7 @@ class Session(object):
             raise authorization_error_class(response)
         elif response.status_code == codes['found']:
             raise Redirect(response)
-        assert response.status_code == codes['ok'], \
+        assert response.status_code in (codes['created'], codes['ok']), \
             'Unexpected status code: {}'.format(response.status_code)
         return response.json()
 
