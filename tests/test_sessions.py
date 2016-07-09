@@ -83,6 +83,13 @@ class SessionTest(unittest.TestCase):
                                        data='{}')
             self.assertIn('name', response)
 
+    def test_request__no_content(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__no_content'):
+            session = prawcore.Session(script_authorizer())
+            response = session.request('DELETE', '/api/v1/me/friends/spez')
+            self.assertIsNone(response)
+
     def test_request__forbidden(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__forbidden'):
