@@ -49,6 +49,10 @@ class OAuthException(PrawcoreException):
                                    .format(error, description))
 
 
+class BadRequest(RequestException):
+    """Indicate invalid parameters for the request."""
+
+
 class Forbidden(RequestException):
     """Indicate the authentication is not permitted for the request."""
 
