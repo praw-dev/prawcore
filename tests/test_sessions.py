@@ -57,8 +57,7 @@ class SessionTest(unittest.TestCase):
         self.assertEqual('Listing', response['kind'])
 
     def test_request__post(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__post'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__post'):
             session = prawcore.Session(script_authorizer())
             data = {'kind': 'self', 'sr': 'reddit_api_test', 'text': 'Test!',
                     'title': 'A Test from PRAWCORE.'}
@@ -67,8 +66,7 @@ class SessionTest(unittest.TestCase):
                           response['json']['data']['url'])
 
     def test_request__raw_json(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__raw_json'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__raw_json'):
             session = prawcore.Session(readonly_authorizer())
             response = session.request('GET', ('/r/reddit_api_test/comments/'
                                                '45xjdr/want_raw_json_test/'))
@@ -84,30 +82,26 @@ class SessionTest(unittest.TestCase):
             self.assertIn('reason', context_manager.exception.response.json())
 
     def test_request__created(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__created'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__created'):
             session = prawcore.Session(script_authorizer())
             response = session.request('PUT', '/api/v1/me/friends/spez',
                                        data='{}')
             self.assertIn('name', response)
 
     def test_request__no_content(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__no_content'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):
             session = prawcore.Session(script_authorizer())
             response = session.request('DELETE', '/api/v1/me/friends/spez')
             self.assertIsNone(response)
 
     def test_request__forbidden(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__forbidden'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__forbidden'):
             session = prawcore.Session(script_authorizer())
             self.assertRaises(prawcore.Forbidden, session.request,
                               'GET', '/user/spez/gilded/given')
 
     def test_request__redirect(self):
-        with Betamax(REQUESTOR).use_cassette(
-                'Session_request__redirect'):
+        with Betamax(REQUESTOR).use_cassette('Session_request__redirect'):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.Redirect) as context_manager:
                 session.request('GET', '/r/random')
