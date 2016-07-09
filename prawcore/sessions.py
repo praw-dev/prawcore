@@ -6,7 +6,7 @@ from requests.status_codes import codes
 
 from .auth import Authorizer
 from .rate_limit import RateLimiter
-from .exceptions import InvalidInvocation, Redirect
+from .exceptions import BadRequest, InvalidInvocation, Redirect
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -81,6 +81,8 @@ class Session(object):
 
         if response.status_code in (codes['forbidden'], codes['unauthorized']):
             raise authorization_error_class(response)
+        elif response.status_code == codes['bad_request']:
+            raise BadRequest(response)
         elif response.status_code == codes['found']:
             raise Redirect(response)
         elif response.status_code == codes['no_content']:

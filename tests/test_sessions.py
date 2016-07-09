@@ -75,6 +75,14 @@ class SessionTest(unittest.TestCase):
         self.assertEqual('WANT_RAW_JSON test: < > &',
                          response[0]['data']['children'][0]['data']['title'])
 
+    def test_request__bad_request(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__bad_request'):
+            session = prawcore.Session(script_authorizer())
+            with self.assertRaises(prawcore.BadRequest) as context_manager:
+                session.request('PUT', '/api/v1/me/friends/spez',
+                                data='{"note": "prawcore"}')
+            self.assertIn('reason', context_manager.exception.response.json())
+
     def test_request__created(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__created'):
