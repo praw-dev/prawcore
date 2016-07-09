@@ -4,6 +4,21 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.0.10 (2016-07-10)
+-------------------
+
+**Added**
+
+* Support 400 "Bad Request" HTTP responses used in some v1 endpoints.
+* Support 204 "No Content" HTTP responses used in some v1 endpoints.
+
+0.0.9 (2016-07-09)
+------------------
+
+**Added**
+
+* Support 201 "Created" HTTP responses used in some v1 endpoints.
+
 
 0.0.8 (2016-03-21)
 ------------------
