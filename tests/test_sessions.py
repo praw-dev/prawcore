@@ -100,6 +100,12 @@ class SessionTest(unittest.TestCase):
             self.assertRaises(prawcore.Forbidden, session.request,
                               'GET', '/user/spez/gilded/given')
 
+    def test_request__not_found(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__not_found'):
+            session = prawcore.Session(script_authorizer())
+            self.assertRaises(prawcore.NotFound, session.request,
+                              'GET', '/r/reddit_api_test/wiki/invalid')
+
     def test_request__redirect(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__redirect'):
             session = prawcore.Session(readonly_authorizer())
