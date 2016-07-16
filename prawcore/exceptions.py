@@ -65,6 +65,10 @@ class InvalidToken(RequestException):
     """Indicate that the request used an invalid access token."""
 
 
+class NotFound(RequestException):
+    """Indicate that the requested URL was not found."""
+
+
 class Redirect(RequestException):
     """Indicate the request resulted in a redirect.
 
