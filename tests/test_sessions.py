@@ -1,4 +1,6 @@
 """Test for prawcore.Sessions module."""
+from json import dumps
+
 import prawcore
 import unittest
 from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
@@ -87,6 +89,16 @@ class SessionTest(unittest.TestCase):
             response = session.request('PUT', '/api/v1/me/friends/spez',
                                        data='{}')
             self.assertIn('name', response)
+
+    def test_request__okay_with_0_byte_content(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__okay_with_0_byte_content'):
+            session = prawcore.Session(script_authorizer())
+            data = {'model': dumps({'name': 'redditdev'})}
+            path = '/api/multi/user/{}/m/praw_x5g968f66a/r/redditdev'.format(
+                USERNAME)
+            response = session.request('DELETE', path, data=data)
+            self.assertEqual('', response)
 
     def test_request__no_content(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):

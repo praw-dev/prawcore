@@ -91,6 +91,8 @@ class Session(object):
             return
         assert response.status_code in (codes['created'], codes['ok']), \
             'Unexpected status code: {}'.format(response.status_code)
+        if response.headers.get('content-length') == '0':
+            return ''
         return response.json()
 
 
