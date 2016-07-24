@@ -75,6 +75,14 @@ class SessionTest(unittest.TestCase):
         self.assertEqual('WANT_RAW_JSON test: < > &',
                          response[0]['data']['children'][0]['data']['title'])
 
+    def test_request__bad_gateway(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__bad_gateway'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(
+                502, context_manager.exception.response.status_code)
+
     def test_request__bad_request(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__bad_request'):
             session = prawcore.Session(script_authorizer())
@@ -90,6 +98,33 @@ class SessionTest(unittest.TestCase):
                                        data='{}')
             self.assertIn('name', response)
 
+    def test_request__forbidden(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__forbidden'):
+            session = prawcore.Session(script_authorizer())
+            self.assertRaises(prawcore.Forbidden, session.request,
+                              'GET', '/user/spez/gilded/given')
+
+    def test_request__gateway_timeout(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__gateway_timeout'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(
+                504, context_manager.exception.response.status_code)
+
+    def test_request__no_content(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):
+            session = prawcore.Session(script_authorizer())
+            response = session.request('DELETE', '/api/v1/me/friends/spez')
+            self.assertIsNone(response)
+
+    def test_request__not_found(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__not_found'):
+            session = prawcore.Session(script_authorizer())
+            self.assertRaises(prawcore.NotFound, session.request,
+                              'GET', '/r/reddit_api_test/wiki/invalid')
+
     def test_request__okay_with_0_byte_content(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__okay_with_0_byte_content'):
@@ -100,30 +135,21 @@ class SessionTest(unittest.TestCase):
             response = session.request('DELETE', path, data=data)
             self.assertEqual('', response)
 
-    def test_request__no_content(self):
-        with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):
-            session = prawcore.Session(script_authorizer())
-            response = session.request('DELETE', '/api/v1/me/friends/spez')
-            self.assertIsNone(response)
-
-    def test_request__forbidden(self):
-        with Betamax(REQUESTOR).use_cassette('Session_request__forbidden'):
-            session = prawcore.Session(script_authorizer())
-            self.assertRaises(prawcore.Forbidden, session.request,
-                              'GET', '/user/spez/gilded/given')
-
-    def test_request__not_found(self):
-        with Betamax(REQUESTOR).use_cassette('Session_request__not_found'):
-            session = prawcore.Session(script_authorizer())
-            self.assertRaises(prawcore.NotFound, session.request,
-                              'GET', '/r/reddit_api_test/wiki/invalid')
-
     def test_request__redirect(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__redirect'):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.Redirect) as context_manager:
                 session.request('GET', '/r/random')
             self.assertTrue(context_manager.exception.path.startswith('/r/'))
+
+    def test_request__service_unavailable(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__service_unavailable'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(
+                503, context_manager.exception.response.status_code)
 
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
