@@ -101,13 +101,15 @@ class Authorizer(object):
     def _request_token(self, **data):
         url = (self._authenticator._requestor.reddit_url +
                const.ACCESS_TOKEN_PATH)
+        pre_request_time = time.time()
         response = self._authenticator._post(url, **data)
         payload = response.json()
         if 'error' in payload:  # Why are these OKAY responses?
             raise OAuthException(response, payload['error'],
                                  payload.get('error_description'))
 
-        self._expiration_timestamp = time.time() + payload['expires_in']
+        self._expiration_timestamp = (pre_request_time - 10
+                                      + payload['expires_in'])
         self.access_token = payload['access_token']
         if 'refresh_token' in payload:
             self.refresh_token = payload['refresh_token']
