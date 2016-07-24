@@ -4,13 +4,43 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.0.13 (2016-07-24)
+-------------------
+
+**Added**
+
+* Automatically attempt to refresh access tokens when making a request if the
+  access token is expired.
+
+**Fixed**
+
+* Consider access tokens expired slightly earlier than allowed for to prevent
+  InvalidToken exceptions from occuring.
+
+0.0.12 (2016-07-17)
+-------------------
+
+**Added**
+
+* Handle 0-byte HTTP 200 responses.
+
+0.0.11 (2016-07-16)
+-------------------
+
+**Added**
+
+* Add a ``NotFound`` exception.
+* Support 404 "Not Found" HTTP responses.
+
+
 0.0.10 (2016-07-10)
 -------------------
 
 **Added**
 
-* Support 400 "Bad Request" HTTP responses used in some v1 endpoints.
-* Support 204 "No Content" HTTP responses used in some v1 endpoints.
+* Add a ``BadRequest`` exception.
+* Support 400 "Bad Request" HTTP responses.
+* Support 204 "No Content" HTTP responses.
 
 0.0.9 (2016-07-09)
 ------------------
