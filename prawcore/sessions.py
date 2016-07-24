@@ -53,9 +53,13 @@ class Session(object):
         :param data: Dictionary, bytes, or file-like object to send in the body
             of the request.
 
+        Automatically refreshes the access token if it becomes invalid and a
+        refresh token is available. Raises InvalidInvocation in such a case if
+        a refresh token is not available.
+
         """
         if not self._authorizer.is_valid():
-            raise InvalidInvocation('authorizer does not have a valid token')
+            self._authorizer.refresh()
 
         headers = {'Authorization': 'bearer {}'
                    .format(self._authorizer.access_token)}
