@@ -4,13 +4,14 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
-0.0.14 (2016-07-24)
+0.0.14 (2016-07-25)
 -------------------
 
 **Added**
 
 * Add ``ServerError`` exception for 502, 503, and 504 HTTP status codes that is
   only raised after three failed attempts to make the request.
+* Add ``json`` parameter to ``Session.request``.
 
 0.0.13 (2016-07-24)
 -------------------
