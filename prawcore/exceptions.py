@@ -88,3 +88,7 @@ class Redirect(RequestException):
         self.path = path[:-5] if path.endswith('.json') else path
         self.response = response
         PrawcoreException.__init__(self, 'Redirect to {}'.format(self.path))
+
+
+class ServerError(RequestException):
+    """Indicate issues on the server end preventing request fulfillment."""

@@ -6,7 +6,8 @@ from requests.status_codes import codes
 
 from .auth import Authorizer
 from .rate_limit import RateLimiter
-from .exceptions import BadRequest, InvalidInvocation, NotFound, Redirect
+from .exceptions import (BadRequest, InvalidInvocation, NotFound, Redirect,
+                         ServerError)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -14,6 +15,18 @@ log = logging.getLogger(__package__)
 
 class Session(object):
     """The low-level connection interface to reddit's API."""
+
+    RETRY_STATUSES = {codes['bad_gateway'], codes['gateway_timeout'],
+                      codes['service_unavailable']}
+    STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
+                         codes['bad_request']: BadRequest,
+                         codes['found']: Redirect,
+                         codes['forbidden']: authorization_error_class,
+                         codes['gateway_timeout']: ServerError,
+                         codes['not_found']: NotFound,
+                         codes['service_unavailable']: ServerError,
+                         codes['unauthorized']: authorization_error_class}
+    SUCCESS_STATUSES = {codes['created'], codes['ok']}
 
     def __init__(self, authorizer):
         """Preprare the connection to reddit's API.
@@ -34,6 +47,35 @@ class Session(object):
     def __exit__(self, *_args):
         """Allow this object to be used as a context manager."""
         self.close()
+
+    def _request_with_retries(self, method, url, data, headers, params,
+                              retries=3):
+        log.debug('Fetching: {} {}'.format(method, url))
+        log.debug('Headers: {}'.format(headers))
+        log.debug('Params: {}'.format(params))
+        log.debug('Data: {}'.format(data))
+        response = self._rate_limiter.call(self._requestor._http.request,
+                                           method, url, allow_redirects=False,
+                                           data=data, headers=headers,
+                                           params=params)
+
+        log.debug('Response: {} ({} bytes)'.format(
+            response.status_code, response.headers.get('content-length')))
+
+        if response.status_code in self.RETRY_STATUSES and retries > 1:
+            log.warning('Retrying due to {} status: {} {}'
+                        .format(response.status_code, method, url))
+            return self._request_with_retries(method, url, data, headers,
+                                              params, retries=retries - 1)
+        elif response.status_code in self.STATUS_EXCEPTIONS:
+            raise self.STATUS_EXCEPTIONS[response.status_code](response)
+        elif response.status_code == codes['no_content']:
+            return
+        assert response.status_code in self.SUCCESS_STATUSES, \
+            'Unexpected status code: {}'.format(response.status_code)
+        if response.headers.get('content-length') == '0':
+            return ''
+        return response.json()
 
     @property
     def _requestor(self):
@@ -69,35 +111,7 @@ class Session(object):
             data['api_type'] = 'json'
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
-
-        log.debug('Fetching: {} {}'.format(method, url))
-        log.debug('Headers: {}'.format(headers))
-        log.debug('Params: {}'.format(params))
-        log.debug('Data: {}'.format(data))
-
-        response = self._rate_limiter.call(self._requestor._http.request,
-                                           method, url, allow_redirects=False,
-                                           data=data, headers=headers,
-                                           params=params)
-
-        log.debug('Response: {} ({} bytes)'.format(
-            response.status_code, response.headers.get('content-length')))
-
-        if response.status_code in (codes['forbidden'], codes['unauthorized']):
-            raise authorization_error_class(response)
-        elif response.status_code == codes['bad_request']:
-            raise BadRequest(response)
-        elif response.status_code == codes['not_found']:
-            raise NotFound(response)
-        elif response.status_code == codes['found']:
-            raise Redirect(response)
-        elif response.status_code == codes['no_content']:
-            return
-        assert response.status_code in (codes['created'], codes['ok']), \
-            'Unexpected status code: {}'.format(response.status_code)
-        if response.headers.get('content-length') == '0':
-            return ''
-        return response.json()
+        return self._request_with_retries(method, url, data, headers, params)
 
 
 def session(authorizer=None):
