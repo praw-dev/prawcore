@@ -48,16 +48,16 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
-    def _request_with_retries(self, method, url, data, headers, params,
+    def _request_with_retries(self, method, url, data, headers, json, params,
                               retries=3):
         log.debug('Fetching: {} {}'.format(method, url))
         log.debug('Headers: {}'.format(headers))
-        log.debug('Params: {}'.format(params))
         log.debug('Data: {}'.format(data))
+        log.debug('Params: {}'.format(params))
         response = self._rate_limiter.call(self._requestor._http.request,
                                            method, url, allow_redirects=False,
                                            data=data, headers=headers,
-                                           params=params, json=json)
+                                           json=json, params=params)
 
         log.debug('Response: {} ({} bytes)'.format(
             response.status_code, response.headers.get('content-length')))
@@ -65,7 +65,7 @@ class Session(object):
         if response.status_code in self.RETRY_STATUSES and retries > 1:
             log.warning('Retrying due to {} status: {} {}'
                         .format(response.status_code, method, url))
-            return self._request_with_retries(method, url, data, headers,
+            return self._request_with_retries(method, url, data, headers, json,
                                               params, retries=retries - 1)
         elif response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
@@ -94,7 +94,7 @@ class Session(object):
         :param params: The query parameters to send with the request.
         :param data: Dictionary, bytes, or file-like object to send in the body
             of the request.
-        :param json: Object serialized to JSON to send in the body of the
+        :param json: Object to be serialized to JSON in the body of the
             request.
 
         Automatically refreshes the access token if it becomes invalid and a
@@ -113,7 +113,8 @@ class Session(object):
             data['api_type'] = 'json'
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
-        return self._request_with_retries(method, url, data, headers, params)
+        return self._request_with_retries(method, url, data, headers, json,
+                                          params)
 
 
 def session(authorizer=None):

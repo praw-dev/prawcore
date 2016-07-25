@@ -58,6 +58,16 @@ class SessionTest(unittest.TestCase):
         self.assertIsInstance(response, dict)
         self.assertEqual('Listing', response['kind'])
 
+    def test_request__patch(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__patch',
+                match_requests_on=['method', 'uri', 'PRAWCoreBody']):
+            session = prawcore.Session(script_authorizer())
+            json = {'lang': 'ja', 'num_comments': 123}
+            response = session.request('PATCH', '/api/v1/me/prefs', json=json)
+            self.assertEqual('ja', response['lang'])
+            self.assertEqual(123, response['num_comments'])
+
     def test_request__post(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__post'):
             session = prawcore.Session(script_authorizer())
@@ -66,15 +76,6 @@ class SessionTest(unittest.TestCase):
             response = session.request('POST', '/api/submit', data=data)
             self.assertIn('a_test_from_prawcore',
                           response['json']['data']['url'])
-
-    def test_request__patch(self):
-        with Betamax(REQUESTOR).use_cassette('Session_request__patch'):
-            session = prawcore.Session(script_authorizer())
-            json = {'lang': 'ja', 'num_comments': 123}
-            response = session.request('PATCH', '/api/v1/me/prefs',
-                                       json=json)
-            self.assertEqual('ja', response['lang'])
-            self.assertEqual(123, response['num_comments'])
 
     def test_request__raw_json(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__raw_json'):
@@ -156,6 +157,8 @@ class SessionTest(unittest.TestCase):
                 'Session_request__service_unavailable'):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+                session.request('GET', '/')
                 session.request('GET', '/')
             self.assertEqual(
                 503, context_manager.exception.response.status_code)

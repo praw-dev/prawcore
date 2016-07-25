@@ -2,7 +2,9 @@
 
 import os
 from base64 import b64encode
-from betamax import Betamax
+from betamax import Betamax, BaseMatcher
+from betamax_matchers.form_urlencoded import URLEncodedBodyMatcher
+from betamax_matchers.json_body import JSONBodyMatcher
 from betamax_serializers import pretty_json
 from prawcore import Requestor
 
@@ -26,6 +28,24 @@ def b64_string(input_string):
     return b64encode(input_string.encode('utf-8')).decode('utf-8')
 
 
+class BodyMatcher(BaseMatcher):
+    """Match the body of a request with sorted parameters."""
+
+    name = 'PRAWCoreBody'
+
+    def match(self, request, recorded_request):
+        """Match the request to the recorded request."""
+        if not recorded_request['body']['string'] and not request.body:
+            return True
+
+        # Comparison body should be unicode
+        to_compare = request.copy()
+        to_compare.body = str(to_compare.body)
+        return URLEncodedBodyMatcher().match(to_compare, recorded_request) or \
+            JSONBodyMatcher().match(to_compare, recorded_request)
+
+
+Betamax.register_request_matcher(BodyMatcher)
 Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
 
 with Betamax.configure() as config:
