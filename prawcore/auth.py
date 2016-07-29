@@ -35,7 +35,7 @@ class Authenticator(object):
         return response
 
     def authorize_url(self, duration, scopes, state):
-        """Return URL the used out-of-band to grant access to your application.
+        """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``permanent`` or ``temporary``. ``temporary``
             authorizations generate access tokens that last only 1
