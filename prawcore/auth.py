@@ -40,8 +40,8 @@ class Authenticator(object):
         :param duration: Either ``permanent`` or ``temporary``. ``temporary``
             authorizations generate access tokens that last only 1
             hour. ``permanent`` authorizations additionally generate a refresh
-            token that can be indefinetly used to generate new hour-long access
-            tokens.
+            token that can be indefinitely used to generate new hour-long
+            access tokens.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
             ``redirect_uri``. This value should be temporarily unique to client
