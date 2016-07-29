@@ -44,8 +44,8 @@ class Authenticator(object):
             access tokens.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
-            ``redirect_uri``. This value should be temporarily unique to client
-            for whom the URL was generated for.
+            ``redirect_uri``. This value should be temporarily unique to the
+            client for whom the URL was generated for.
 
         """
         if self.redirect_uri is None:
