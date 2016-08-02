@@ -101,6 +101,17 @@ class SessionTest(unittest.TestCase):
                                 data='{"note": "prawcore"}')
             self.assertIn('reason', context_manager.exception.response.json())
 
+    def test_request__cloudflair_connection_timed_out(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__cloudflair_connection_timed_out'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+                session.request('GET', '/')
+                session.request('GET', '/')
+            self.assertEqual(
+                522, context_manager.exception.response.status_code)
+
     def test_request__created(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__created'):
             session = prawcore.Session(script_authorizer())

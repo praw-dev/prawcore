@@ -25,7 +25,9 @@ class Session(object):
                          codes['gateway_timeout']: ServerError,
                          codes['not_found']: NotFound,
                          codes['service_unavailable']: ServerError,
-                         codes['unauthorized']: authorization_error_class}
+                         codes['unauthorized']: authorization_error_class,
+                         # CloudFlare status (not named in requests)
+                         522: ServerError}
     SUCCESS_STATUSES = {codes['created'], codes['ok']}
 
     def __init__(self, authorizer):
