@@ -4,8 +4,8 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
-Unreleased
-----------
+0.1.0 (2016-08-05)
+-------------------
 
 **Added**
 
@@ -17,6 +17,7 @@ Unreleased
 * What was previously ``RequestException`` is now ``ResponseException``.
 
 0.0.15 (2016-08-02)
+-------------------
 
 **Added**
 
