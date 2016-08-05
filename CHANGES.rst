@@ -4,6 +4,24 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* ``RequestException`` which wraps all exceptions that occur from
+  ``requests.request`` in a ``prawcore.RequestException``.
+
+**Changed**
+
+* What was previously ``RequestException`` is now ``ResponseException``.
+
+0.0.15 (2016-08-02)
+
+**Added**
+
+* Handle Cloudflair 522 responses.
+
 0.0.14 (2016-07-25)
 -------------------
 
