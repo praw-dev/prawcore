@@ -1,7 +1,7 @@
 """Provides Authentication and Authorization classes."""
 import time
 from . import const
-from .exceptions import InvalidInvocation, OAuthException, RequestException
+from .exceptions import InvalidInvocation, OAuthException, ResponseException
 from requests import Request
 from requests.status_codes import codes
 
@@ -31,7 +31,7 @@ class Authenticator(object):
         response = self._requestor.post(url, auth=auth,
                                         data=sorted(data.items()))
         if response.status_code != success_status:
-            raise RequestException(response)
+            raise ResponseException(response)
         return response
 
     def authorize_url(self, duration, scopes, state):

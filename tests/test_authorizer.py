@@ -87,7 +87,7 @@ class AuthorizerTest(AuthorizerTestBase):
         authorizer = prawcore.Authorizer(self.authentication, 'INVALID_TOKEN')
         with Betamax(REQUESTOR).use_cassette(
                 'Authorizer_refresh__with_invalid_token'):
-            self.assertRaises(prawcore.RequestException, authorizer.refresh)
+            self.assertRaises(prawcore.ResponseException, authorizer.refresh)
             self.assertFalse(authorizer.is_valid())
 
     def test_refresh__without_refresh_token(self):
