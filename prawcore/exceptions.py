@@ -17,6 +17,24 @@ class InvalidInvocation(PrawcoreException):
     """Indicate that the code to execute cannot be completed."""
 
 
+class RequestException(PrawcoreException):
+    """Indicate that there was an error with the incomplete HTTP request."""
+
+    def __init__(self, original_exception, request_args, request_kwargs):
+        """Initialize a RequestException instance.
+
+        :param original_exception: The original exception that occurred.
+        :param request_args: The arguments to the request function.
+        :param request_kwargs: The keyword arguments to the request function.
+
+        """
+        self.original_exception = original_exception
+        self.request_args = request_args
+        self.request_kwargs = request_kwargs
+        super(RequestException, self).__init__('error with request {}'
+                                               .format(original_exception))
+
+
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 

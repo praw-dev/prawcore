@@ -1,11 +1,17 @@
 """Provides the HTTP request handling interface."""
 import requests
 from .const import __version__
-from .exceptions import InvalidInvocation
+from .exceptions import InvalidInvocation, RequestException
 
 
 class Requestor(object):
     """Requestor provides an interface to HTTP requests."""
+
+    def __getattr__(self, attribute):
+        """Pass all undefined attributes to the _http attribute."""
+        if attribute.startswith('__'):
+            raise AttributeError
+        return getattr(self._http, attribute)
 
     def __init__(self, user_agent, oauth_url='https://oauth.reddit.com',
                  reddit_url='https://www.reddit.com'):
@@ -30,8 +36,13 @@ class Requestor(object):
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url
 
-    def __getattr__(self, attribute):
-        """Pass all undefined attributes to the _http attribute."""
-        if attribute.startswith('__'):
-            raise AttributeError
-        return getattr(self._http, attribute)
+    def close(self):
+        """Call close on the underlying session."""
+        return self._http.close()
+
+    def request(self, *args, **kwargs):
+        """Issue the HTTP request capturing any errors that may occur."""
+        try:
+            return self._http.request(*args, **kwargs)
+        except Exception as exc:
+            raise RequestException(exc, args, kwargs)
