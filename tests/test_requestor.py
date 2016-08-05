@@ -3,6 +3,8 @@ import pickle
 
 import prawcore
 import unittest
+from mock import patch
+from prawcore import RequestException
 
 
 class RequestorTest(unittest.TestCase):
@@ -16,6 +18,21 @@ class RequestorTest(unittest.TestCase):
         for agent in [None, 'shorty']:
             self.assertRaises(prawcore.InvalidInvocation, prawcore.Requestor,
                               agent)
+
+    @patch('requests.Session')
+    def test_request__wrap_request_exceptions(self, mock_session):
+        exception = Exception('prawcore wrap_request_exceptions')
+        session_instance = mock_session.return_value
+        session_instance.request.side_effect = exception
+        requestor = prawcore.Requestor('prawcore:test (by /u/bboe)')
+        with self.assertRaises(prawcore.RequestException) as context_manager:
+            requestor.request('get', 'http://a.b', data='bar')
+        self.assertIsInstance(context_manager.exception, RequestException)
+        self.assertIs(exception, context_manager.exception.original_exception)
+        self.assertEqual(('get', 'http://a.b'),
+                         context_manager.exception.request_args)
+        self.assertEqual({'data': 'bar'},
+                         context_manager.exception.request_kwargs)
 
     def test_pickle(self):
         requestor = prawcore.Requestor('prawcore:test (by /u/bboe)')

@@ -56,7 +56,7 @@ class Session(object):
         log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
         log.debug('Params: {}'.format(params))
-        response = self._rate_limiter.call(self._requestor._http.request,
+        response = self._rate_limiter.call(self._requestor.request,
                                            method, url, allow_redirects=False,
                                            data=data, headers=headers,
                                            json=json, params=params)
@@ -85,7 +85,7 @@ class Session(object):
 
     def close(self):
         """Close the session and perform any clean up."""
-        self._requestor._http.close()
+        self._requestor.close()
 
     def request(self, method, path, params=None, data=None, json=None):
         """Return the json content from the resource at ``path``.

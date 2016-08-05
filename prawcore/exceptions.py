@@ -18,17 +18,35 @@ class InvalidInvocation(PrawcoreException):
 
 
 class RequestException(PrawcoreException):
-    """Indicate that there was an error with the HTTP request."""
+    """Indicate that there was an error with the incomplete HTTP request."""
+
+    def __init__(self, original_exception, request_args, request_kwargs):
+        """Initialize a RequestException instance.
+
+        :param original_exception: The original exception that occurred.
+        :param request_args: The arguments to the request function.
+        :param request_kwargs: The keyword arguments to the request function.
+
+        """
+        self.original_exception = original_exception
+        self.request_args = request_args
+        self.request_kwargs = request_kwargs
+        super(RequestException, self).__init__('error with request {}'
+                                               .format(original_exception))
+
+
+class ResponseException(PrawcoreException):
+    """Indicate that there was an error with the completed HTTP request."""
 
     def __init__(self, response):
-        """Initialize a RequestException instance..
+        """Initialize a RequestException instance.
 
         :param response: A requests.response instance.
 
         """
         self.response = response
-        super(RequestException, self).__init__('error processing request ({})'
-                                               .format(response.status_code))
+        super(ResponseException, self).__init__('received {} HTTP response'
+                                                .format(response.status_code))
 
 
 class OAuthException(PrawcoreException):
@@ -49,27 +67,27 @@ class OAuthException(PrawcoreException):
                                    .format(error, description))
 
 
-class BadRequest(RequestException):
+class BadRequest(ResponseException):
     """Indicate invalid parameters for the request."""
 
 
-class Forbidden(RequestException):
+class Forbidden(ResponseException):
     """Indicate the authentication is not permitted for the request."""
 
 
-class InsufficientScope(RequestException):
+class InsufficientScope(ResponseException):
     """Indicate that the request requires a different scope."""
 
 
-class InvalidToken(RequestException):
+class InvalidToken(ResponseException):
     """Indicate that the request used an invalid access token."""
 
 
-class NotFound(RequestException):
+class NotFound(ResponseException):
     """Indicate that the requested URL was not found."""
 
 
-class Redirect(RequestException):
+class Redirect(ResponseException):
     """Indicate the request resulted in a redirect.
 
     This class adds the attribute ``path``, which is the path to which the
@@ -90,5 +108,5 @@ class Redirect(RequestException):
         PrawcoreException.__init__(self, 'Redirect to {}'.format(self.path))
 
 
-class ServerError(RequestException):
+class ServerError(ResponseException):
     """Indicate issues on the server end preventing request fulfillment."""
