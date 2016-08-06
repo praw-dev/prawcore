@@ -9,12 +9,15 @@ from requests.status_codes import codes
 class Authenticator(object):
     """Stores OAuth2 authentication credentials."""
 
-    def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
+    def __init__(self, requestor, client_id, client_secret=None,
+                 redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
-        :param client_secret: The OAuth2 client secret to use with the session.
+        :param client_secret: (optional) The OAuth2 client secret to use with
+            the session. This parameter is required for use with all
+            Authorizers save for DeviceIDAuthorizer.
         :param redirect_uri: (optional) The redirect URI exactly as specified
             in your OAuth application settings on reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
@@ -27,7 +30,7 @@ class Authenticator(object):
         self.redirect_uri = redirect_uri
 
     def _post(self, url, success_status=codes['ok'], **data):
-        auth = (self.client_id, self.client_secret)
+        auth = (self.client_id, self.client_secret or '')
         response = self._requestor.request('post', url, auth=auth,
                                            data=sorted(data.items()))
         if response.status_code != success_status:
@@ -85,13 +88,10 @@ class Authorizer(object):
             authorization.
 
         """
-        if not isinstance(authenticator, Authenticator):
-            raise InvalidInvocation('invalid Authenticator: {}'
-                                    .format(authenticator))
-
         self._authenticator = authenticator
         self.refresh_token = refresh_token
         self._clear_access_token()
+        self._validate_authenticator()
 
     def _clear_access_token(self):
         self._expiration_timestamp = None
@@ -114,6 +114,11 @@ class Authorizer(object):
         if 'refresh_token' in payload:
             self.refresh_token = payload['refresh_token']
         self.scopes = set(payload['scope'].split(' '))
+
+    def _validate_authenticator(self):
+        if not self._authenticator.client_secret:
+            raise InvalidInvocation('Authorizer must be used with an '
+                                    'Authenticator that has a client secret.')
 
     def authorize(self, code):
         """Obtain and set authorization tokens based on ``code``.
@@ -165,6 +170,37 @@ class Authorizer(object):
         self._clear_access_token()
         if not only_access:
             self.refresh_token = None
+
+
+class DeviceIDAuthorizer(Authorizer):
+    """Manages app-only OAuth2 for 'installed' applications.
+
+    While the '*' scope will be available, some endpoints simply will not work
+    due to the lack of an associated reddit account.
+    """
+
+    def __init__(self, authenticator, device_id='DO_NOT_TRACK_THIS_DEVICE'):
+        """Represent an app-only OAuth2 authorization for 'installed' apps.
+
+        :param authenticator: An instance of :class:`Authenticator`.
+        :param device_id: (optional) A unique ID (20-30 character ASCII string)
+            (default DO_NOT_TRACK_THIS_DEVICE). For more information about this
+            parameter, see:
+            https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
+        """
+        super(DeviceIDAuthorizer, self).__init__(authenticator)
+        self._device_id = device_id
+
+    def _validate_authenticator(self):
+        if self._authenticator.client_secret:
+            raise InvalidInvocation('DeviceIDAuthorizor cannot be used with an'
+                                    ' Authenticator that has a client secret.')
+
+    def refresh(self):
+        """Obtain a new access token."""
+        grant_type = 'https://oauth.reddit.com/grants/installed_client'
+        self._request_token(grant_type=grant_type,
+                            device_id=self._device_id)
 
 
 class ReadOnlyAuthorizer(Authorizer):
