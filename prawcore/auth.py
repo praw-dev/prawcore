@@ -167,6 +167,34 @@ class Authorizer(object):
             self.refresh_token = None
 
 
+class DeviceIDAuthorizer(Authorizer):
+    """Manages app-only OAuth2 for 'installed' applications.
+
+    While the '*' scope will be available, some endpoints simply will not work
+    due to the lack of an associated reddit account.
+    """
+
+    def __init__(self, authenticator, device_id):
+        """Represents an app-only OAuth2 authorization for 'installed' apps.
+
+        :param authenticator: An instance of :class:`Authenticator`.
+        :param device_id: A unique ID (20-30 character ASCII string)
+            For more information about this parameter, see:
+            https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
+        """
+        if authenticator.client_secret != '':
+            raise InvalidInvocation(
+                'confindential client cannot instantiate this class')
+        super(DeviceIDAuthorizer, self).__init__(authenticator)
+        self._device_id = device_id
+
+    def refresh(self):
+        """Obtain a new access token."""
+        grant_type = 'https://oauth.reddit.com/grants/installed_client'
+        self._request_token(grant_type=grant_type,
+                            device_id=self._device_id)
+
+
 class ReadOnlyAuthorizer(Authorizer):
     """Manages authorizations that are not associated with a reddit account.
 

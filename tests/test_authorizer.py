@@ -157,6 +157,40 @@ class AuthorizerTest(AuthorizerTestBase):
         self.assertRaises(prawcore.InvalidInvocation, authorizer.revoke)
 
 
+class DeviceIDAuthorizerTest(AuthorizerTestBase):
+    DEVICE_ID = 'DO_NOT_TRACK_THIS_DEVICE'
+
+    def test_refresh(self):
+        authorizer = prawcore.DeviceIDAuthorizer(self.authentication,
+                                                 self.DEVICE_ID)
+        with Betamax(REQUESTOR).use_cassette('DeviceIDAuthorizer_refresh'):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(['*']), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_refresh__with_short_device_id(self):
+        authorizer = prawcore.DeviceIDAuthorizer(self.authentication,
+                                                 self.DEVICE_ID[:19])
+        with Betamax(REQUESTOR).use_cassette(
+                 'DeviceIDAuthorizer_refresh__with_short_device_id'):
+            self.assertRaises(prawcore.OAuthException, authorizer.refresh)
+
+    def test_initialize(self):
+        authorizer = prawcore.DeviceIDAuthorizer(self.authentication,
+                                                 self.DEVICE_ID)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertIsNone(authorizer.refresh_token)
+        self.assertFalse(authorizer.is_valid())
+
+    def test_initialize__with_client_secret(self):
+        self.authentication.client_secret = 'dummy_client_secret'
+        self.assertRaises(prawcore.InvalidInvocation,
+                          prawcore.DeviceIDAuthorizer,
+                          self.authentication, self.DEVICE_ID)
+
 class ReadOnlyAuthorizerTest(AuthorizerTestBase):
     def test_refresh(self):
         authorizer = prawcore.ReadOnlyAuthorizer(self.authentication)
