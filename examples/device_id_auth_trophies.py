@@ -18,10 +18,8 @@ def main():
 
     authenticator = prawcore.Authenticator(
         prawcore.Requestor('prawcore_device_id_auth_example'),
-        os.environ['PRAWCORE_CLIENT_ID'],
-        os.environ['PRAWCORE_CLIENT_SECRET'])
-    authorizer = prawcore.DeviceIDAuthorizer(authenticator,
-                                             'DO_NOT_TRACK_THIS_DEVICE')
+        os.environ['PRAWCORE_CLIENT_ID'])
+    authorizer = prawcore.DeviceIDAuthorizer(authenticator)
     authorizer.refresh()
 
     user = sys.argv[1]
