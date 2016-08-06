@@ -3,14 +3,17 @@
 prawcore
 ========
 
+.. image:: https://img.shields.io/pypi/v/prawcore.svg
+           :alt: Latest prawcore Version
+           :target: https://pypi.python.org/pypi/prawcore
 .. image:: https://travis-ci.org/praw-dev/prawcore.svg?branch=master
            :target: https://travis-ci.org/praw-dev/prawcore
 .. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=master
            :target: https://coveralls.io/github/praw-dev/prawcore?branch=master
+.. image:: https://badges.gitter.im/praw-dev/praw.svg
+           :alt: Join the chat at https://gitter.im/praw-dev/praw
+           :target: https://gitter.im/praw-dev/praw
 
-
-Notice: This package is in development and should not be used until this notice
-is removed.
 
 prawcore is a low-level communication layer for PRAW 4+.
 
