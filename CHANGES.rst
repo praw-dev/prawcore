@@ -4,8 +4,16 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.1.1 (2016-08-06)
+------------------
+
+**Added**
+
+* Add ``DeviceIDAuthorizer`` that permits installed application access to the
+  API.
+
 0.1.0 (2016-08-05)
--------------------
+------------------
 
 **Added**
 
