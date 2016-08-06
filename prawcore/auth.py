@@ -9,12 +9,13 @@ from requests.status_codes import codes
 class Authenticator(object):
     """Stores OAuth2 authentication credentials."""
 
-    def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
+    def __init__(self, requestor, client_id, client_secret=None, redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
-        :param client_secret: The OAuth2 client secret to use with the session.
+        :param client_secret: (optional) The OAuth2 client secret to use
+            with the session.
         :param redirect_uri: (optional) The redirect URI exactly as specified
             in your OAuth application settings on reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
@@ -27,7 +28,8 @@ class Authenticator(object):
         self.redirect_uri = redirect_uri
 
     def _post(self, url, success_status=codes['ok'], **data):
-        auth = (self.client_id, self.client_secret)
+        secret = self.client_secret if self.client_secret is not None else ''
+        auth = (self.client_id, secret)
         response = self._requestor.request('post', url, auth=auth,
                                            data=sorted(data.items()))
         if response.status_code != success_status:
@@ -174,17 +176,17 @@ class DeviceIDAuthorizer(Authorizer):
     due to the lack of an associated reddit account.
     """
 
-    def __init__(self, authenticator, device_id):
+    def __init__(self, authenticator, device_id='DO_NOT_TRACK_THIS_DEVICE'):
         """Represents an app-only OAuth2 authorization for 'installed' apps.
 
         :param authenticator: An instance of :class:`Authenticator`.
-        :param device_id: A unique ID (20-30 character ASCII string)
+        :param device_id: (optional) A unique ID (20-30 character ASCII string)
             For more information about this parameter, see:
             https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
         """
-        if authenticator.client_secret != '':
+        if authenticator.client_secret:
             raise InvalidInvocation(
-                'confindential client cannot instantiate this class')
+                'confidential client cannot instantiate this class')
         super(DeviceIDAuthorizer, self).__init__(authenticator)
         self._device_id = device_id
 
