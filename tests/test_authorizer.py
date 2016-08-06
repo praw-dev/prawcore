@@ -191,6 +191,7 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
                  'DeviceIDAuthorizer_refresh__with_short_device_id'):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
 
+
 class ReadOnlyAuthorizerTest(AuthorizerTestBase):
     def test_refresh(self):
         authorizer = prawcore.ReadOnlyAuthorizer(self.authentication)
