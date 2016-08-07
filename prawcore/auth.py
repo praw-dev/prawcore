@@ -290,7 +290,7 @@ class ImplicitAuthorizer(BaseAuthorizer):
             an offset before passing in this number to account for a delay
             between when Reddit prepared the response, and when you make this
             function call.
-        :param scopes: A space-delimited string of Reddit OAuth2 scope names as
+        :param scope: A space-delimited string of Reddit OAuth2 scope names as
             returned from Reddit in the callback to the authenticator's
             redirect uri.
 
