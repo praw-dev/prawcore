@@ -10,12 +10,12 @@ class BaseAuthenticator(object):
     """Provide the base authenticator object that stores OAuth2 credentials."""
 
     def __init__(self, requestor, client_id, redirect_uri=None):
-        """Represent a single authentication to reddit's API.
+        """Represent a single authentication to Reddit's API.
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
         :param redirect_uri: (optional) The redirect URI exactly as specified
-            in your OAuth application settings on reddit. This parameter is
+            in your OAuth application settings on Reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
             ``authorize`` method of the ``Authorizer`` class.
 
@@ -57,10 +57,10 @@ class BaseAuthenticator(object):
         return request.prepare().url
 
     def revoke_token(self, token, token_type=None):
-        """Ask reddit to revoke the provided token.
+        """Ask Reddit to revoke the provided token.
 
         :param token: The access or refresh token to revoke.
-        :param token_type: (Optional) When provided, hint to reddit what the
+        :param token_type: (Optional) When provided, hint to Reddit what the
             token type is for a possible efficiency gain. The value can be
             either ``access_token`` or ``refresh_token``.
 
@@ -78,13 +78,13 @@ class TrustedAuthenticator(BaseAuthenticator):
     RESPONSE_TYPE = 'code'
 
     def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
-        """Represent a single authentication to reddit's API.
+        """Represent a single authentication to Reddit's API.
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
         :param client_secret: The OAuth2 client secret to use with the session.
         :param redirect_uri: (optional) The redirect URI exactly as specified
-            in your OAuth application settings on reddit. This parameter is
+            in your OAuth application settings on Reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
             ``authorize`` method of the ``Authorizer`` class.
 
@@ -118,7 +118,7 @@ class UntrustedAuthenticator(BaseAuthenticator):
             'temporary', scopes, state)
 
     def revoke_token(self, token):
-        """Ask reddit to revoke the provided token.
+        """Ask Reddit to revoke the provided token.
 
         :param token: The access token to revoke.
 
