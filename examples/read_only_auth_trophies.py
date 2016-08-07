@@ -17,7 +17,7 @@ def main():
         print('Usage: {} USERNAME'.format(sys.argv[0]))
         return 1
 
-    authenticator = prawcore.Authenticator(
+    authenticator = prawcore.TrustedAuthenticator(
         prawcore.Requestor('prawcore_read_only_example'),
         os.environ['PRAWCORE_CLIENT_ID'],
         os.environ['PRAWCORE_CLIENT_SECRET'])

@@ -4,6 +4,14 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Changed**
+
+* Split ``Authenticator`` into ``TrustedAuthenticator`` and
+  ``UntrustedAuthenticator``.
+
 0.1.1 (2016-08-06)
 ------------------
 

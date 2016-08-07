@@ -6,18 +6,14 @@ from requests import Request
 from requests.status_codes import codes
 
 
-class Authenticator(object):
-    """Stores OAuth2 authentication credentials."""
+class BaseAuthenticator(object):
+    """Provide the base authenticator object that stores OAuth2 credentials."""
 
-    def __init__(self, requestor, client_id, client_secret=None,
-                 redirect_uri=None):
+    def __init__(self, requestor, client_id, redirect_uri=None):
         """Represent a single authentication to reddit's API.
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
-        :param client_secret: (optional) The OAuth2 client secret to use with
-            the session. This parameter is required for use with all
-            Authorizers save for DeviceIDAuthorizer.
         :param redirect_uri: (optional) The redirect URI exactly as specified
             in your OAuth application settings on reddit. This parameter is
             required if you want to use the ``authorize_url`` method, or the
@@ -26,12 +22,10 @@ class Authenticator(object):
         """
         self._requestor = requestor
         self.client_id = client_id
-        self.client_secret = client_secret
         self.redirect_uri = redirect_uri
 
     def _post(self, url, success_status=codes['ok'], **data):
-        auth = (self.client_id, self.client_secret or '')
-        response = self._requestor.request('post', url, auth=auth,
+        response = self._requestor.request('post', url, auth=self._auth(),
                                            data=sorted(data.items()))
         if response.status_code != success_status:
             raise ResponseException(response)
@@ -55,7 +49,8 @@ class Authenticator(object):
             raise InvalidInvocation('redirect URI not provided')
 
         params = {'client_id': self.client_id, 'duration': duration,
-                  'redirect_uri': self.redirect_uri, 'response_type': 'code',
+                  'redirect_uri': self.redirect_uri,
+                  'response_type': self.RESPONSE_TYPE,
                   'scope': ' '.join(scopes), 'state': state}
         url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
         request = Request('GET', url, params=params)
@@ -77,13 +72,47 @@ class Authenticator(object):
         self._post(url, success_status=codes['no_content'], **data)
 
 
+class TrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for web, or script type apps."""
+
+    RESPONSE_TYPE = 'code'
+
+    def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
+        """Represent a single authentication to reddit's API.
+
+        :param requestor: An instance of :class:`Requestor`.
+        :param client_id: The OAuth2 client ID to use with the session.
+        :param client_secret: The OAuth2 client secret to use with the session.
+        :param redirect_uri: (optional) The redirect URI exactly as specified
+            in your OAuth application settings on reddit. This parameter is
+            required if you want to use the ``authorize_url`` method, or the
+            ``authorize`` method of the ``Authorizer`` class.
+
+        """
+        super(TrustedAuthenticator, self).__init__(requestor, client_id,
+                                                   redirect_uri)
+        self.client_secret = client_secret
+
+    def _auth(self):
+        return (self.client_id, self.client_secret)
+
+
+class UntrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for installed applications."""
+
+    RESPONSE_TYPE = 'token'
+
+    def _auth(self):
+        return (self.client_id, '')
+
+
 class Authorizer(object):
     """Manages OAuth2 authorization tokens and scopes."""
 
     def __init__(self, authenticator, refresh_token=None):
         """Represent a single authorization to reddit's API.
 
-        :param authenticator: An instance of :class:`Authenticator`.
+        :param authenticator: An instance of :class:`BaseAuthenticator`.
         :param refresh_token: (Optional) Enables the ability to refresh the
             authorization.
 
@@ -116,9 +145,8 @@ class Authorizer(object):
         self.scopes = set(payload['scope'].split(' '))
 
     def _validate_authenticator(self):
-        if not self._authenticator.client_secret:
-            raise InvalidInvocation('Authorizer must be used with an '
-                                    'Authenticator that has a client secret.')
+        if not isinstance(self._authenticator, TrustedAuthenticator):
+            raise InvalidInvocation('Must use a ``TrustedAuthenticator``.')
 
     def authorize(self, code):
         """Obtain and set authorization tokens based on ``code``.
@@ -182,7 +210,7 @@ class DeviceIDAuthorizer(Authorizer):
     def __init__(self, authenticator, device_id='DO_NOT_TRACK_THIS_DEVICE'):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
-        :param authenticator: An instance of :class:`Authenticator`.
+        :param authenticator: An instance of :class:`UntrustedAuthenticator`.
         :param device_id: (optional) A unique ID (20-30 character ASCII string)
             (default DO_NOT_TRACK_THIS_DEVICE). For more information about this
             parameter, see:
@@ -192,9 +220,8 @@ class DeviceIDAuthorizer(Authorizer):
         self._device_id = device_id
 
     def _validate_authenticator(self):
-        if self._authenticator.client_secret:
-            raise InvalidInvocation('DeviceIDAuthorizor cannot be used with an'
-                                    ' Authenticator that has a client secret.')
+        if not isinstance(self._authenticator, UntrustedAuthenticator):
+            raise InvalidInvocation('Must use an UntrustedAuthentictor.')
 
     def refresh(self):
         """Obtain a new access token."""
@@ -227,7 +254,7 @@ class ScriptAuthorizer(Authorizer):
     def __init__(self, authenticator, username, password):
         """Represent a single personal-use authorization to reddit's API.
 
-        :param authenticator: An instance of :class:`Authenticator`.
+        :param authenticator: An instance of :class:`TrustedAuthenticator`.
         :param username: The reddit username of one of the application's
             developers.
         :param password: The password associated with ``username``.

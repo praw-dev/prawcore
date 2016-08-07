@@ -6,27 +6,28 @@ import unittest
 from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
                      PASSWORD, USERNAME)
 from betamax import Betamax
-from prawcore.auth import Authorizer
 
 
-class InvalidAuthorizer(Authorizer):
+class InvalidAuthorizer(prawcore.Authorizer):
     def __init__(self):
         super(InvalidAuthorizer, self).__init__(
-            prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET))
+            prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET))
 
     def is_valid(self):
         return False
 
 
 def client_authorizer():
-    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
+    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
+                                                  CLIENT_SECRET)
     authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
     authorizer.refresh()
     return authorizer
 
 
 def readonly_authorizer(refresh=True):
-    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
+    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
+                                                  CLIENT_SECRET)
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     if refresh:
         authorizer.refresh()
@@ -34,7 +35,8 @@ def readonly_authorizer(refresh=True):
 
 
 def script_authorizer():
-    authenticator = prawcore.Authenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
+    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
+                                                  CLIENT_SECRET)
     authorizer = prawcore.ScriptAuthorizer(authenticator, USERNAME, PASSWORD)
     authorizer.refresh()
     return authorizer
