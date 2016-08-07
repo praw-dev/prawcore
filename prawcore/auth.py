@@ -127,19 +127,16 @@ class UntrustedAuthenticator(BaseAuthenticator):
                                                                 'access_token')
 
 
-class Authorizer(object):
-    """Manages OAuth2 authorization tokens and scopes."""
+class BaseAuthorizer(object):
+    """Superclass for OAuth2 authorization tokens and scopes."""
 
-    def __init__(self, authenticator, refresh_token=None):
-        """Represent a single authorization to reddit's API.
+    def __init__(self, authenticator):
+        """Represent a single authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`BaseAuthenticator`.
-        :param refresh_token: (Optional) Enables the ability to refresh the
-            authorization.
 
         """
         self._authenticator = authenticator
-        self.refresh_token = refresh_token
         self._clear_access_token()
         self._validate_authenticator()
 
@@ -166,20 +163,9 @@ class Authorizer(object):
         self.scopes = set(payload['scope'].split(' '))
 
     def _validate_authenticator(self):
-        if not isinstance(self._authenticator, TrustedAuthenticator):
-            raise InvalidInvocation('Must use a ``TrustedAuthenticator``.')
-
-    def authorize(self, code):
-        """Obtain and set authorization tokens based on ``code``.
-
-        :param code: The code obtained by an out-of-band authorization request
-            to reddit.
-
-        """
-        if self._authenticator.redirect_uri is None:
-            raise InvalidInvocation('redirect URI not provided')
-        self._request_token(code=code, grant_type='authorization_code',
-                            redirect_uri=self._authenticator.redirect_uri)
+        if not isinstance(self._authenticator, self.AUTHENTICATOR_CLASS):
+            raise InvalidInvocation('Must use a authenticator of type {}.'
+                                    .format(self.AUTHENTICATOR_CLASS.__name__))
 
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
@@ -190,6 +176,43 @@ class Authorizer(object):
         """
         return self.access_token is not None \
             and time.time() < self._expiration_timestamp
+
+    def revoke(self):
+        """Revoke the current Authorization."""
+        if self.access_token is None:
+            raise InvalidInvocation('no token available to revoke')
+
+        self._authenticator.revoke_token(self.access_token, 'access_token')
+        self._clear_access_token()
+
+
+class Authorizer(BaseAuthorizer):
+    """Manages OAuth2 authorization tokens and scopes."""
+
+    AUTHENTICATOR_CLASS = TrustedAuthenticator
+
+    def __init__(self, authenticator, refresh_token=None):
+        """Represent a single authorization to Reddit's API.
+
+        :param authenticator: An instance of :class:`TrustedAuthenticator`.
+        :param refresh_token: (Optional) Enables the ability to refresh the
+            authorization.
+
+        """
+        super(Authorizer, self).__init__(authenticator)
+        self.refresh_token = refresh_token
+
+    def authorize(self, code):
+        """Obtain and set authorization tokens based on ``code``.
+
+        :param code: The code obtained by an out-of-band authorization request
+            to Reddit.
+
+        """
+        if self._authenticator.redirect_uri is None:
+            raise InvalidInvocation('redirect URI not provided')
+        self._request_token(code=code, grant_type='authorization_code',
+                            redirect_uri=self._authenticator.redirect_uri)
 
     def refresh(self):
         """Obtain a new access token from the refresh_token."""
@@ -208,25 +231,24 @@ class Authorizer(object):
         associated with that authorization.
 
         """
-        if self.refresh_token is not None and not only_access:
+        if only_access or self.refresh_token is None:
+            super(Authorizer, self).revoke()
+        else:
             self._authenticator.revoke_token(self.refresh_token,
                                              'refresh_token')
-        elif self.access_token is not None:
-            self._authenticator.revoke_token(self.access_token, 'access_token')
-        else:
-            raise InvalidInvocation('no token available to revoke')
-
-        self._clear_access_token()
-        if not only_access:
+            self._clear_access_token()
             self.refresh_token = None
 
 
-class DeviceIDAuthorizer(Authorizer):
+class DeviceIDAuthorizer(BaseAuthorizer):
     """Manages app-only OAuth2 for 'installed' applications.
 
     While the '*' scope will be available, some endpoints simply will not work
-    due to the lack of an associated reddit account.
+    due to the lack of an associated Reddit account.
+
     """
+
+    AUTHENTICATOR_CLASS = UntrustedAuthenticator
 
     def __init__(self, authenticator, device_id='DO_NOT_TRACK_THIS_DEVICE'):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
@@ -251,11 +273,39 @@ class DeviceIDAuthorizer(Authorizer):
                             device_id=self._device_id)
 
 
+class ImplicitAuthorizer(BaseAuthorizer):
+    """Manages implicit installed-app type authorizations."""
+
+    AUTHENTICATOR_CLASS = UntrustedAuthenticator
+
+    def __init__(self, authenticator, access_token, expires_in, scope):
+        """Represent a single implicit authorization to Reddit's API.
+
+        :param authenticator: An instance of :class:`UntrustedAuthenticator`.
+        :param access_token: The access_token obtained from Reddit via callback
+            to the authenticator's redirect_uri.
+        :param expires_in: The number of seconds the ``access_token`` is valid
+            for. The origin of this value was returned from Reddit via callback
+            to the authenticator's redirect uri. Note, you may need to subtract
+            an offset before passing in this number to account for a delay
+            between when Reddit prepared the response, and when you make this
+            function call.
+        :param scopes: A space-delimited string of Reddit OAuth2 scope names as
+            returned from Reddit in the callback to the authenticator's
+            redirect uri.
+
+        """
+        super(ImplicitAuthorizer, self).__init__(authenticator)
+        self._expiration_timestamp = time.time() + expires_in
+        self.access_token = access_token
+        self.scopes = set(scope.split(' '))
+
+
 class ReadOnlyAuthorizer(Authorizer):
-    """Manages authorizations that are not associated with a reddit account.
+    """Manages authorizations that are not associated with a Reddit account.
 
     While the '*' scope will be available, some endpoints simply will not work
-    due to the lack of an associated reddit account.
+    due to the lack of an associated Reddit account.
 
     """
 
@@ -272,11 +322,13 @@ class ScriptAuthorizer(Authorizer):
 
     """
 
+    AUTHENTICATOR_CLASS = TrustedAuthenticator
+
     def __init__(self, authenticator, username, password):
-        """Represent a single personal-use authorization to reddit's API.
+        """Represent a single personal-use authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`TrustedAuthenticator`.
-        :param username: The reddit username of one of the application's
+        :param username: The Reddit username of one of the application's
             developers.
         :param password: The password associated with ``username``.
 

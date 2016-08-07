@@ -7,6 +7,10 @@ that deprecations will not be announced by a minor release.
 Unreleased
 ----------
 
+**Added**
+
+* Add ``ImplicitAuthorizer``.
+
 **Changed**
 
 * Split ``Authenticator`` into ``TrustedAuthenticator`` and

@@ -2,7 +2,7 @@
 
 import logging
 from .auth import (Authorizer, DeviceIDAuthorizer, ReadOnlyAuthorizer,  # NOQA
-                   ScriptAuthorizer, TrustedAuthenticator,
+                   ImplicitAuthorizer, ScriptAuthorizer, TrustedAuthenticator,
                    UntrustedAuthenticator)
 from .const import __version__  # noqa
 from .exceptions import *  # noqa
