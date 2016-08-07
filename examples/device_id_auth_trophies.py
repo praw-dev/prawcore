@@ -3,6 +3,7 @@
 """This example outputs a user's list of trophies.
 
 This program demonstrates the use of ``prawcore.DeviceIDAuthorizer``.
+
 """
 
 import os
@@ -16,7 +17,7 @@ def main():
         print('Usage: {} USERNAME'.format(sys.argv[0]))
         return 1
 
-    authenticator = prawcore.Authenticator(
+    authenticator = prawcore.UntrustedAuthenticator(
         prawcore.Requestor('prawcore_device_id_auth_example'),
         os.environ['PRAWCORE_CLIENT_ID'])
     authorizer = prawcore.DeviceIDAuthorizer(authenticator)

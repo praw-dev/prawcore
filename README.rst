@@ -32,9 +32,9 @@ Execution Example
 -----------------
 
 The following example demonstrates how to use prawcore to obtain the list of
-trophies for a given user. This example assumes you have the environment
-variables ``PRAWCORE_CLIENT_ID`` and ``PRAWCORE_CLIENT_SECRET`` set to the
-appropriate values for your application.
+trophies for a given user using the script-app type.  This example assumes you
+have the environment variables ``PRAWCORE_CLIENT_ID`` and
+``PRAWCORE_CLIENT_SECRET`` set to the appropriate values for your application.
 
 .. code-block:: python
 
@@ -43,7 +43,7 @@ appropriate values for your application.
    import pprint
    import prawcore
 
-   authenticator = prawcore.Authenticator(
+   authenticator = prawcore.TrustedAuthenticator(
        prawcore.Requestor('YOUR_VALID_USER_AGENT'),
        os.environ['PRAWCORE_CLIENT_ID'],
        os.environ['PRAWCORE_CLIENT_SECRET'])

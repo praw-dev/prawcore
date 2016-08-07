@@ -9,8 +9,8 @@ from betamax import Betamax
 
 class AuthorizerTestBase(unittest.TestCase):
     def setUp(self):
-        self.authentication = prawcore.Authenticator(REQUESTOR, CLIENT_ID,
-                                                     CLIENT_SECRET)
+        self.authentication = prawcore.TrustedAuthenticator(
+            REQUESTOR, CLIENT_ID, CLIENT_SECRET)
 
 
 class AuthorizerTest(AuthorizerTestBase):
@@ -62,11 +62,6 @@ class AuthorizerTest(AuthorizerTestBase):
         self.assertIsNone(authorizer.refresh_token)
         self.assertFalse(authorizer.is_valid())
 
-    def test_initialize__with_invalid_authenticator_type(self):
-        for invalid_type in [None, 1, True, object()]:
-            self.assertRaises(AttributeError, prawcore.Authorizer,
-                              invalid_type)
-
     def test_initialize__with_refresh_token(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
         self.assertIsNone(authorizer.access_token)
@@ -74,10 +69,10 @@ class AuthorizerTest(AuthorizerTestBase):
         self.assertEqual(REFRESH_TOKEN, authorizer.refresh_token)
         self.assertFalse(authorizer.is_valid())
 
-    def test_initialize__without_client_secret(self):
-        self.authentication.client_secret = None
+    def test_initialize__with_untrusted_authenticator(self):
+        authenticator = prawcore.UntrustedAuthenticator(None, None)
         self.assertRaises(prawcore.InvalidInvocation, prawcore.Authorizer,
-                          self.authentication)
+                          authenticator)
 
     def test_refresh(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
@@ -165,20 +160,19 @@ class AuthorizerTest(AuthorizerTestBase):
 
 class DeviceIDAuthorizerTest(AuthorizerTestBase):
     def setUp(self):
-        self.authentication = prawcore.Authenticator(REQUESTOR, CLIENT_ID)
+        self.authentication = prawcore.UntrustedAuthenticator(REQUESTOR,
+                                                              CLIENT_ID)
 
     def test_initialize(self):
         authorizer = prawcore.DeviceIDAuthorizer(self.authentication)
         self.assertIsNone(authorizer.access_token)
         self.assertIsNone(authorizer.scopes)
-        self.assertIsNone(authorizer.refresh_token)
         self.assertFalse(authorizer.is_valid())
 
-    def test_initialize__with_client_secret(self):
-        self.authentication.client_secret = 'dummy_client_secret'
+    def test_initialize__with_trusted_authenticator(self):
+        authenticator = prawcore.TrustedAuthenticator(None, None, None)
         self.assertRaises(prawcore.InvalidInvocation,
-                          prawcore.DeviceIDAuthorizer,
-                          self.authentication)
+                          prawcore.DeviceIDAuthorizer, authenticator)
 
     def test_refresh(self):
         authorizer = prawcore.DeviceIDAuthorizer(self.authentication)
@@ -194,6 +188,16 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
         with Betamax(REQUESTOR).use_cassette(
                  'DeviceIDAuthorizer_refresh__with_short_device_id'):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
+
+
+class ImplicitAuthorizerTest(AuthorizerTestBase):
+    def test_initialize(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        authorizer = prawcore.ImplicitAuthorizer(authenticator, 'fake token',
+                                                 1, 'modposts read')
+        self.assertEqual('fake token', authorizer.access_token)
+        self.assertEqual({'modposts', 'read'}, authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
 
 
 class ReadOnlyAuthorizerTest(AuthorizerTestBase):

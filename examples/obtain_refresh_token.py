@@ -5,7 +5,8 @@
 In order for this example to work your application's redirect URI must be set
 to http://localhost:8080.
 
-This tool can be used to conveniently create refresh tokens for later use.
+This tool can be used to conveniently create refresh tokens for later use with
+your web application OAuth2 credentials.
 
 """
 import os
@@ -43,7 +44,7 @@ def main():
         print('Usage: {} SCOPE...'.format(sys.argv[0]))
         return 1
 
-    authenticator = prawcore.Authenticator(
+    authenticator = prawcore.TrustedAuthenticator(
         prawcore.Requestor('prawcore_refresh_token_example'),
         os.environ['PRAWCORE_CLIENT_ID'],
         os.environ['PRAWCORE_CLIENT_SECRET'],
