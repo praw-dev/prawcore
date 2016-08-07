@@ -26,19 +26,20 @@ class TrustedAuthenticatorTest(unittest.TestCase):
     def test_revoke_token(self):
         authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
                                                       CLIENT_SECRET)
-        with Betamax(REQUESTOR).use_cassette('Authenticator_revoke_token'):
+        with Betamax(REQUESTOR).use_cassette(
+                'TrustedAuthenticator_revoke_token'):
             authenticator.revoke_token('dummy token')
 
     def test_revoke_token__with_access_token_hint(self):
         authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
                                                       CLIENT_SECRET)
         with Betamax(REQUESTOR).use_cassette(
-                'Authenticator_revoke_token__with_access_token_hint'):
+                'TrustedAuthenticator_revoke_token__with_access_token_hint'):
             authenticator.revoke_token('dummy token', 'access_token')
 
     def test_revoke_token__with_refresh_token_hint(self):
         authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
                                                       CLIENT_SECRET)
         with Betamax(REQUESTOR).use_cassette(
-                'Authenticator_revoke_token__with_refresh_token_hint'):
+                'TrustedAuthenticator_revoke_token__with_refresh_token_hint'):
             authenticator.revoke_token('dummy token', 'refresh_token')
