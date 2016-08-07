@@ -9,4 +9,5 @@ Maintainers
 Contributors
 ============
 
+- nmtake `@nmtake <https://github.com/nmtake>`_
 - Add "Name <email (optional)> and github profile link" above this line.
