@@ -1,0 +1,51 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2016-08-07T06:22:25",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "token=dummy+token&token_type_hint=access_token"
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "Basic N3poaE9NdGNPQUlxU2c6",
+          "Connection": "keep-alive",
+          "Content-Length": "46",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "__cfduid=d606bb08abab5495ec27d11011454bcfa1455490291",
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.1.1"
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/revoke_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": ""
+        },
+        "headers": {
+          "CF-RAY": "2ce8a253675d2276-LAX",
+          "Connection": "keep-alive",
+          "Content-Length": "0",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Sun, 07 Aug 2016 06:22:25 GMT",
+          "Server": "cloudflare-nginx",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "X-Moose": "majestic",
+          "cache-control": "max-age=0, must-revalidate",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 204,
+          "message": "No Content"
+        },
+        "url": "https://www.reddit.com/api/v1/revoke_token"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.7.1"
+}

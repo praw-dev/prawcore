@@ -105,6 +105,27 @@ class UntrustedAuthenticator(BaseAuthenticator):
     def _auth(self):
         return (self.client_id, '')
 
+    def authorize_url(self, scopes, state):
+        """Return the URL used out-of-band to grant access to your application.
+
+        :param scopes: A list of OAuth scopes to request authorization for.
+        :param state: A string that will be reflected in the callback to
+            ``redirect_uri``. This value should be temporarily unique to the
+            client for whom the URL was generated for.
+
+        """
+        return super(UntrustedAuthenticator, self).authorize_url(
+            'temporary', scopes, state)
+
+    def revoke_token(self, token):
+        """Ask reddit to revoke the provided token.
+
+        :param token: The access token to revoke.
+
+        """
+        return super(UntrustedAuthenticator, self).revoke_token(token,
+                                                                'access_token')
+
 
 class Authorizer(object):
     """Manages OAuth2 authorization tokens and scopes."""
