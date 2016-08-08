@@ -4,8 +4,8 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
-Unreleased
-----------
+0.2.1 (2016-08-07)
+------------------
 
 **Fixed**
 
