@@ -175,12 +175,13 @@ class BaseAuthorizer(object):
 class Authorizer(BaseAuthorizer):
     """Manages OAuth2 authorization tokens and scopes."""
 
-    AUTHENTICATOR_CLASS = TrustedAuthenticator
+    AUTHENTICATOR_CLASS = BaseAuthenticator
 
     def __init__(self, authenticator, refresh_token=None):
         """Represent a single authorization to Reddit's API.
 
-        :param authenticator: An instance of :class:`TrustedAuthenticator`.
+        :param authenticator: An instance of a subclass of
+            :class:`BaseAuthenticator`.
         :param refresh_token: (Optional) Enables the ability to refresh the
             authorization.
 

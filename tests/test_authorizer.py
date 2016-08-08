@@ -71,8 +71,11 @@ class AuthorizerTest(AuthorizerTestBase):
 
     def test_initialize__with_untrusted_authenticator(self):
         authenticator = prawcore.UntrustedAuthenticator(None, None)
-        self.assertRaises(prawcore.InvalidInvocation, prawcore.Authorizer,
-                          authenticator)
+        authorizer = prawcore.Authorizer(authenticator)
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertIsNone(authorizer.refresh_token)
+        self.assertFalse(authorizer.is_valid())
 
     def test_refresh(self):
         authorizer = prawcore.Authorizer(self.authentication, REFRESH_TOKEN)
