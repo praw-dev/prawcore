@@ -53,6 +53,16 @@ class SessionTest(unittest.TestCase):
     def test_init__without_authenticator(self):
         self.assertRaises(prawcore.InvalidInvocation, prawcore.Session, None)
 
+    def test_init__with_device_id_authorizer(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        authorizer = prawcore.DeviceIDAuthorizer(authenticator)
+        prawcore.Session(authorizer)
+
+    def test_init__with_implicit_authorizer(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        authorizer = prawcore.ImplicitAuthorizer(authenticator, None, 0, '')
+        prawcore.Session(authorizer)
+
     def test_request__get(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__get'):
             session = prawcore.Session(readonly_authorizer())

@@ -4,7 +4,7 @@ import logging
 from requests.compat import urljoin
 from requests.status_codes import codes
 
-from .auth import Authorizer
+from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadRequest, InvalidInvocation, NotFound, Redirect,
                          ServerError)
@@ -36,7 +36,7 @@ class Session(object):
         :param authorizer: An instance of :class:`Authorizer`.
 
         """
-        if not isinstance(authorizer, Authorizer):
+        if not isinstance(authorizer, BaseAuthorizer):
             raise InvalidInvocation('invalid Authorizer: {}'
                                     .format(authorizer))
         self._authorizer = authorizer

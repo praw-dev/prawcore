@@ -4,6 +4,14 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Fixed**
+
+* ``session`` works with ``DeviceIDAuthorizer`` and ``ImplicitAuthorizer``.
+
+
 0.2.0 (2016-08-07)
 ------------------
 
