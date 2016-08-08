@@ -17,6 +17,13 @@ class TrustedAuthenticatorTest(unittest.TestCase):
         self.assertIn('scope=identity+read', url)
         self.assertIn('state=a_state', url)
 
+    def test_authorize_url__fail_with_implicit(self):
+        authenticator = prawcore.TrustedAuthenticator(
+            REQUESTOR, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+        self.assertRaises(prawcore.InvalidInvocation,
+                          authenticator.authorize_url, 'temporary',
+                          ['identity', 'read'], 'a_state', implicit=True)
+
     def test_authorize_url__fail_without_redirect_uri(self):
         authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
                                                       CLIENT_SECRET)
@@ -47,20 +54,40 @@ class TrustedAuthenticatorTest(unittest.TestCase):
 
 
 class UntrustedAuthenticatorTest(unittest.TestCase):
-    def test_authorize_url(self):
+    def test_authorize_url__code(self):
         authenticator = prawcore.UntrustedAuthenticator(
             REQUESTOR, CLIENT_ID, REDIRECT_URI)
-        url = authenticator.authorize_url(['identity', 'read'], 'a_state')
+        url = authenticator.authorize_url('permanent', ['identity', 'read'],
+                                          'a_state')
+        self.assertIn('client_id={}'.format(CLIENT_ID), url)
+        self.assertIn('duration=permanent', url)
+        self.assertIn('response_type=code', url)
+        self.assertIn('scope=identity+read', url)
+        self.assertIn('state=a_state', url)
+
+    def test_authorize_url__token(self):
+        authenticator = prawcore.UntrustedAuthenticator(
+            REQUESTOR, CLIENT_ID, REDIRECT_URI)
+        url = authenticator.authorize_url('temporary', ['identity', 'read'],
+                                          'a_state', implicit=True)
         self.assertIn('client_id={}'.format(CLIENT_ID), url)
         self.assertIn('duration=temporary', url)
         self.assertIn('response_type=token', url)
         self.assertIn('scope=identity+read', url)
         self.assertIn('state=a_state', url)
 
+    def test_authorize_url__fail_with_token_and_permanent(self):
+        authenticator = prawcore.UntrustedAuthenticator(
+            REQUESTOR, CLIENT_ID, REDIRECT_URI)
+        self.assertRaises(prawcore.InvalidInvocation,
+                          authenticator.authorize_url, 'permanent',
+                          ['identity', 'read'], 'a_state', implicit=True)
+
     def test_authorize_url__fail_without_redirect_uri(self):
         authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
         self.assertRaises(prawcore.InvalidInvocation,
-                          authenticator.authorize_url, ['identity'], '...')
+                          authenticator.authorize_url, 'temporary',
+                          ['identity'], '...')
 
     def test_revoke_token(self):
         authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
