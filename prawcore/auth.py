@@ -31,26 +31,35 @@ class BaseAuthenticator(object):
             raise ResponseException(response)
         return response
 
-    def authorize_url(self, duration, scopes, state):
+    def authorize_url(self, duration, scopes, state, implicit=False):
         """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``permanent`` or ``temporary``. ``temporary``
             authorizations generate access tokens that last only 1
             hour. ``permanent`` authorizations additionally generate a refresh
             token that can be indefinitely used to generate new hour-long
-            access tokens.
+            access tokens. Only ``temporary`` can be specified if ``implicit``
+            is set to ``True``.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
             ``redirect_uri``. This value should be temporarily unique to the
             client for whom the URL was generated for.
+        :param implicit: (optional) Use the implicit grant flow (default:
+            False). This flow is only available for UntrustedAuthenticators.
 
         """
         if self.redirect_uri is None:
             raise InvalidInvocation('redirect URI not provided')
+        if implicit and not isinstance(self, UntrustedAuthenticator):
+            raise InvalidInvocation('Only UntrustedAuthentictor instances can '
+                                    'use the implicit grant flow.')
+        if implicit and duration != 'temporary':
+            raise InvalidInvocation('The implicit grant flow only supports '
+                                    'temporary access tokens.')
 
         params = {'client_id': self.client_id, 'duration': duration,
                   'redirect_uri': self.redirect_uri,
-                  'response_type': self.RESPONSE_TYPE,
+                  'response_type': 'token' if implicit else 'code',
                   'scope': ' '.join(scopes), 'state': state}
         url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
         request = Request('GET', url, params=params)
@@ -100,31 +109,8 @@ class TrustedAuthenticator(BaseAuthenticator):
 class UntrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for installed applications."""
 
-    RESPONSE_TYPE = 'token'
-
     def _auth(self):
         return (self.client_id, '')
-
-    def authorize_url(self, scopes, state):
-        """Return the URL used out-of-band to grant access to your application.
-
-        :param scopes: A list of OAuth scopes to request authorization for.
-        :param state: A string that will be reflected in the callback to
-            ``redirect_uri``. This value should be temporarily unique to the
-            client for whom the URL was generated for.
-
-        """
-        return super(UntrustedAuthenticator, self).authorize_url(
-            'temporary', scopes, state)
-
-    def revoke_token(self, token):
-        """Ask Reddit to revoke the provided token.
-
-        :param token: The access token to revoke.
-
-        """
-        return super(UntrustedAuthenticator, self).revoke_token(token,
-                                                                'access_token')
 
 
 class BaseAuthorizer(object):
@@ -189,12 +175,13 @@ class BaseAuthorizer(object):
 class Authorizer(BaseAuthorizer):
     """Manages OAuth2 authorization tokens and scopes."""
 
-    AUTHENTICATOR_CLASS = TrustedAuthenticator
+    AUTHENTICATOR_CLASS = BaseAuthenticator
 
     def __init__(self, authenticator, refresh_token=None):
         """Represent a single authorization to Reddit's API.
 
-        :param authenticator: An instance of :class:`TrustedAuthenticator`.
+        :param authenticator: An instance of a subclass of
+            :class:`BaseAuthenticator`.
         :param refresh_token: (Optional) Enables the ability to refresh the
             authorization.
 
@@ -262,10 +249,6 @@ class DeviceIDAuthorizer(BaseAuthorizer):
         super(DeviceIDAuthorizer, self).__init__(authenticator)
         self._device_id = device_id
 
-    def _validate_authenticator(self):
-        if not isinstance(self._authenticator, UntrustedAuthenticator):
-            raise InvalidInvocation('Must use an UntrustedAuthentictor.')
-
     def refresh(self):
         """Obtain a new access token."""
         grant_type = 'https://oauth.reddit.com/grants/installed_client'
@@ -308,6 +291,8 @@ class ReadOnlyAuthorizer(Authorizer):
     due to the lack of an associated Reddit account.
 
     """
+
+    AUTHENTICATOR_CLASS = TrustedAuthenticator
 
     def refresh(self):
         """Obtain a new ReadOnly access token."""

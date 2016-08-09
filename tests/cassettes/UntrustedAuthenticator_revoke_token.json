@@ -1,21 +1,21 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2016-08-07T06:22:25",
+      "recorded_at": "2016-08-08T15:16:56",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "token=dummy+token&token_type_hint=access_token"
+          "string": "token=dummy+token"
         },
         "headers": {
           "Accept": "*/*",
           "Accept-Encoding": "gzip, deflate",
           "Authorization": "Basic N3poaE9NdGNPQUlxU2c6",
           "Connection": "keep-alive",
-          "Content-Length": "46",
+          "Content-Length": "17",
           "Content-Type": "application/x-www-form-urlencoded",
           "Cookie": "__cfduid=d606bb08abab5495ec27d11011454bcfa1455490291",
-          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.1.1"
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.2.1"
         },
         "method": "POST",
         "uri": "https://www.reddit.com/api/v1/revoke_token"
@@ -26,11 +26,11 @@
           "string": ""
         },
         "headers": {
-          "CF-RAY": "2ce8a253675d2276-LAX",
+          "CF-RAY": "2cf3eea58337142b-LAX",
           "Connection": "keep-alive",
           "Content-Length": "0",
           "Content-Type": "application/json; charset=UTF-8",
-          "Date": "Sun, 07 Aug 2016 06:22:25 GMT",
+          "Date": "Mon, 08 Aug 2016 15:16:55 GMT",
           "Server": "cloudflare-nginx",
           "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
           "X-Moose": "majestic",

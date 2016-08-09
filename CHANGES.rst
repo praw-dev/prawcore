@@ -4,6 +4,18 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Changed**
+
+* ``UntrustedAuthenticator.authorization_url`` takes ``duration`` and
+  ``implicit`` arguments, so that it can also support the code grant flow.
+
+**Fixed**
+
+* ``Authorizer`` class can be used with ``UntrustedAuthenticator``.
+
 0.2.1 (2016-08-07)
 ------------------
 
