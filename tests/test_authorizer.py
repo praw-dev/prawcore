@@ -202,8 +202,18 @@ class ImplicitAuthorizerTest(AuthorizerTestBase):
         self.assertEqual({'modposts', 'read'}, authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
 
+    def test_initialize__with_trusted_authenticator(self):
+        self.assertRaises(prawcore.InvalidInvocation,
+                          prawcore.ImplicitAuthorizer, self.authentication,
+                          None, None, None)
+
 
 class ReadOnlyAuthorizerTest(AuthorizerTestBase):
+    def test_initialize__with_untrusted_authenticator(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        self.assertRaises(prawcore.InvalidInvocation,
+                          prawcore.ReadOnlyAuthorizer, authenticator)
+
     def test_refresh(self):
         authorizer = prawcore.ReadOnlyAuthorizer(self.authentication)
         self.assertIsNone(authorizer.access_token)
@@ -219,6 +229,11 @@ class ReadOnlyAuthorizerTest(AuthorizerTestBase):
 
 
 class ScriptAuthorizerTest(AuthorizerTestBase):
+    def test_initialize__with_untrusted_authenticator(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        self.assertRaises(prawcore.InvalidInvocation,
+                          prawcore.ScriptAuthorizer, authenticator, None, None)
+
     def test_refresh(self):
         authorizer = prawcore.ScriptAuthorizer(self.authentication, USERNAME,
                                                PASSWORD)

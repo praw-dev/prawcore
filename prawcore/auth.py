@@ -249,10 +249,6 @@ class DeviceIDAuthorizer(BaseAuthorizer):
         super(DeviceIDAuthorizer, self).__init__(authenticator)
         self._device_id = device_id
 
-    def _validate_authenticator(self):
-        if not isinstance(self._authenticator, UntrustedAuthenticator):
-            raise InvalidInvocation('Must use an UntrustedAuthentictor.')
-
     def refresh(self):
         """Obtain a new access token."""
         grant_type = 'https://oauth.reddit.com/grants/installed_client'
@@ -295,6 +291,8 @@ class ReadOnlyAuthorizer(Authorizer):
     due to the lack of an associated Reddit account.
 
     """
+
+    AUTHENTICATOR_CLASS = TrustedAuthenticator
 
     def refresh(self):
         """Obtain a new ReadOnly access token."""
