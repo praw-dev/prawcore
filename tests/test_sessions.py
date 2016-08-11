@@ -73,7 +73,7 @@ class SessionTest(unittest.TestCase):
     def test_request__patch(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__patch',
-                match_requests_on=['method', 'uri', 'PRAWCoreBody']):
+                match_requests_on=['method', 'uri', 'json-body']):
             session = prawcore.Session(script_authorizer())
             json = {'lang': 'ja', 'num_comments': 123}
             response = session.request('PATCH', '/api/v1/me/prefs', json=json)

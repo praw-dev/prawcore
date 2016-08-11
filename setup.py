@@ -30,6 +30,10 @@ setup(name=PACKAGE_NAME,
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: Implementation :: CPython'],
+      dependency_links=[
+          ('https://github.com/bboe/betamax_matchers/tarball/json_body_short_'
+           'circuit_pass#egg=betamax_matchers-0.3.0')
+      ],
       description='Low-level communication layer for PRAW 4+.',
       install_requires=['requests >=2.9.1, <3.0'],
       keywords='praw reddit api',
@@ -39,8 +43,7 @@ setup(name=PACKAGE_NAME,
       tests_require=['betamax >=0.7.1, <0.8',
                      'betamax_matchers >=0.3.0, <0.4',
                      'betamax-serializers >=0.2.0, <0.3',
-                     'mock ==1.0.1',
-                     'requests ==2.10.0'],
+                     'mock ==1.0.1'],
       test_suite='tests',
       url='https://github.com/praw-dev/prawcore',
       version=VERSION)
