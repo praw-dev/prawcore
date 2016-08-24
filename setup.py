@@ -31,8 +31,8 @@ setup(name=PACKAGE_NAME,
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: Implementation :: CPython'],
       dependency_links=[
-          ('https://github.com/bboe/betamax_matchers/tarball/json_body_short_'
-           'circuit_pass#egg=betamax_matchers-0.3.0')
+          ('https://github.com/sigmavirus24/betamax_matchers/tarball/master'
+           '#egg=betamax_matchers-0.3.0')
       ],
       description='Low-level communication layer for PRAW 4+.',
       install_requires=['requests >=2.9.1, <3.0'],
