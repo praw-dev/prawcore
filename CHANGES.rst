@@ -4,13 +4,16 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
-Unreleased
-----------
+0.3.0 (2016-11-20)
+------------------
 
-**Changed**
+**Added**
 
-* ``UntrustedAuthenticator.authorization_url`` takes ``duration`` and
-  ``implicit`` arguments, so that it can also support the code grant flow.
+* * Add ``files`` parameter to ``Session.request`` to support image upload
+  operations.
+* Add ``duration`` and ``implicit`` parameters to
+  ``UntrustedAuthenticator.authorization_url`` so that the method also supports
+  the code grant flow.
 
 **Fixed**
 
