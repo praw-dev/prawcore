@@ -50,16 +50,17 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
-    def _request_with_retries(self, method, url, data, headers, json, params,
-                              retries=3):
+    def _request_with_retries(self, data, files, headers, json, method,
+                              params, url, retries=3):
         log.debug('Fetching: {} {}'.format(method, url))
         log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
         log.debug('Params: {}'.format(params))
         response = self._rate_limiter.call(self._requestor.request,
                                            method, url, allow_redirects=False,
-                                           data=data, headers=headers,
-                                           json=json, params=params)
+                                           data=data, files=files,
+                                           headers=headers, json=json,
+                                           params=params)
 
         log.debug('Response: {} ({} bytes)'.format(
             response.status_code, response.headers.get('content-length')))
@@ -67,8 +68,9 @@ class Session(object):
         if response.status_code in self.RETRY_STATUSES and retries > 1:
             log.warning('Retrying due to {} status: {} {}'
                         .format(response.status_code, method, url))
-            return self._request_with_retries(method, url, data, headers, json,
-                                              params, retries=retries - 1)
+            return self._request_with_retries(
+                data=data, files=files, headers=headers, json=json,
+                method=method, params=params, url=url, retries=retries - 1)
         elif response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
         elif response.status_code == codes['no_content']:
@@ -87,17 +89,19 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor.close()
 
-    def request(self, method, path, params=None, data=None, json=None):
+    def request(self, method, path, data=None, files=None, json=None,
+                params=None):
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., get, post, put.
         :param path: The path of the request. This path will be combined with
             the ``oauth_url`` of the Requestor.
-        :param params: The query parameters to send with the request.
         :param data: Dictionary, bytes, or file-like object to send in the body
             of the request.
+        :param files: Dictionary, mapping ``filename`` to file-like object.
         :param json: Object to be serialized to JSON in the body of the
             request.
+        :param params: The query parameters to send with the request.
 
         Automatically refreshes the access token if it becomes invalid and a
         refresh token is available. Raises InvalidInvocation in such a case if
@@ -115,8 +119,9 @@ class Session(object):
             data['api_type'] = 'json'
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
-        return self._request_with_retries(method, url, data, headers, json,
-                                          params)
+        return self._request_with_retries(
+            data=data, files=files, headers=headers, json=json, method=method,
+            params=params,  url=url)
 
 
 def session(authorizer=None):

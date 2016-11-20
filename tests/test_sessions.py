@@ -89,6 +89,19 @@ class SessionTest(unittest.TestCase):
             self.assertIn('a_test_from_prawcore',
                           response['json']['data']['url'])
 
+    def test_request__post__with_files(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__post__with_files',
+                match_requests_on=['uri', 'method']):
+            session = prawcore.Session(script_authorizer())
+            data = {'upload_type': 'header'}
+            with open('tests/files/white-square.png', 'rb') as fp:
+                files = {'file': fp}
+                response = session.request(
+                    'POST', '/r/reddit_api_test/api/upload_sr_img', data=data,
+                    files=files)
+            self.assertIn('img_src', response)
+
     def test_request__raw_json(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__raw_json'):
             session = prawcore.Session(readonly_authorizer())
