@@ -63,8 +63,10 @@ class OAuthException(PrawcoreException):
         self.error = error
         self.description = description
         self.response = response
-        PrawcoreException.__init__(self, '{} error processing request ({})'
-                                   .format(error, description))
+        message = '{} error processing request'.format(error)
+        if description:
+            message += ' ({})'.format(description)
+        PrawcoreException.__init__(self, message)
 
 
 class BadRequest(ResponseException):
