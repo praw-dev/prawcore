@@ -4,12 +4,19 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.4.0 (2016-12-09)
+------------------
+
+**Changed**
+
+* Prevent '(None)' from appearing in OAuthException message.
+
 0.3.0 (2016-11-20)
 ------------------
 
 **Added**
 
-* * Add ``files`` parameter to ``Session.request`` to support image upload
+* Add ``files`` parameter to ``Session.request`` to support image upload
   operations.
 * Add ``duration`` and ``implicit`` parameters to
   ``UntrustedAuthenticator.authorization_url`` so that the method also supports
