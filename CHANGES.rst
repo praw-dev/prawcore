@@ -4,6 +4,14 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+All network requests now have a 16 second timeout by default. The environment
+variable ``prawcore_timeout`` can be used to adjust the value.
+
 0.4.0 (2016-12-09)
 ------------------
 

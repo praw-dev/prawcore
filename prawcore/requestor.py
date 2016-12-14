@@ -1,6 +1,6 @@
 """Provides the HTTP request handling interface."""
 import requests
-from .const import __version__
+from .const import __version__, TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
 
 
@@ -43,6 +43,6 @@ class Requestor(object):
     def request(self, *args, **kwargs):
         """Issue the HTTP request capturing any errors that may occur."""
         try:
-            return self._http.request(*args, **kwargs)
+            return self._http.request(*args, timeout=TIMEOUT, **kwargs)
         except Exception as exc:
             raise RequestException(exc, args, kwargs)

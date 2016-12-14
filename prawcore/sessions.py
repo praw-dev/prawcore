@@ -1,5 +1,7 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
 import logging
+import random
+import time
 
 from requests.compat import urljoin
 from requests.status_codes import codes
@@ -52,6 +54,11 @@ class Session(object):
 
     def _request_with_retries(self, data, files, headers, json, method,
                               params, url, retries=3):
+        if retries < 3:
+            base = 0 if retries == 2 else 2
+            sleep_time = base + 2 * random.random()
+            log.debug('Sleeping: {:0.2f} seconds'.format(sleep_time))
+            time.sleep(sleep_time)
         log.debug('Fetching: {} {}'.format(method, url))
         log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
