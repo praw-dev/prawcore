@@ -1,7 +1,7 @@
 """Constants for the prawcore package."""
 import os
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 ACCESS_TOKEN_PATH = '/api/v1/access_token'
 AUTHORIZATION_PATH = '/api/v1/authorize'
