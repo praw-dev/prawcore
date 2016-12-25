@@ -137,6 +137,17 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 522, context_manager.exception.response.status_code)
 
+    def test_request__cloudflair_unknown_error(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__cloudflair_unknown_error'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+                session.request('GET', '/')
+                session.request('GET', '/')
+            self.assertEqual(
+                520, context_manager.exception.response.status_code)
+
     def test_request__created(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__created'):
             session = prawcore.Session(script_authorizer())
@@ -158,6 +169,15 @@ class SessionTest(unittest.TestCase):
                 session.request('GET', '/')
             self.assertEqual(
                 504, context_manager.exception.response.status_code)
+
+    def test_request__internal_server_error(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__internal_server_error'):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.ServerError) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(
+                500, context_manager.exception.response.status_code)
 
     def test_request__no_content(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):

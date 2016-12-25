@@ -18,17 +18,20 @@ log = logging.getLogger(__package__)
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
-    RETRY_STATUSES = {codes['bad_gateway'], codes['gateway_timeout'],
+    RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
+                      codes['internal_server_error'],
                       codes['service_unavailable']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
                          codes['found']: Redirect,
                          codes['forbidden']: authorization_error_class,
                          codes['gateway_timeout']: ServerError,
+                         codes['internal_server_error']: ServerError,
                          codes['not_found']: NotFound,
                          codes['service_unavailable']: ServerError,
                          codes['unauthorized']: authorization_error_class,
                          # CloudFlare status (not named in requests)
+                         520: ServerError,
                          522: ServerError}
     SUCCESS_STATUSES = {codes['created'], codes['ok']}
 

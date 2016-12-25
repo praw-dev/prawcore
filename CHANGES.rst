@@ -4,6 +4,15 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* Handle 500 responses.
+* Handle Cloudflair 520 responses.
+
+
 0.5.0 (2016-12-13)
 ------------------
 
