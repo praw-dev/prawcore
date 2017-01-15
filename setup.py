@@ -37,7 +37,7 @@ setup(name=PACKAGE_NAME,
            '#egg=betamax_matchers-0.3.0')
       ],
       description='Low-level communication layer for PRAW 4+.',
-      install_requires=['requests >=2.9.1, <3.0'],
+      install_requires=['requests >=2.6.0, <3.0'],
       keywords='praw reddit api',
       license='Simplified BSD License',
       long_description=README,
