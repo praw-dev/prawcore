@@ -4,12 +4,13 @@ import random
 import time
 
 from requests.compat import urljoin
+from requests.exceptions import ChunkedEncodingError
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadRequest, InvalidInvocation, NotFound, Redirect,
-                         ServerError)
+                         RequestException, ServerError)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -66,18 +67,28 @@ class Session(object):
         log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
         log.debug('Params: {}'.format(params))
-        response = self._rate_limiter.call(self._requestor.request,
-                                           method, url, allow_redirects=False,
-                                           data=data, files=files,
-                                           headers=headers, json=json,
-                                           params=params)
+        try:
+            response = self._rate_limiter.call(
+                self._requestor.request, method, url, allow_redirects=False,
+                data=data, files=files, headers=headers, json=json,
+                params=params)
+            log.debug('Response: {} ({} bytes)'.format(
+                response.status_code, response.headers.get('content-length')))
+        except RequestException as exception:
+            if retries <= 1 or not isinstance(exception.original_exception,
+                                              ChunkedEncodingError):
+                raise
+            response = None
+            log.exception('Response')
 
-        log.debug('Response: {} ({} bytes)'.format(
-            response.status_code, response.headers.get('content-length')))
-
-        if response.status_code in self.RETRY_STATUSES and retries > 1:
+        if retries > 1 and (response is None or
+                            response.status_code in self.RETRY_STATUSES):
+            if response is None:
+                status = 'ChunkedEncodingError'
+            else:
+                status = response.status_code
             log.warning('Retrying due to {} status: {} {}'
-                        .format(response.status_code, method, url))
+                        .format(status, method, url))
             return self._request_with_retries(
                 data=data, files=files, headers=headers, json=json,
                 method=method, params=params, url=url, retries=retries - 1)

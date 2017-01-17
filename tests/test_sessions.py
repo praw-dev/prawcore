@@ -6,6 +6,9 @@ import unittest
 from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
                      PASSWORD, USERNAME)
 from betamax import Betamax
+from mock import Mock, patch
+from prawcore.exceptions import RequestException
+from requests.exceptions import ChunkedEncodingError
 
 
 class InvalidAuthorizer(prawcore.Authorizer):
@@ -25,8 +28,8 @@ def client_authorizer():
     return authorizer
 
 
-def readonly_authorizer(refresh=True):
-    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID,
+def readonly_authorizer(refresh=True, requestor=REQUESTOR):
+    authenticator = prawcore.TrustedAuthenticator(requestor, CLIENT_ID,
                                                   CLIENT_SECRET)
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     if refresh:
@@ -62,6 +65,28 @@ class SessionTest(unittest.TestCase):
         authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
         authorizer = prawcore.ImplicitAuthorizer(authenticator, None, 0, '')
         prawcore.Session(authorizer)
+
+    @patch('requests.Session')
+    def test_request__chunked_encoding_retry(self, mock_session):
+        session_instance = mock_session.return_value
+
+        # Handle Auth
+        response_dict = {'access_token': '', 'expires_in': 99, 'scope': ''}
+        session_instance.request.return_value = Mock(
+            headers={}, json=lambda: response_dict, status_code=200)
+        requestor = prawcore.Requestor('prawcore:test (by /u/bboe)')
+        authorizer = readonly_authorizer(requestor=requestor)
+        session_instance.request.reset_mock()
+
+        # Fail on subsequent request
+        exception = ChunkedEncodingError()
+        session_instance.request.side_effect = exception
+
+        with self.assertRaises(RequestException) as context_manager:
+            prawcore.Session(authorizer).request('GET', '/')
+        self.assertIsInstance(context_manager.exception, RequestException)
+        self.assertIs(exception, context_manager.exception.original_exception)
+        self.assertEqual(3, session_instance.request.call_count)
 
     def test_request__get(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__get'):
