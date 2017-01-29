@@ -1,4 +1,5 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
+from copy import deepcopy
 import logging
 import random
 import time
@@ -135,15 +136,16 @@ class Session(object):
 
         headers = {'Authorization': 'bearer {}'
                    .format(self._authorizer.access_token)}
-        params = params or {}
+        params = deepcopy(params) or {}
         params['raw_json'] = 1
         if isinstance(data, dict):
+            data = deepcopy(data)
             data['api_type'] = 'json'
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
         return self._request_with_retries(
             data=data, files=files, headers=headers, json=json, method=method,
-            params=params,  url=url)
+            params=params, url=url)
 
 
 def session(authorizer=None):

@@ -91,8 +91,10 @@ class SessionTest(unittest.TestCase):
     def test_request__get(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__get'):
             session = prawcore.Session(readonly_authorizer())
-            response = session.request('GET', '/')
+            params = {'limit': 100}
+            response = session.request('GET', '/', params=params)
         self.assertIsInstance(response, dict)
+        self.assertEqual(1, len(params))
         self.assertEqual('Listing', response['kind'])
 
     def test_request__patch(self):
@@ -110,9 +112,11 @@ class SessionTest(unittest.TestCase):
             session = prawcore.Session(script_authorizer())
             data = {'kind': 'self', 'sr': 'reddit_api_test', 'text': 'Test!',
                     'title': 'A Test from PRAWCORE.'}
+            key_count = len(data)
             response = session.request('POST', '/api/submit', data=data)
             self.assertIn('a_test_from_prawcore',
                           response['json']['data']['url'])
+            self.assertEqual(key_count, len(data))  # Ensure data is untouched
 
     def test_request__post__with_files(self):
         with Betamax(REQUESTOR).use_cassette(

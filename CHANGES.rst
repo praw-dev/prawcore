@@ -11,6 +11,10 @@ Unreleased
 
 * Handle 413 Request entity too large responses.
 
+**Fixed**
+
+* Avoid modifying passed in ``data`` and ``params`` to ``Session.request``.
+
 0.7.0 (2016-01-16)
 ------------------
 
