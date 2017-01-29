@@ -10,6 +10,7 @@ Unreleased
 **Added**
 
 * Handle 413 Request entity too large responses.
+* ``reset_timestamp`` to ``RateLimiter``.
 
 **Fixed**
 
