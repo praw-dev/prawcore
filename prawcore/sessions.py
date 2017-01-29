@@ -10,7 +10,7 @@ from requests.status_codes import codes
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadRequest, InvalidInvocation, NotFound, Redirect,
-                         RequestException, ServerError)
+                         RequestException, ServerError, TooLarge)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -29,6 +29,7 @@ class Session(object):
                          codes['gateway_timeout']: ServerError,
                          codes['internal_server_error']: ServerError,
                          codes['not_found']: NotFound,
+                         codes['request_entity_too_large']: TooLarge,
                          codes['service_unavailable']: ServerError,
                          codes['unauthorized']: authorization_error_class,
                          # CloudFlare status (not named in requests)

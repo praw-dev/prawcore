@@ -112,3 +112,7 @@ class Redirect(ResponseException):
 
 class ServerError(ResponseException):
     """Indicate issues on the server end preventing request fulfillment."""
+
+
+class TooLarge(ResponseException):
+    """Indicate that the request data exceeds the allowed limit."""

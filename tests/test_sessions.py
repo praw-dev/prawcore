@@ -244,6 +244,21 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 503, context_manager.exception.response.status_code)
 
+    def test_request__too_large(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__too_large',
+                match_requests_on=['uri', 'method']):
+            session = prawcore.Session(script_authorizer())
+            data = {'upload_type': 'header'}
+            with open('tests/files/too_large.jpg', 'rb') as fp:
+                files = {'file': fp}
+                with self.assertRaises(prawcore.TooLarge) as context_manager:
+                    session.request(
+                        'POST', '/r/reddit_api_test/api/upload_sr_img',
+                        data=data, files=files)
+            self.assertEqual(
+                413, context_manager.exception.response.status_code)
+
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):

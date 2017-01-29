@@ -4,6 +4,13 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* Handle 413 Request entity too large responses.
+
 0.7.0 (2016-01-16)
 ------------------
 
