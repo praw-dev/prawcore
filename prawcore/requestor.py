@@ -14,7 +14,7 @@ class Requestor(object):
         return getattr(self._http, attribute)
 
     def __init__(self, user_agent, oauth_url='https://oauth.reddit.com',
-                 reddit_url='https://www.reddit.com'):
+                 reddit_url='https://www.reddit.com', session_cls=None):
         """Create an instance of the Requestor class.
 
         :param user_agent: The user-agent for your application. Please follow
@@ -24,12 +24,14 @@ class Requestor(object):
             reddit site. (Default: https://oauth.reddit.com)
         :param reddit_url: (Optional) The URL used when obtaining access
             tokens. (Default: https://www.reddit.com)
-
+        :param session_cls: (Optional) A class to handle requests, compatible
+            with requests.Session. (Default: None)
         """
         if user_agent is None or len(user_agent) < 7:
             raise InvalidInvocation('user_agent is not descriptive')
 
-        self._http = requests.Session()
+        session_cls = session_cls or requests.Session
+        self._http = session_cls()
         self._http.headers['User-Agent'] = '{} prawcore/{}'.format(
             user_agent, __version__)
 
