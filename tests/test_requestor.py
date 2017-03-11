@@ -3,7 +3,7 @@ import pickle
 
 import prawcore
 import unittest
-from mock import patch
+from mock import patch, Mock
 from prawcore import RequestException
 
 
@@ -33,6 +33,24 @@ class RequestorTest(unittest.TestCase):
                          context_manager.exception.request_args)
         self.assertEqual({'data': 'bar'},
                          context_manager.exception.request_kwargs)
+
+    def test_request__use_custom_session(self):
+        override = 'REQUEST OVERRIDDEN'
+        custom_header = 'CUSTOM SESSION HEADER'
+        headers = {'session_header': custom_header}
+        attrs = {'request.return_value': override, 'headers': headers}
+        session = Mock(**attrs)
+
+        requestor = prawcore.Requestor('prawcore:test (by /u/bboe)',
+                                       session=session)
+
+        self.assertEqual('prawcore:test (by /u/bboe) prawcore/{}'
+                         .format(prawcore.__version__),
+                         requestor._http.headers['User-Agent'])
+        self.assertEqual(requestor._http.headers['session_header'],
+                         custom_header)
+
+        self.assertEqual(requestor.request('https://reddit.com'), override)
 
     def test_pickle(self):
         requestor = prawcore.Requestor('prawcore:test (by /u/bboe)')
