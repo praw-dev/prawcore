@@ -4,12 +4,12 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
-Unreleased
-----------
- 
+0.9.0 (2017-03-11)
+------------------
+
 **Added**
 
-* Add ``session`` parameter to Requestor to ease support of custom sessions 
+* Add ``session`` parameter to Requestor to ease support of custom sessions
   (e.g. caching or mock ones).
 
 0.8.0 (2017-01-29)
