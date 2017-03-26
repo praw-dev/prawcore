@@ -7,7 +7,7 @@ import unittest
 from betamax import Betamax
 from mock import Mock, patch
 from prawcore.exceptions import RequestException
-from requests.exceptions import ChunkedEncodingError
+from requests.exceptions import ChunkedEncodingError, ConnectionError
 from testfixtures import LogCapture
 
 from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
@@ -87,6 +87,34 @@ class SessionTest(unittest.TestCase):
 
         expected = ('prawcore', 'WARNING',
                     'Retrying due to ChunkedEncodingError() status: GET '
+                    'https://oauth.reddit.com/')
+
+        with LogCapture(level=logging.WARNING) as log_capture:
+            with self.assertRaises(RequestException) as context_manager:
+                prawcore.Session(authorizer).request('GET', '/')
+            log_capture.check(expected, expected)
+        self.assertIsInstance(context_manager.exception, RequestException)
+        self.assertIs(exception, context_manager.exception.original_exception)
+        self.assertEqual(3, session_instance.request.call_count)
+
+    @patch('requests.Session')
+    def test_request__connection_error_retry(self, mock_session):
+        session_instance = mock_session.return_value
+
+        # Handle Auth
+        response_dict = {'access_token': '', 'expires_in': 99, 'scope': ''}
+        session_instance.request.return_value = Mock(
+            headers={}, json=lambda: response_dict, status_code=200)
+        requestor = prawcore.Requestor('prawcore:test (by /u/bboe)')
+        authorizer = readonly_authorizer(requestor=requestor)
+        session_instance.request.reset_mock()
+
+        # Fail on subsequent request
+        exception = ConnectionError()
+        session_instance.request.side_effect = exception
+
+        expected = ('prawcore', 'WARNING',
+                    'Retrying due to ConnectionError() status: GET '
                     'https://oauth.reddit.com/')
 
         with LogCapture(level=logging.WARNING) as log_capture:
