@@ -20,6 +20,7 @@ log = logging.getLogger(__package__)
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
+    RETRY_EXCEPTIONS = (ChunkedEncodingError,)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
                       codes['service_unavailable']}
@@ -69,6 +70,7 @@ class Session(object):
         log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
         log.debug('Params: {}'.format(params))
+        saved_exception = None
         try:
             response = self._rate_limiter.call(
                 self._requestor.request, method, url, allow_redirects=False,
@@ -78,15 +80,15 @@ class Session(object):
                 response.status_code, response.headers.get('content-length')))
         except RequestException as exception:
             if retries <= 1 or not isinstance(exception.original_exception,
-                                              ChunkedEncodingError):
+                                              self.RETRY_EXCEPTIONS):
                 raise
+            saved_exception = exception.original_exception
             response = None
-            log.exception('Response')
 
         if retries > 1 and (response is None or
                             response.status_code in self.RETRY_STATUSES):
-            if response is None:
-                status = 'ChunkedEncodingError'
+            if saved_exception:
+                status = repr(saved_exception)
             else:
                 status = response.status_code
             log.warning('Retrying due to {} status: {} {}'

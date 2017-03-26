@@ -1,14 +1,17 @@
 """Test for prawcore.Sessions module."""
+import logging
 from json import dumps
 
 import prawcore
 import unittest
-from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
-                     PASSWORD, USERNAME)
 from betamax import Betamax
 from mock import Mock, patch
 from prawcore.exceptions import RequestException
 from requests.exceptions import ChunkedEncodingError
+from testfixtures import LogCapture
+
+from .config import (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, REQUESTOR,
+                     PASSWORD, USERNAME)
 
 
 class InvalidAuthorizer(prawcore.Authorizer):
@@ -82,8 +85,14 @@ class SessionTest(unittest.TestCase):
         exception = ChunkedEncodingError()
         session_instance.request.side_effect = exception
 
-        with self.assertRaises(RequestException) as context_manager:
-            prawcore.Session(authorizer).request('GET', '/')
+        expected = ('prawcore', 'WARNING',
+                    'Retrying due to ChunkedEncodingError() status: GET '
+                    'https://oauth.reddit.com/')
+
+        with LogCapture(level=logging.WARNING) as log_capture:
+            with self.assertRaises(RequestException) as context_manager:
+                prawcore.Session(authorizer).request('GET', '/')
+            log_capture.check(expected, expected)
         self.assertIsInstance(context_manager.exception, RequestException)
         self.assertIs(exception, context_manager.exception.original_exception)
         self.assertEqual(3, session_instance.request.call_count)
