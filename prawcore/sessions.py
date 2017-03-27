@@ -59,22 +59,22 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
-    def _request_with_retries(self, data, files, headers, json, method,
-                              params, url, retries=3):
+    def _request_with_retries(self, data, files, json, method, params, url,
+                              retries=3):
         if retries < 3:
             base = 0 if retries == 2 else 2
             sleep_time = base + 2 * random.random()
             log.debug('Sleeping: {:0.2f} seconds'.format(sleep_time))
             time.sleep(sleep_time)
+
         log.debug('Fetching: {} {}'.format(method, url))
-        log.debug('Headers: {}'.format(headers))
         log.debug('Data: {}'.format(data))
         log.debug('Params: {}'.format(params))
         saved_exception = None
         try:
             response = self._rate_limiter.call(
-                self._requestor.request, method, url, allow_redirects=False,
-                data=data, files=files, headers=headers, json=json,
+                self._requestor.request, self._set_header_callback, method,
+                url, allow_redirects=False, data=data, files=files, json=json,
                 params=params)
             log.debug('Response: {} ({} bytes)'.format(
                 response.status_code, response.headers.get('content-length')))
@@ -94,8 +94,8 @@ class Session(object):
             log.warning('Retrying due to {} status: {} {}'
                         .format(status, method, url))
             return self._request_with_retries(
-                data=data, files=files, headers=headers, json=json,
-                method=method, params=params, url=url, retries=retries - 1)
+                data=data, files=files, json=json, method=method,
+                params=params, url=url, retries=retries - 1)
         elif response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
         elif response.status_code == codes['no_content']:
@@ -105,6 +105,12 @@ class Session(object):
         if response.headers.get('content-length') == '0':
             return ''
         return response.json()
+
+    def _set_header_callback(self):
+        if not self._authorizer.is_valid():
+            self._authorizer.refresh()
+        return {'Authorization': 'bearer {}'
+                .format(self._authorizer.access_token)}
 
     @property
     def _requestor(self):
@@ -133,11 +139,6 @@ class Session(object):
         a refresh token is not available.
 
         """
-        if not self._authorizer.is_valid():
-            self._authorizer.refresh()
-
-        headers = {'Authorization': 'bearer {}'
-                   .format(self._authorizer.access_token)}
         params = deepcopy(params) or {}
         params['raw_json'] = 1
         if isinstance(data, dict):
@@ -146,7 +147,7 @@ class Session(object):
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
         return self._request_with_retries(
-            data=data, files=files, headers=headers, json=json, method=method,
+            data=data, files=files, json=json, method=method,
             params=params, url=url)
 
 

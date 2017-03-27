@@ -13,6 +13,17 @@ Unreleased
   ``Connection Reset by Peer`` issues that appear to occur somewhat frequently
   when running on Amazon EC2.
 
+**Changed**
+
+* Calling ``RateLimiter`` now requires a second positional argument,
+  ``set_header_callback``.
+
+**Fixed**
+
+* Check if the access token is expired immediately before every authorized
+  request, rather than just before the request flow. This new approach accounts
+  for failure retries, and rate limiter delay.
+
 0.9.0 (2017-03-11)
 ------------------
 
