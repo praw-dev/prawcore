@@ -23,7 +23,7 @@ class Session(object):
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
-                      codes['service_unavailable'], codes['unauthorized']}
+                      codes['service_unavailable']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
                          codes['found']: Redirect,
@@ -107,11 +107,14 @@ class Session(object):
         response, saved_exception = self._make_request(
             data, files, json, method, params, retries, url)
 
+        do_retry = False
         if response is not None and \
            response.status_code == codes['unauthorized']:
             self._authorizer._clear_access_token()
+            if hasattr(self._authorizer, 'refresh'):
+                do_retry = True
 
-        if retries > 1 and (response is None or
+        if retries > 1 and (do_retry or response is None or
                             response.status_code in self.RETRY_STATUSES):
             return self._do_retry(data, files, json, method, params, response,
                                   retries, saved_exception, url)
@@ -126,7 +129,8 @@ class Session(object):
         return response.json()
 
     def _set_header_callback(self):
-        if not self._authorizer.is_valid():
+        if not self._authorizer.is_valid() and hasattr(self._authorizer,
+                                                       'refresh'):
             self._authorizer.refresh()
         return {'Authorization': 'bearer {}'
                 .format(self._authorizer.access_token)}

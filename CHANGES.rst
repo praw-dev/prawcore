@@ -4,6 +4,13 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.10.1 (2017-04-10)
+-------------------
+
+**Fixed**
+* ``InvalidToken`` is again raised on 401 when a non-refreshable application is
+  in use.
+
 0.10.0 (2017-04-10)
 -------------------
 
