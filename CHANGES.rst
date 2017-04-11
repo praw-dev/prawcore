@@ -9,7 +9,7 @@ Unreleased
 
 **Added**
 
-* ``ConnectionErrors`` exceptios are automatically retried. This handles
+* ``ConnectionError`` exceptions are automatically retried. This handles
   ``Connection Reset by Peer`` issues that appear to occur somewhat frequently
   when running on Amazon EC2.
 
