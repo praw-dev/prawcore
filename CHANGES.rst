@@ -9,7 +9,7 @@ Unreleased
 
 **Added**
 
-* ``ConnectionErrors`` exceptios are automatically retried. This handles
+* ``ConnectionError`` exceptions are automatically retried. This handles
   ``Connection Reset by Peer`` issues that appear to occur somewhat frequently
   when running on Amazon EC2.
 
@@ -17,6 +17,8 @@ Unreleased
 
 * Calling ``RateLimiter`` now requires a second positional argument,
   ``set_header_callback``.
+* In the event a 401 unauthorized occurs, the access token is cleared and the
+  request is retried.
 
 **Fixed**
 

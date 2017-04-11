@@ -312,8 +312,8 @@ class SessionTest(unittest.TestCase):
                 'Session_request__with_invalid_access_token'):
             session = prawcore.Session(readonly_authorizer())
             session._authorizer.access_token += 'invalid'
-            self.assertRaises(prawcore.InvalidToken, session.request, 'GET',
-                              '/')
+            response = session.request('GET', '/')
+        self.assertIsInstance(response, dict)
 
     def test_request__with_invalid_authorizer(self):
         session = prawcore.Session(InvalidAuthorizer())
