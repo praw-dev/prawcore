@@ -23,7 +23,7 @@ class Session(object):
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
-                      codes['service_unavailable']}
+                      codes['service_unavailable'], codes['unauthorized']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
                          codes['found']: Redirect,
@@ -38,6 +38,20 @@ class Session(object):
                          520: ServerError,
                          522: ServerError}
     SUCCESS_STATUSES = {codes['created'], codes['ok']}
+
+    @staticmethod
+    def _log_request(data, method, params, url):
+        log.debug('Fetching: {} {}'.format(method, url))
+        log.debug('Data: {}'.format(data))
+        log.debug('Params: {}'.format(params))
+
+    @staticmethod
+    def _retry_sleep(retries):
+        if retries < 3:
+            base = 0 if retries == 2 else 2
+            sleep_time = base + 2 * random.random()
+            log.debug('Sleeping: {:0.2f} seconds'.format(sleep_time))
+            time.sleep(sleep_time)
 
     def __init__(self, authorizer):
         """Preprare the connection to reddit's API.
@@ -59,18 +73,19 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
-    def _request_with_retries(self, data, files, json, method, params, url,
-                              retries=3):
-        if retries < 3:
-            base = 0 if retries == 2 else 2
-            sleep_time = base + 2 * random.random()
-            log.debug('Sleeping: {:0.2f} seconds'.format(sleep_time))
-            time.sleep(sleep_time)
+    def _do_retry(self, data, files, json, method, params, response, retries,
+                  saved_exception, url):
+        if saved_exception:
+            status = repr(saved_exception)
+        else:
+            status = response.status_code
+        log.warning('Retrying due to {} status: {} {}'
+                    .format(status, method, url))
+        return self._request_with_retries(
+            data=data, files=files, json=json, method=method,
+            params=params, url=url, retries=retries - 1)
 
-        log.debug('Fetching: {} {}'.format(method, url))
-        log.debug('Data: {}'.format(data))
-        log.debug('Params: {}'.format(params))
-        saved_exception = None
+    def _make_request(self, data, files, json, method, params, retries, url):
         try:
             response = self._rate_limiter.call(
                 self._requestor.request, self._set_header_callback, method,
@@ -78,24 +93,28 @@ class Session(object):
                 params=params)
             log.debug('Response: {} ({} bytes)'.format(
                 response.status_code, response.headers.get('content-length')))
+            return response, None
         except RequestException as exception:
             if retries <= 1 or not isinstance(exception.original_exception,
                                               self.RETRY_EXCEPTIONS):
                 raise
-            saved_exception = exception.original_exception
-            response = None
+            return None, exception.original_exception
+
+    def _request_with_retries(self, data, files, json, method, params, url,
+                              retries=3):
+        self._retry_sleep(retries)
+        self._log_request(data, method, params, url)
+        response, saved_exception = self._make_request(
+            data, files, json, method, params, retries, url)
+
+        if response is not None and \
+           response.status_code == codes['unauthorized']:
+            self._authorizer._clear_access_token()
 
         if retries > 1 and (response is None or
                             response.status_code in self.RETRY_STATUSES):
-            if saved_exception:
-                status = repr(saved_exception)
-            else:
-                status = response.status_code
-            log.warning('Retrying due to {} status: {} {}'
-                        .format(status, method, url))
-            return self._request_with_retries(
-                data=data, files=files, json=json, method=method,
-                params=params, url=url, retries=retries - 1)
+            return self._do_retry(data, files, json, method, params, response,
+                                  retries, saved_exception, url)
         elif response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
         elif response.status_code == codes['no_content']:

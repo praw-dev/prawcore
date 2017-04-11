@@ -17,6 +17,8 @@ Unreleased
 
 * Calling ``RateLimiter`` now requires a second positional argument,
   ``set_header_callback``.
+* In the event a 401 unauthorized occurs, the access token is cleared and the
+  request is retried.
 
 **Fixed**
 
