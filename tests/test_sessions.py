@@ -308,8 +308,19 @@ class SessionTest(unittest.TestCase):
                               'GET', '/api/v1/me')
 
     def test_request__with_invalid_access_token(self):
+        authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
+        authorizer = prawcore.ImplicitAuthorizer(authenticator, None, 0, '')
+        session = prawcore.Session(authorizer)
+
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_invalid_access_token'):
+            session._authorizer.access_token = 'invalid'
+            self.assertRaises(prawcore.InvalidToken, session.request,
+                              'get', '/')
+
+    def test_request__with_invalid_access_token__retry(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__with_invalid_access_token__retry'):
             session = prawcore.Session(readonly_authorizer())
             session._authorizer.access_token += 'invalid'
             response = session.request('GET', '/')
