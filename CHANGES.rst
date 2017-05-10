@@ -4,6 +4,12 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+* Requestor now accepts keyword argument ``proxies`` to use for all requests.
+
 0.10.1 (2017-04-10)
 -------------------
 

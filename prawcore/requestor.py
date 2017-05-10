@@ -14,7 +14,8 @@ class Requestor(object):
         return getattr(self._http, attribute)
 
     def __init__(self, user_agent, oauth_url='https://oauth.reddit.com',
-                 reddit_url='https://www.reddit.com', session=None):
+                 reddit_url='https://www.reddit.com', session=None,
+                 proxies=None):
         """Create an instance of the Requestor class.
 
         :param user_agent: The user-agent for your application. Please follow
@@ -26,11 +27,14 @@ class Requestor(object):
             tokens. (Default: https://www.reddit.com)
         :param session: (Optional) A session to handle requests, compatible
             with requests.Session(). (Default: None)
+        :param proxies: (Optional) A proxies dict to be used by the
+            requests library. PRAW only uses https. (Default: None)
         """
         if user_agent is None or len(user_agent) < 7:
             raise InvalidInvocation('user_agent is not descriptive')
 
         self._http = session or requests.Session()
+        self._http.proxies = proxies
         self._http.headers['User-Agent'] = '{} prawcore/{}'.format(
             user_agent, __version__)
 
