@@ -19,6 +19,12 @@ class RequestorTest(unittest.TestCase):
             self.assertRaises(prawcore.InvalidInvocation, prawcore.Requestor,
                               agent)
 
+    def test_initialize__proxies(self):
+        expectedProxies = {'https': 'http://www.example.com'}
+        requestor = prawcore.Requestor('prawcore:test (by /u/bboe)',
+                                       proxies=expectedProxies)
+        self.assertEqual(requestor._http.proxies, expectedProxies)
+
     @patch('requests.Session')
     def test_request__wrap_request_exceptions(self, mock_session):
         exception = Exception('prawcore wrap_request_exceptions')
