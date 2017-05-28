@@ -4,10 +4,18 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+0.11.0 (2017-05-27)
+-------------------
+
+**Added**
+
+* ``Conflict`` exception is raised when response status 409 is returned.
+
 0.10.1 (2017-04-10)
 -------------------
 
 **Fixed**
+
 * ``InvalidToken`` is again raised on 401 when a non-refreshable application is
   in use.
 
