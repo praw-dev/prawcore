@@ -214,6 +214,19 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 520, context_manager.exception.response.status_code)
 
+    def test_request__conflict(self):
+        with Betamax(REQUESTOR).use_cassette('Session_request__conflict'):
+            session = prawcore.Session(script_authorizer())
+            previous = 'f0214574-430d-11e7-84ca-1201093304fa'
+            with self.assertRaises(prawcore.Conflict) as context_manager:
+                session.request('POST', '/r/ThirdRealm/api/wiki/edit', data={
+                    'content': 'New text',
+                    'page': 'index',
+                    'previous': previous
+                })
+            self.assertEqual(
+                409, context_manager.exception.response.status_code)
+
     def test_request__created(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__created'):
             session = prawcore.Session(script_authorizer())
