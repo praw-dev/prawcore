@@ -10,8 +10,8 @@ from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
-from .exceptions import (BadRequest, InvalidInvocation, NotFound, Redirect,
-                         RequestException, ServerError, TooLarge)
+from .exceptions import (BadRequest, Conflict, InvalidInvocation, NotFound,
+                         Redirect, RequestException, ServerError, TooLarge)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -26,6 +26,7 @@ class Session(object):
                       codes['service_unavailable']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
+                         codes['conflict']: Conflict,
                          codes['found']: Redirect,
                          codes['forbidden']: authorization_error_class,
                          codes['gateway_timeout']: ServerError,

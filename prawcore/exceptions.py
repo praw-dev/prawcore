@@ -73,6 +73,10 @@ class BadRequest(ResponseException):
     """Indicate invalid parameters for the request."""
 
 
+class Conflict(ResponseException):
+    """Indicate a conflicting change in the target resource."""
+
+
 class Forbidden(ResponseException):
     """Indicate the authentication is not permitted for the request."""
 
