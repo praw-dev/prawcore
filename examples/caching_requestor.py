@@ -23,7 +23,7 @@ class CachingSession(requests.Session):
     get_cache = {}
 
     def request(self, method, url, params=None, **kwargs):
-        """Caching version of requests.Session.request."""
+        """Perform a request, or return a cached response if available."""
         params_key = tuple(params.items()) if params else ()
         if method.upper() == 'GET':
             if (url, params_key) in self.get_cache:
