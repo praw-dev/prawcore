@@ -10,8 +10,9 @@ from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
-from .exceptions import (BadRequest, Conflict, InvalidInvocation, NotFound,
-                         Redirect, RequestException, ServerError, TooLarge)
+from .exceptions import (BadJSON, BadRequest, Conflict, InvalidInvocation,
+                         NotFound, Redirect, RequestException, ServerError,
+                         TooLarge)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -127,7 +128,10 @@ class Session(object):
             'Unexpected status code: {}'.format(response.status_code)
         if response.headers.get('content-length') == '0':
             return ''
-        return response.json()
+        try:
+            return response.json()
+        except ValueError:
+            raise BadJSON(response)
 
     def _set_header_callback(self):
         if not self._authorizer.is_valid() and hasattr(self._authorizer,
