@@ -4,6 +4,14 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* ``BadJSON`` exception for the rare cases that a response that should contain
+  valid JSON has unparsable JSON.
+
 0.11.0 (2017-05-27)
 -------------------
 

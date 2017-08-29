@@ -184,6 +184,15 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 502, context_manager.exception.response.status_code)
 
+    def test_request__bad_json(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__bad_json'):
+            session = prawcore.Session(script_authorizer())
+            with self.assertRaises(prawcore.BadJSON) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(92,
+                             len(context_manager.exception.response.content))
+
     def test_request__bad_request(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__bad_request'):
             session = prawcore.Session(script_authorizer())

@@ -69,6 +69,10 @@ class OAuthException(PrawcoreException):
         PrawcoreException.__init__(self, message)
 
 
+class BadJSON(ResponseException):
+    """Indicate the response did not contain valid JSON."""
+
+
 class BadRequest(ResponseException):
     """Indicate invalid parameters for the request."""
 
