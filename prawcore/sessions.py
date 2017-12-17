@@ -12,7 +12,7 @@ from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadJSON, BadRequest, Conflict, InvalidInvocation,
                          NotFound, Redirect, RequestException, ServerError,
-                         TooLarge)
+                         TooLarge, UnavailableForLegalReasons)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -36,6 +36,8 @@ class Session(object):
                          codes['request_entity_too_large']: TooLarge,
                          codes['service_unavailable']: ServerError,
                          codes['unauthorized']: authorization_error_class,
+                         codes['unavailable_for_legal_reasons']:
+                         UnavailableForLegalReasons,
                          # CloudFlare status (not named in requests)
                          520: ServerError,
                          522: ServerError}

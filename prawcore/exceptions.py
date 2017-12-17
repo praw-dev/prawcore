@@ -93,6 +93,10 @@ class InvalidToken(ResponseException):
     """Indicate that the request used an invalid access token."""
 
 
+class UnavailableForLegalReasons(ResponseException):
+    """Indicate that the requested URL is unavilable due to legal reasons."""
+
+
 class NotFound(ResponseException):
     """Indicate that the requested URL was not found."""
 
