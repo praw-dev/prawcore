@@ -322,6 +322,16 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 413, context_manager.exception.response.status_code)
 
+    def test_request__unavailable_for_legal_reasons(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__unavailable_for_legal_reasons'):
+            session = prawcore.Session(readonly_authorizer())
+            exception_class = prawcore.UnavailableForLegalReasons
+            with self.assertRaises(exception_class) as context_manager:
+                session.request('GET', '/')
+            self.assertEqual(
+                451, context_manager.exception.response.status_code)
+
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):
