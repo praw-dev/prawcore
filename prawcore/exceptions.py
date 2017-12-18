@@ -39,7 +39,7 @@ class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
     def __init__(self, response):
-        """Initialize a RequestException instance.
+        """Initialize a ResponseException instance.
 
         :param response: A requests.response instance.
 
@@ -93,10 +93,6 @@ class InvalidToken(ResponseException):
     """Indicate that the request used an invalid access token."""
 
 
-class UnavailableForLegalReasons(ResponseException):
-    """Indicate that the requested URL is unavilable due to legal reasons."""
-
-
 class NotFound(ResponseException):
     """Indicate that the requested URL was not found."""
 
@@ -128,3 +124,7 @@ class ServerError(ResponseException):
 
 class TooLarge(ResponseException):
     """Indicate that the request data exceeds the allowed limit."""
+
+
+class UnavailableForLegalReasons(ResponseException):
+    """Indicate that the requested URL is unavilable due to legal reasons."""
