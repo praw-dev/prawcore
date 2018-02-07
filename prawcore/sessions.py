@@ -5,7 +5,8 @@ import random
 import time
 
 from requests.compat import urljoin
-from requests.exceptions import ChunkedEncodingError, ConnectionError
+from requests.exceptions import (ChunkedEncodingError, ConnectionError,
+                                 ReadTimeout)
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
@@ -21,7 +22,7 @@ log = logging.getLogger(__package__)
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
-    RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError)
+    RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
                       codes['service_unavailable']}
