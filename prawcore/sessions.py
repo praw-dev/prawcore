@@ -6,7 +6,7 @@ import time
 
 from requests.compat import urljoin
 from requests.exceptions import (ChunkedEncodingError, ConnectionError,
-                                ReadTimeout)
+                                 ReadTimeout)
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
@@ -25,8 +25,8 @@ class Session(object):
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
-                      codes['service_unavailable'],
-                      codes['read_timeout']}
+                      codes['read_timeout'],
+                      codes['service_unavailable']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
                          codes['conflict']: Conflict,
@@ -35,12 +35,12 @@ class Session(object):
                          codes['gateway_timeout']: ServerError,
                          codes['internal_server_error']: ServerError,
                          codes['not_found']: NotFound,
+                         codes['read_timeout']: ReadTimeout,
                          codes['request_entity_too_large']: TooLarge,
                          codes['service_unavailable']: ServerError,
                          codes['unauthorized']: authorization_error_class,
                          codes['unavailable_for_legal_reasons']:
                          UnavailableForLegalReasons,
-                         codes['read_timeout']: ReadTimeout,
                          # CloudFlare status (not named in requests)
                          520: ServerError,
                          522: ServerError}
