@@ -96,6 +96,9 @@ class InvalidToken(ResponseException):
 class NotFound(ResponseException):
     """Indicate that the requested URL was not found."""
 
+class ReadTimeout(RequestException):
+    """Indicate that response was not received."""
+
 
 class Redirect(ResponseException):
     """Indicate the request resulted in a redirect.
