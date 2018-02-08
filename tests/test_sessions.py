@@ -272,7 +272,7 @@ class SessionTest(unittest.TestCase):
         with Betamax(REQUESTOR).use_cassette('Session_request__network_error'):
             session = prawcore.Session(script_authorizer())
             self.assertRaises(prawcore.NetworkError, session.request,
-                              'GET', '') # TODO needs to be filled out
+                              'GET', '')  # TODO needs to be filled out
 
     def test_request__no_content(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):
