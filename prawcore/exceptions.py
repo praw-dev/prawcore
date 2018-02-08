@@ -93,6 +93,10 @@ class InvalidToken(ResponseException):
     """Indicate that the request used an invalid access token."""
 
 
+class NetworkError(RequestException):
+    """Indicate that response was not received."""
+
+
 class NotFound(ResponseException):
     """Indicate that the requested URL was not found."""
 

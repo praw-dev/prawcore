@@ -11,8 +11,8 @@ from requests.status_codes import codes
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadJSON, BadRequest, Conflict, InvalidInvocation,
-                         NotFound, Redirect, RequestException, ServerError,
-                         TooLarge, UnavailableForLegalReasons)
+                         NetworkError, NotFound, Redirect, RequestException,
+                         ServerError, TooLarge, UnavailableForLegalReasons)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -24,6 +24,7 @@ class Session(object):
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError)
     RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
                       codes['internal_server_error'],
+                      codes['network_error'],
                       codes['service_unavailable']}
     STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
                          codes['bad_request']: BadRequest,
@@ -32,6 +33,7 @@ class Session(object):
                          codes['forbidden']: authorization_error_class,
                          codes['gateway_timeout']: ServerError,
                          codes['internal_server_error']: ServerError,
+                         codes['network_error']: NetworkError,
                          codes['not_found']: NotFound,
                          codes['request_entity_too_large']: TooLarge,
                          codes['service_unavailable']: ServerError,

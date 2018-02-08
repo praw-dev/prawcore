@@ -267,6 +267,13 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 500, context_manager.exception.response.status_code)
 
+    def test_request__network_error(self):
+        # TODO Session_request__network_error needs to be created
+        with Betamax(REQUESTOR).use_cassette('Session_request__network_error'):
+            session = prawcore.Session(script_authorizer())
+            self.assertRaises(prawcore.NetworkError, session.request,
+                              'GET', '')  # TODO needs to be filled out
+
     def test_request__no_content(self):
         with Betamax(REQUESTOR).use_cassette('Session_request__no_content'):
             session = prawcore.Session(script_authorizer())
