@@ -4,6 +4,13 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Removed**
+
+* Removed support for Python 3.3 as it is no longer supported by requests.
+
 0.13.0 (2017-12-16)
 -------------------
 
