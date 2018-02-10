@@ -11,4 +11,5 @@ Contributors
 
 - nmtake `@nmtake <https://github.com/nmtake>`_
 - elnuno `@elnuno <https://github.com/elnuno>`_
+- Zeerak Waseem <zeerak.w@gmail.com> `@ZeerakW <https://github.com/ZeerakW>`_
 - Add "Name <email (optional)> and github profile link" above this line.
