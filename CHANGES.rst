@@ -7,6 +7,10 @@ that deprecations will not be announced by a minor release.
 Unreleased
 ----------
 
+**Added**
+
+``ReadTimeout`` is automatically retried like the server errors.
+
 **Removed**
 
 * Removed support for Python 3.3 as it is no longer supported by requests.
