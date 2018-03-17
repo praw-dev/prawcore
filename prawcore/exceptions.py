@@ -106,7 +106,7 @@ class Redirect(ResponseException):
     """
 
     def __init__(self, response):
-        """Initialize a Redirect exception instance..
+        """Initialize a Redirect exception instance.
 
         :param response: A requests.response instance containing a location
         header.
@@ -120,6 +120,26 @@ class Redirect(ResponseException):
 
 class ServerError(ResponseException):
     """Indicate issues on the server end preventing request fulfillment."""
+
+
+class SpecialError(ResponseException):
+    """Indicate syntax or spam-prevention issues."""
+
+    def __init__(self, response):
+        """Initialize a SpecialError exception instance.
+
+        :param response: A requests.response instance containing a message
+        and a list of special errors.
+
+        """
+        self.response = response
+
+        resp_dict = self.response.json()  # assumes valid JSON
+        self.message = resp_dict.get('message', '')
+        self.reason = resp_dict.get('reason', '')
+        self.special_errors = resp_dict.get('special_errors', [])
+        PrawcoreException.__init__(self, 'Special error {!r}'.format(
+            self.message))
 
 
 class TooLarge(ResponseException):
