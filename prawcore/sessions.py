@@ -13,7 +13,7 @@ from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
 from .exceptions import (BadJSON, BadRequest, Conflict, InvalidInvocation,
                          NotFound, Redirect, RequestException, ServerError,
-                         TooLarge, UnavailableForLegalReasons)
+                         SpecialError, TooLarge, UnavailableForLegalReasons)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -33,6 +33,7 @@ class Session(object):
                          codes['forbidden']: authorization_error_class,
                          codes['gateway_timeout']: ServerError,
                          codes['internal_server_error']: ServerError,
+                         codes['media_type']: SpecialError,
                          codes['not_found']: NotFound,
                          codes['request_entity_too_large']: TooLarge,
                          codes['service_unavailable']: ServerError,

@@ -361,6 +361,19 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(
                 451, context_manager.exception.response.status_code)
 
+    def test_request__unsupported_media_type(self):
+        with Betamax(REQUESTOR).use_cassette(
+                'Session_request__unsupported_media_type'):
+            session = prawcore.Session(script_authorizer())
+            exception_class = prawcore.SpecialError
+            data = {'content': 'type: submission\naction: upvote',
+                    'page': 'config/automoderator'}
+            with self.assertRaises(exception_class) as context_manager:
+                session.request('POST', 'r/ttft/api/wiki/edit/',
+                                data=data)
+            self.assertEqual(415,
+                             context_manager.exception.response.status_code)
+
     def test_request__with_insufficent_scope(self):
         with Betamax(REQUESTOR).use_cassette(
                 'Session_request__with_insufficient_scope'):
