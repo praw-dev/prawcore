@@ -8,3 +8,8 @@
 _build/
 build/
 dist/
+
+# PyCharm
+.idea/
+# pyenc
+.python
