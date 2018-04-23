@@ -11,5 +11,5 @@ dist/
 
 # PyCharm
 .idea/
-# pyenc
-.python
+# pyenv
+.python-version
