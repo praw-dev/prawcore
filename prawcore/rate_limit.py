@@ -1,5 +1,8 @@
 """Provide the RateLimiter class."""
+import logging
 import time
+
+log = logging.getLogger(__package__)
 
 
 class RateLimiter(object):
@@ -41,6 +44,9 @@ class RateLimiter(object):
         sleep_seconds = self.next_request_timestamp - time.time()
         if sleep_seconds <= 0:
             return
+        message = 'Sleeping: {:0.2f} seconds prior to' \
+                  ' call'.format(sleep_seconds)
+        log.debug(message)
         time.sleep(sleep_seconds)
 
     def update(self, response_headers):
