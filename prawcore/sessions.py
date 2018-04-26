@@ -55,10 +55,11 @@ class Session(object):
     def _retry_sleep(retries):
         if retries < 3:
             base = 0 if retries == 2 else 2
-            stime = base + 2 * random.random()
-            msg = 'Sleeping: {:0.2f} seconds prior to retry'.format(stime)
-            log.debug(msg)
-            time.sleep(stime)
+            sleep_seconds = base + 2 * random.random()
+            message = 'Sleeping: {:0.2f} seconds prior to' \
+                      ' retry'.format(sleep_seconds)
+            log.debug(message)
+            time.sleep(sleep_seconds)
 
     def __init__(self, authorizer):
         """Preprare the connection to reddit's API.

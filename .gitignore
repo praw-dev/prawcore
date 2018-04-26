@@ -5,11 +5,8 @@
 *~
 .DS_Store
 .coverage
+.idea/
+.python-version
 _build/
 build/
 dist/
-
-# PyCharm
-.idea/
-# pyenv
-.python-version
