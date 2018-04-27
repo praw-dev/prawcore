@@ -4,19 +4,29 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+1.0.0 (2018-04-26)
+------------------
+
+I am releasing 1.0.0 as prawcore is quite stable and it's unlikely that any
+breaking changes will need to be introduced in the near future.
+
+**Added**
+
+* Log debug messages for all sleep times.
+
 0.15.0 (2018-03-31)
 -------------------
 
 **Added**
 
-``SpecialError`` is raised on HTTP 415.
+* ``SpecialError`` is raised on HTTP 415.
 
 0.14.0 (2018-02-10)
 -------------------
 
 **Added**
 
-``ReadTimeout`` is automatically retried like the server errors.
+* ``ReadTimeout`` is automatically retried like the server errors.
 
 **Removed**
 
