@@ -4,6 +4,13 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+1.0.1 (2019-02-05)
+------------------
+
+**Fixed**
+
+* ``RateLimiter`` will not sleep longer than ``next_request_timestamp``.
+
 1.0.0 (2018-04-26)
 ------------------
 
