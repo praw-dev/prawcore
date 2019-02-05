@@ -82,5 +82,5 @@ class RateLimiter(object):
         else:
             estimated_clients = 1.0
 
-        self.next_request_timestamp = now + (
-            estimated_clients * seconds_to_reset / self.remaining)
+        self.next_request_timestamp = min(self.reset_timestamp, now + (
+            estimated_clients * seconds_to_reset / self.remaining))
