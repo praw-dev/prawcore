@@ -1,19 +1,16 @@
 after_success: coveralls
 cache: pip
+dist: xenial
 install: pip install coveralls flake8 pydocstyle
 language: python
 matrix:
-  allow_failures:
-    - python: nightly
   fast_finish: true
 python:
   - 2.7
-  - 3.4
   - 3.5
   - 3.6
-  - nightly
+  - 3.7
 script:
   - flake8
   - pydocstyle
   - coverage run --source=prawcore setup.py test
-sudo: false
