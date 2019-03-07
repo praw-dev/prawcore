@@ -24,9 +24,10 @@ class BaseAuthenticator(object):
         self.client_id = client_id
         self.redirect_uri = redirect_uri
 
-    def _post(self, url, success_status=codes['ok'], **data):
-        response = self._requestor.request('post', url, auth=self._auth(),
-                                           data=sorted(data.items()))
+    def _post(self, url, success_status=codes["ok"], **data):
+        response = self._requestor.request(
+            "post", url, auth=self._auth(), data=sorted(data.items())
+        )
         if response.status_code != success_status:
             raise ResponseException(response)
         return response
@@ -49,20 +50,28 @@ class BaseAuthenticator(object):
 
         """
         if self.redirect_uri is None:
-            raise InvalidInvocation('redirect URI not provided')
+            raise InvalidInvocation("redirect URI not provided")
         if implicit and not isinstance(self, UntrustedAuthenticator):
-            raise InvalidInvocation('Only UntrustedAuthentictor instances can '
-                                    'use the implicit grant flow.')
-        if implicit and duration != 'temporary':
-            raise InvalidInvocation('The implicit grant flow only supports '
-                                    'temporary access tokens.')
+            raise InvalidInvocation(
+                "Only UntrustedAuthentictor instances can "
+                "use the implicit grant flow."
+            )
+        if implicit and duration != "temporary":
+            raise InvalidInvocation(
+                "The implicit grant flow only supports "
+                "temporary access tokens."
+            )
 
-        params = {'client_id': self.client_id, 'duration': duration,
-                  'redirect_uri': self.redirect_uri,
-                  'response_type': 'token' if implicit else 'code',
-                  'scope': ' '.join(scopes), 'state': state}
+        params = {
+            "client_id": self.client_id,
+            "duration": duration,
+            "redirect_uri": self.redirect_uri,
+            "response_type": "token" if implicit else "code",
+            "scope": " ".join(scopes),
+            "state": state,
+        }
         url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
-        request = Request('GET', url, params=params)
+        request = Request("GET", url, params=params)
         return request.prepare().url
 
     def revoke_token(self, token, token_type=None):
@@ -74,17 +83,17 @@ class BaseAuthenticator(object):
             either ``access_token`` or ``refresh_token``.
 
         """
-        data = {'token': token}
+        data = {"token": token}
         if token_type is not None:
-            data['token_type_hint'] = token_type
+            data["token_type_hint"] = token_type
         url = self._requestor.reddit_url + const.REVOKE_TOKEN_PATH
-        self._post(url, success_status=codes['no_content'], **data)
+        self._post(url, success_status=codes["no_content"], **data)
 
 
 class TrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for web, or script type apps."""
 
-    RESPONSE_TYPE = 'code'
+    RESPONSE_TYPE = "code"
 
     def __init__(self, requestor, client_id, client_secret, redirect_uri=None):
         """Represent a single authentication to Reddit's API.
@@ -98,8 +107,9 @@ class TrustedAuthenticator(BaseAuthenticator):
             ``authorize`` method of the ``Authorizer`` class.
 
         """
-        super(TrustedAuthenticator, self).__init__(requestor, client_id,
-                                                   redirect_uri)
+        super(TrustedAuthenticator, self).__init__(
+            requestor, client_id, redirect_uri
+        )
         self.client_secret = client_secret
 
     def _auth(self):
@@ -110,7 +120,7 @@ class UntrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for installed applications."""
 
     def _auth(self):
-        return (self.client_id, '')
+        return (self.client_id, "")
 
 
 class BaseAuthorizer(object):
@@ -132,26 +142,32 @@ class BaseAuthorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        url = (self._authenticator._requestor.reddit_url +
-               const.ACCESS_TOKEN_PATH)
+        url = (
+            self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
+        )
         pre_request_time = time.time()
         response = self._authenticator._post(url, **data)
         payload = response.json()
-        if 'error' in payload:  # Why are these OKAY responses?
-            raise OAuthException(response, payload['error'],
-                                 payload.get('error_description'))
+        if "error" in payload:  # Why are these OKAY responses?
+            raise OAuthException(
+                response, payload["error"], payload.get("error_description")
+            )
 
-        self._expiration_timestamp = (pre_request_time - 10
-                                      + payload['expires_in'])
-        self.access_token = payload['access_token']
-        if 'refresh_token' in payload:
-            self.refresh_token = payload['refresh_token']
-        self.scopes = set(payload['scope'].split(' '))
+        self._expiration_timestamp = (
+            pre_request_time - 10 + payload["expires_in"]
+        )
+        self.access_token = payload["access_token"]
+        if "refresh_token" in payload:
+            self.refresh_token = payload["refresh_token"]
+        self.scopes = set(payload["scope"].split(" "))
 
     def _validate_authenticator(self):
         if not isinstance(self._authenticator, self.AUTHENTICATOR_CLASS):
-            raise InvalidInvocation('Must use a authenticator of type {}.'
-                                    .format(self.AUTHENTICATOR_CLASS.__name__))
+            raise InvalidInvocation(
+                "Must use a authenticator of type {}.".format(
+                    self.AUTHENTICATOR_CLASS.__name__
+                )
+            )
 
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
@@ -160,15 +176,17 @@ class BaseAuthorizer(object):
         actually valid on the server side.
 
         """
-        return self.access_token is not None \
+        return (
+            self.access_token is not None
             and time.time() < self._expiration_timestamp
+        )
 
     def revoke(self):
         """Revoke the current Authorization."""
         if self.access_token is None:
-            raise InvalidInvocation('no token available to revoke')
+            raise InvalidInvocation("no token available to revoke")
 
-        self._authenticator.revoke_token(self.access_token, 'access_token')
+        self._authenticator.revoke_token(self.access_token, "access_token")
         self._clear_access_token()
 
 
@@ -197,16 +215,20 @@ class Authorizer(BaseAuthorizer):
 
         """
         if self._authenticator.redirect_uri is None:
-            raise InvalidInvocation('redirect URI not provided')
-        self._request_token(code=code, grant_type='authorization_code',
-                            redirect_uri=self._authenticator.redirect_uri)
+            raise InvalidInvocation("redirect URI not provided")
+        self._request_token(
+            code=code,
+            grant_type="authorization_code",
+            redirect_uri=self._authenticator.redirect_uri,
+        )
 
     def refresh(self):
         """Obtain a new access token from the refresh_token."""
         if self.refresh_token is None:
-            raise InvalidInvocation('refresh token not provided')
-        self._request_token(grant_type='refresh_token',
-                            refresh_token=self.refresh_token)
+            raise InvalidInvocation("refresh token not provided")
+        self._request_token(
+            grant_type="refresh_token", refresh_token=self.refresh_token
+        )
 
     def revoke(self, only_access=False):
         """Revoke the current Authorization.
@@ -221,8 +243,9 @@ class Authorizer(BaseAuthorizer):
         if only_access or self.refresh_token is None:
             super(Authorizer, self).revoke()
         else:
-            self._authenticator.revoke_token(self.refresh_token,
-                                             'refresh_token')
+            self._authenticator.revoke_token(
+                self.refresh_token, "refresh_token"
+            )
             self._clear_access_token()
             self.refresh_token = None
 
@@ -237,7 +260,7 @@ class DeviceIDAuthorizer(BaseAuthorizer):
 
     AUTHENTICATOR_CLASS = UntrustedAuthenticator
 
-    def __init__(self, authenticator, device_id='DO_NOT_TRACK_THIS_DEVICE'):
+    def __init__(self, authenticator, device_id="DO_NOT_TRACK_THIS_DEVICE"):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
         :param authenticator: An instance of :class:`UntrustedAuthenticator`.
@@ -251,9 +274,8 @@ class DeviceIDAuthorizer(BaseAuthorizer):
 
     def refresh(self):
         """Obtain a new access token."""
-        grant_type = 'https://oauth.reddit.com/grants/installed_client'
-        self._request_token(grant_type=grant_type,
-                            device_id=self._device_id)
+        grant_type = "https://oauth.reddit.com/grants/installed_client"
+        self._request_token(grant_type=grant_type, device_id=self._device_id)
 
 
 class ImplicitAuthorizer(BaseAuthorizer):
@@ -281,7 +303,7 @@ class ImplicitAuthorizer(BaseAuthorizer):
         super(ImplicitAuthorizer, self).__init__(authenticator)
         self._expiration_timestamp = time.time() + expires_in
         self.access_token = access_token
-        self.scopes = set(scope.split(' '))
+        self.scopes = set(scope.split(" "))
 
 
 class ReadOnlyAuthorizer(Authorizer):
@@ -296,7 +318,7 @@ class ReadOnlyAuthorizer(Authorizer):
 
     def refresh(self):
         """Obtain a new ReadOnly access token."""
-        self._request_token(grant_type='client_credentials')
+        self._request_token(grant_type="client_credentials")
 
 
 class ScriptAuthorizer(Authorizer):
@@ -324,5 +346,8 @@ class ScriptAuthorizer(Authorizer):
 
     def refresh(self):
         """Obtain a new personal-use script type access token."""
-        self._request_token(grant_type='password', username=self._username,
-                            password=self._password)
+        self._request_token(
+            grant_type="password",
+            username=self._username,
+            password=self._password,
+        )
