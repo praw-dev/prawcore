@@ -9,12 +9,17 @@ class Requestor(object):
 
     def __getattr__(self, attribute):
         """Pass all undefined attributes to the _http attribute."""
-        if attribute.startswith('__'):
+        if attribute.startswith("__"):
             raise AttributeError
         return getattr(self._http, attribute)
 
-    def __init__(self, user_agent, oauth_url='https://oauth.reddit.com',
-                 reddit_url='https://www.reddit.com', session=None):
+    def __init__(
+        self,
+        user_agent,
+        oauth_url="https://oauth.reddit.com",
+        reddit_url="https://www.reddit.com",
+        session=None,
+    ):
         """Create an instance of the Requestor class.
 
         :param user_agent: The user-agent for your application. Please follow
@@ -28,11 +33,12 @@ class Requestor(object):
             with requests.Session(). (Default: None)
         """
         if user_agent is None or len(user_agent) < 7:
-            raise InvalidInvocation('user_agent is not descriptive')
+            raise InvalidInvocation("user_agent is not descriptive")
 
         self._http = session or requests.Session()
-        self._http.headers['User-Agent'] = '{} prawcore/{}'.format(
-            user_agent, __version__)
+        self._http.headers["User-Agent"] = "{} prawcore/{}".format(
+            user_agent, __version__
+        )
 
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url

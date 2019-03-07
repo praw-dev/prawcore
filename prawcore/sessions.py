@@ -5,15 +5,28 @@ import random
 import time
 
 from requests.compat import urljoin
-from requests.exceptions import (ChunkedEncodingError, ConnectionError,
-                                 ReadTimeout)
+from requests.exceptions import (
+    ChunkedEncodingError,
+    ConnectionError,
+    ReadTimeout,
+)
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .rate_limit import RateLimiter
-from .exceptions import (BadJSON, BadRequest, Conflict, InvalidInvocation,
-                         NotFound, Redirect, RequestException, ServerError,
-                         SpecialError, TooLarge, UnavailableForLegalReasons)
+from .exceptions import (
+    BadJSON,
+    BadRequest,
+    Conflict,
+    InvalidInvocation,
+    NotFound,
+    Redirect,
+    RequestException,
+    ServerError,
+    SpecialError,
+    TooLarge,
+    UnavailableForLegalReasons,
+)
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)
@@ -23,41 +36,48 @@ class Session(object):
     """The low-level connection interface to reddit's API."""
 
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
-    RETRY_STATUSES = {520, 522, codes['bad_gateway'], codes['gateway_timeout'],
-                      codes['internal_server_error'],
-                      codes['service_unavailable']}
-    STATUS_EXCEPTIONS = {codes['bad_gateway']: ServerError,
-                         codes['bad_request']: BadRequest,
-                         codes['conflict']: Conflict,
-                         codes['found']: Redirect,
-                         codes['forbidden']: authorization_error_class,
-                         codes['gateway_timeout']: ServerError,
-                         codes['internal_server_error']: ServerError,
-                         codes['media_type']: SpecialError,
-                         codes['not_found']: NotFound,
-                         codes['request_entity_too_large']: TooLarge,
-                         codes['service_unavailable']: ServerError,
-                         codes['unauthorized']: authorization_error_class,
-                         codes['unavailable_for_legal_reasons']:
-                         UnavailableForLegalReasons,
-                         # CloudFlare status (not named in requests)
-                         520: ServerError,
-                         522: ServerError}
-    SUCCESS_STATUSES = {codes['created'], codes['ok']}
+    RETRY_STATUSES = {
+        520,
+        522,
+        codes["bad_gateway"],
+        codes["gateway_timeout"],
+        codes["internal_server_error"],
+        codes["service_unavailable"],
+    }
+    STATUS_EXCEPTIONS = {
+        codes["bad_gateway"]: ServerError,
+        codes["bad_request"]: BadRequest,
+        codes["conflict"]: Conflict,
+        codes["found"]: Redirect,
+        codes["forbidden"]: authorization_error_class,
+        codes["gateway_timeout"]: ServerError,
+        codes["internal_server_error"]: ServerError,
+        codes["media_type"]: SpecialError,
+        codes["not_found"]: NotFound,
+        codes["request_entity_too_large"]: TooLarge,
+        codes["service_unavailable"]: ServerError,
+        codes["unauthorized"]: authorization_error_class,
+        codes["unavailable_for_legal_reasons"]: UnavailableForLegalReasons,
+        # CloudFlare status (not named in requests)
+        520: ServerError,
+        522: ServerError,
+    }
+    SUCCESS_STATUSES = {codes["created"], codes["ok"]}
 
     @staticmethod
     def _log_request(data, method, params, url):
-        log.debug('Fetching: {} {}'.format(method, url))
-        log.debug('Data: {}'.format(data))
-        log.debug('Params: {}'.format(params))
+        log.debug("Fetching: {} {}".format(method, url))
+        log.debug("Data: {}".format(data))
+        log.debug("Params: {}".format(params))
 
     @staticmethod
     def _retry_sleep(retries):
         if retries < 3:
             base = 0 if retries == 2 else 2
             sleep_seconds = base + 2 * random.random()
-            message = 'Sleeping: {:0.2f} seconds prior to' \
-                      ' retry'.format(sleep_seconds)
+            message = "Sleeping: {:0.2f} seconds prior to" " retry".format(
+                sleep_seconds
+            )
             log.debug(message)
             time.sleep(sleep_seconds)
 
@@ -68,8 +88,9 @@ class Session(object):
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
-            raise InvalidInvocation('invalid Authorizer: {}'
-                                    .format(authorizer))
+            raise InvalidInvocation(
+                "invalid Authorizer: {}".format(authorizer)
+            )
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
 
@@ -81,70 +102,118 @@ class Session(object):
         """Allow this object to be used as a context manager."""
         self.close()
 
-    def _do_retry(self, data, files, json, method, params, response, retries,
-                  saved_exception, url):
+    def _do_retry(
+        self,
+        data,
+        files,
+        json,
+        method,
+        params,
+        response,
+        retries,
+        saved_exception,
+        url,
+    ):
         if saved_exception:
             status = repr(saved_exception)
         else:
             status = response.status_code
-        log.warning('Retrying due to {} status: {} {}'
-                    .format(status, method, url))
+        log.warning(
+            "Retrying due to {} status: {} {}".format(status, method, url)
+        )
         return self._request_with_retries(
-            data=data, files=files, json=json, method=method,
-            params=params, url=url, retries=retries - 1)
+            data=data,
+            files=files,
+            json=json,
+            method=method,
+            params=params,
+            url=url,
+            retries=retries - 1,
+        )
 
     def _make_request(self, data, files, json, method, params, retries, url):
         try:
             response = self._rate_limiter.call(
-                self._requestor.request, self._set_header_callback, method,
-                url, allow_redirects=False, data=data, files=files, json=json,
-                params=params)
-            log.debug('Response: {} ({} bytes)'.format(
-                response.status_code, response.headers.get('content-length')))
+                self._requestor.request,
+                self._set_header_callback,
+                method,
+                url,
+                allow_redirects=False,
+                data=data,
+                files=files,
+                json=json,
+                params=params,
+            )
+            log.debug(
+                "Response: {} ({} bytes)".format(
+                    response.status_code,
+                    response.headers.get("content-length"),
+                )
+            )
             return response, None
         except RequestException as exception:
-            if retries <= 1 or not isinstance(exception.original_exception,
-                                              self.RETRY_EXCEPTIONS):
+            if retries <= 1 or not isinstance(
+                exception.original_exception, self.RETRY_EXCEPTIONS
+            ):
                 raise
             return None, exception.original_exception
 
-    def _request_with_retries(self, data, files, json, method, params, url,
-                              retries=3):
+    def _request_with_retries(
+        self, data, files, json, method, params, url, retries=3
+    ):
         self._retry_sleep(retries)
         self._log_request(data, method, params, url)
         response, saved_exception = self._make_request(
-            data, files, json, method, params, retries, url)
+            data, files, json, method, params, retries, url
+        )
 
         do_retry = False
-        if response is not None and \
-           response.status_code == codes['unauthorized']:
+        if (
+            response is not None
+            and response.status_code == codes["unauthorized"]
+        ):
             self._authorizer._clear_access_token()
-            if hasattr(self._authorizer, 'refresh'):
+            if hasattr(self._authorizer, "refresh"):
                 do_retry = True
 
-        if retries > 1 and (do_retry or response is None or
-                            response.status_code in self.RETRY_STATUSES):
-            return self._do_retry(data, files, json, method, params, response,
-                                  retries, saved_exception, url)
+        if retries > 1 and (
+            do_retry
+            or response is None
+            or response.status_code in self.RETRY_STATUSES
+        ):
+            return self._do_retry(
+                data,
+                files,
+                json,
+                method,
+                params,
+                response,
+                retries,
+                saved_exception,
+                url,
+            )
         elif response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
-        elif response.status_code == codes['no_content']:
+        elif response.status_code == codes["no_content"]:
             return
-        assert response.status_code in self.SUCCESS_STATUSES, \
-            'Unexpected status code: {}'.format(response.status_code)
-        if response.headers.get('content-length') == '0':
-            return ''
+        assert (
+            response.status_code in self.SUCCESS_STATUSES
+        ), "Unexpected status code: {}".format(response.status_code)
+        if response.headers.get("content-length") == "0":
+            return ""
         try:
             return response.json()
         except ValueError:
             raise BadJSON(response)
 
     def _set_header_callback(self):
-        if not self._authorizer.is_valid() and hasattr(self._authorizer,
-                                                       'refresh'):
+        if not self._authorizer.is_valid() and hasattr(
+            self._authorizer, "refresh"
+        ):
             self._authorizer.refresh()
-        return {'Authorization': 'bearer {}'
-                .format(self._authorizer.access_token)}
+        return {
+            "Authorization": "bearer {}".format(self._authorizer.access_token)
+        }
 
     @property
     def _requestor(self):
@@ -154,8 +223,9 @@ class Session(object):
         """Close the session and perform any clean up."""
         self._requestor.close()
 
-    def request(self, method, path, data=None, files=None, json=None,
-                params=None):
+    def request(
+        self, method, path, data=None, files=None, json=None, params=None
+    ):
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., get, post, put.
@@ -174,15 +244,20 @@ class Session(object):
 
         """
         params = deepcopy(params) or {}
-        params['raw_json'] = 1
+        params["raw_json"] = 1
         if isinstance(data, dict):
             data = deepcopy(data)
-            data['api_type'] = 'json'
+            data["api_type"] = "json"
             data = sorted(data.items())
         url = urljoin(self._requestor.oauth_url, path)
         return self._request_with_retries(
-            data=data, files=files, json=json, method=method,
-            params=params, url=url)
+            data=data,
+            files=files,
+            json=json,
+            method=method,
+            params=params,
+            url=url,
+        )
 
 
 def session(authorizer=None):

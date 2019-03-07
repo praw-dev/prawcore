@@ -5,6 +5,8 @@ function exit_error() {
     exit 1
 }
 
+black -l 79 *.py examples prawcore tests || exit_error "Please install black: pip install black"
+
 python setup.py test || exit_error "Please fix test issues."
 echo "tests pass!"
 

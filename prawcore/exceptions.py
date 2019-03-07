@@ -31,8 +31,9 @@ class RequestException(PrawcoreException):
         self.original_exception = original_exception
         self.request_args = request_args
         self.request_kwargs = request_kwargs
-        super(RequestException, self).__init__('error with request {}'
-                                               .format(original_exception))
+        super(RequestException, self).__init__(
+            "error with request {}".format(original_exception)
+        )
 
 
 class ResponseException(PrawcoreException):
@@ -45,8 +46,9 @@ class ResponseException(PrawcoreException):
 
         """
         self.response = response
-        super(ResponseException, self).__init__('received {} HTTP response'
-                                                .format(response.status_code))
+        super(ResponseException, self).__init__(
+            "received {} HTTP response".format(response.status_code)
+        )
 
 
 class OAuthException(PrawcoreException):
@@ -63,9 +65,9 @@ class OAuthException(PrawcoreException):
         self.error = error
         self.description = description
         self.response = response
-        message = '{} error processing request'.format(error)
+        message = "{} error processing request".format(error)
         if description:
-            message += ' ({})'.format(description)
+            message += " ({})".format(description)
         PrawcoreException.__init__(self, message)
 
 
@@ -112,10 +114,10 @@ class Redirect(ResponseException):
         header.
 
         """
-        path = urlparse(response.headers['location']).path
-        self.path = path[:-5] if path.endswith('.json') else path
+        path = urlparse(response.headers["location"]).path
+        self.path = path[:-5] if path.endswith(".json") else path
         self.response = response
-        PrawcoreException.__init__(self, 'Redirect to {}'.format(self.path))
+        PrawcoreException.__init__(self, "Redirect to {}".format(self.path))
 
 
 class ServerError(ResponseException):
@@ -135,11 +137,12 @@ class SpecialError(ResponseException):
         self.response = response
 
         resp_dict = self.response.json()  # assumes valid JSON
-        self.message = resp_dict.get('message', '')
-        self.reason = resp_dict.get('reason', '')
-        self.special_errors = resp_dict.get('special_errors', [])
-        PrawcoreException.__init__(self, 'Special error {!r}'.format(
-            self.message))
+        self.message = resp_dict.get("message", "")
+        self.reason = resp_dict.get("reason", "")
+        self.special_errors = resp_dict.get("special_errors", [])
+        PrawcoreException.__init__(
+            self, "Special error {!r}".format(self.message)
+        )
 
 
 class TooLarge(ResponseException):
