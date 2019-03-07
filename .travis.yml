@@ -1,16 +1,24 @@
-after_success: coveralls
 cache: pip
 dist: xenial
-install: pip install coveralls flake8 pydocstyle
+install: pip install coveralls
+jobs:
+  include:
+    - install: pip install black flake8 pydocstyle
+      python: 3.7
+      script:
+        - black --check -l 79 *.py examples prawcore tests
+        - flake8
+        - pydocstyle
+      stage: lint
 language: python
-matrix:
-  fast_finish: true
 python:
   - 2.7
   - 3.5
   - 3.6
   - 3.7
 script:
-  - flake8
-  - pydocstyle
   - coverage run --source=prawcore setup.py test
+  - coveralls
+stages:
+  - lint
+  - test
