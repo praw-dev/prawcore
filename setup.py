@@ -33,6 +33,7 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     description="Low-level communication layer for PRAW 4+.",
+    extras_require={"dev": ["pre-commit"]},
     install_requires=["requests >=2.6.0, <3.0"],
     keywords="praw reddit api",
     license="Simplified BSD License",
