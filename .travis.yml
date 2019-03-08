@@ -6,7 +6,7 @@ jobs:
     - install: pip install black flake8 pydocstyle
       python: 3.7
       script:
-        - black --check -l 79 *.py examples prawcore tests
+        - black --check --verbose *.py examples prawcore tests
         - flake8
         - pydocstyle
       stage: lint
