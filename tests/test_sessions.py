@@ -241,9 +241,9 @@ class SessionTest(unittest.TestCase):
                 )
             self.assertIn("reason", context_manager.exception.response.json())
 
-    def test_request__cloudflair_connection_timed_out(self):
+    def test_request__cloudflare_connection_timed_out(self):
         with Betamax(REQUESTOR).use_cassette(
-            "Session_request__cloudflair_connection_timed_out"
+            "Session_request__cloudflare_connection_timed_out"
         ):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
@@ -254,9 +254,9 @@ class SessionTest(unittest.TestCase):
                 522, context_manager.exception.response.status_code
             )
 
-    def test_request__cloudflair_unknown_error(self):
+    def test_request__cloudflare_unknown_error(self):
         with Betamax(REQUESTOR).use_cassette(
-            "Session_request__cloudflair_unknown_error"
+            "Session_request__cloudflare_unknown_error"
         ):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
