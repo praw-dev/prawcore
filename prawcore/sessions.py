@@ -58,7 +58,7 @@ class Session(object):
         codes["service_unavailable"]: ServerError,
         codes["unauthorized"]: authorization_error_class,
         codes["unavailable_for_legal_reasons"]: UnavailableForLegalReasons,
-        # CloudFlare status (not named in requests)
+        # Cloudflare status (not named in requests)
         520: ServerError,
         522: ServerError,
     }

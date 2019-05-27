@@ -125,7 +125,7 @@ breaking changes will need to be introduced in the near future.
 **Added**
 
 * Handle 500 responses.
-* Handle Cloudflair 520 responses.
+* Handle Cloudflare 520 responses.
 
 
 0.5.0 (2016-12-13)
@@ -203,7 +203,7 @@ variable ``prawcore_timeout`` can be used to adjust the value.
 
 **Added**
 
-* Handle Cloudflair 522 responses.
+* Handle Cloudflare 522 responses.
 
 0.0.14 (2016-07-25)
 -------------------
