@@ -143,10 +143,12 @@ class Session(object):
         log.debug("Data: {}".format(data))
         log.debug("Params: {}".format(params))
 
-    def __init__(self, authorizer):
+    def __init__(self, authorizer, retry_strategy_class):
         """Preprare the connection to reddit's API.
 
         :param authorizer: An instance of :class:`Authorizer`.
+        :param retry_strategy_class: A concrete subclass of
+            :class:`RetryStrategy`.
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
@@ -155,7 +157,7 @@ class Session(object):
             )
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
-        self._retry_strategy_class = FiniteRetryStrategy
+        self._retry_strategy_class = retry_strategy_class
 
     def __enter__(self):
         """Allow this object to be used as a context manager."""
@@ -328,10 +330,13 @@ class Session(object):
         )
 
 
-def session(authorizer=None):
+def session(authorizer=None, retry_strategy_class=FiniteRetryStrategy):
     """Return a :class:`Session` instance.
 
     :param authorizer: An instance of :class:`Authorizer`.
+    :param retry_strategy_class: A concrete subclass of :class:`RetryStrategy`.
 
     """
-    return Session(authorizer=authorizer)
+    return Session(
+        authorizer=authorizer, retry_strategy_class=retry_strategy_class
+    )
