@@ -32,6 +32,52 @@ from .util import authorization_error_class
 log = logging.getLogger(__package__)
 
 
+class RetryStrategy(object):
+    """An abstract class for scheduling request retries.
+
+    The strategy controls both the number and frequency of retry attempts.
+
+    Instances of this class are immutable.
+
+    """
+
+    def sleep(self):
+        """Sleep until we are ready to attempt the request."""
+        sleep_seconds = self._sleep_seconds()
+        if sleep_seconds is not None:
+            message = "Sleeping: {:0.2f} seconds prior to retry".format(
+                sleep_seconds
+            )
+            log.debug(message)
+            time.sleep(sleep_seconds)
+
+
+class FiniteRetryStrategy(RetryStrategy):
+    """A ``RetryStrategy`` that retries requests a finite number of times."""
+
+    def _sleep_seconds(self):
+        if self._retries < 3:
+            base = 0 if self._retries == 2 else 2
+            return base + 2 * random.random()
+        return None
+
+    def __init__(self, retries=3):
+        """Initialize the strategy.
+
+        :param retries: Number of times to attempt a request.
+
+        """
+        self._retries = retries
+
+    def consume_available_retry(self):
+        """Allow one fewer retry."""
+        return type(self)(self._retries - 1)
+
+    def should_retry_on_failure(self):
+        """``True`` if and only if the strategy will allow another retry."""
+        return self._retries > 1
+
+
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
@@ -70,17 +116,6 @@ class Session(object):
         log.debug("Data: {}".format(data))
         log.debug("Params: {}".format(params))
 
-    @staticmethod
-    def _retry_sleep(retries):
-        if retries < 3:
-            base = 0 if retries == 2 else 2
-            sleep_seconds = base + 2 * random.random()
-            message = "Sleeping: {:0.2f} seconds prior to" " retry".format(
-                sleep_seconds
-            )
-            log.debug(message)
-            time.sleep(sleep_seconds)
-
     def __init__(self, authorizer):
         """Preprare the connection to reddit's API.
 
@@ -93,6 +128,7 @@ class Session(object):
             )
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
+        self._retry_strategy_class = FiniteRetryStrategy
 
     def __enter__(self):
         """Allow this object to be used as a context manager."""
@@ -110,7 +146,7 @@ class Session(object):
         method,
         params,
         response,
-        retries,
+        retry_strategy_state,
         saved_exception,
         url,
     ):
@@ -128,10 +164,12 @@ class Session(object):
             method=method,
             params=params,
             url=url,
-            retries=retries - 1,
+            retry_strategy_state=retry_strategy_state.consume_available_retry(),  # noqa: E501
         )
 
-    def _make_request(self, data, files, json, method, params, retries, url):
+    def _make_request(
+        self, data, files, json, method, params, retry_strategy_state, url
+    ):
         try:
             response = self._rate_limiter.call(
                 self._requestor.request,
@@ -152,19 +190,22 @@ class Session(object):
             )
             return response, None
         except RequestException as exception:
-            if retries <= 1 or not isinstance(
+            if not retry_strategy_state.should_retry_on_failure() or not isinstance(  # noqa: E501
                 exception.original_exception, self.RETRY_EXCEPTIONS
             ):
                 raise
             return None, exception.original_exception
 
     def _request_with_retries(
-        self, data, files, json, method, params, url, retries=3
+        self, data, files, json, method, params, url, retry_strategy_state=None
     ):
-        self._retry_sleep(retries)
+        if retry_strategy_state is None:
+            retry_strategy_state = self._retry_strategy_class()
+
+        retry_strategy_state.sleep()
         self._log_request(data, method, params, url)
         response, saved_exception = self._make_request(
-            data, files, json, method, params, retries, url
+            data, files, json, method, params, retry_strategy_state, url
         )
 
         do_retry = False
@@ -176,7 +217,7 @@ class Session(object):
             if hasattr(self._authorizer, "refresh"):
                 do_retry = True
 
-        if retries > 1 and (
+        if retry_strategy_state.should_retry_on_failure() and (
             do_retry
             or response is None
             or response.status_code in self.RETRY_STATUSES
@@ -188,7 +229,7 @@ class Session(object):
                 method,
                 params,
                 response,
-                retries,
+                retry_strategy_state,
                 saved_exception,
                 url,
             )
