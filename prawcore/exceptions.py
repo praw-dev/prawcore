@@ -1,12 +1,5 @@
 """Provide exception classes for the prawcore package."""
-
-import sys
-
-
-if sys.version_info[0] == 2:
-    from urlparse import urlparse
-else:
-    from urllib.parse import urlparse
+from urllib.parse import urlparse
 
 
 class PrawcoreException(Exception):

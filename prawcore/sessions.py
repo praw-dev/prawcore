@@ -1,10 +1,10 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
 from copy import deepcopy
+from urllib.parse import urljoin
 import logging
 import random
 import time
 
-from requests.compat import urljoin
 from requests.exceptions import (
     ChunkedEncodingError,
     ConnectionError,
