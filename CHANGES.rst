@@ -4,6 +4,13 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Removed**
+
+* Drop python 2.7 support.
+
 1.0.1 (2019-02-05)
 ------------------
 
