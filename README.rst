@@ -10,12 +10,8 @@ prawcore
            :target: https://travis-ci.org/praw-dev/prawcore
 .. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=master
            :target: https://coveralls.io/github/praw-dev/prawcore?branch=master
-.. image:: https://badges.gitter.im/praw-dev/praw.svg
-           :alt: Join the chat at https://gitter.im/praw-dev/praw
-           :target: https://gitter.im/praw-dev/praw
 
-
-prawcore is a low-level communication layer for PRAW 4+.
+prawcore is a low-level communication layer used by PRAW 4+.
 
 
 Installation
