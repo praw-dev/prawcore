@@ -74,7 +74,7 @@ class FiniteRetryStrategy(RetryStrategy):
         return type(self)(self._retries - 1)
 
     def should_retry_on_failure(self):
-        """``True`` if and only if the strategy will allow another retry."""
+        """Return ``True`` if and only if the strategy will allow another retry."""
         return self._retries > 1
 
 

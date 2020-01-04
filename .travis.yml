@@ -4,7 +4,7 @@ install: pip install coveralls
 jobs:
   include:
     - install: pip install black flake8 pydocstyle
-      python: 3.7
+      python: 3.8
       script:
         - black --check --verbose *.py examples prawcore tests
         - flake8
@@ -15,6 +15,7 @@ python:
   - 3.5
   - 3.6
   - 3.7
+  - 3.8
 script:
   - coverage run --source=prawcore setup.py test
   - coveralls
