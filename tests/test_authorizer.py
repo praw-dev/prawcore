@@ -1,7 +1,7 @@
 """Test for prawcore.auth.Authorizer classes."""
 import prawcore
 import unittest
-from .config import (
+from .conftest import (
     CLIENT_ID,
     CLIENT_SECRET,
     PASSWORD,

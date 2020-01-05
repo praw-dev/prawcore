@@ -14,7 +14,7 @@ from requests.exceptions import (
 )
 from testfixtures import LogCapture
 
-from .config import (
+from .conftest import (
     CLIENT_ID,
     CLIENT_SECRET,
     REFRESH_TOKEN,

@@ -1,7 +1,7 @@
 """Test for sublcasses of prawcore.auth.BaseAuthenticator class."""
 import prawcore
 import unittest
-from .config import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REQUESTOR
+from .conftest import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REQUESTOR
 from betamax import Betamax
 
 
