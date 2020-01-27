@@ -110,7 +110,14 @@ class Redirect(ResponseException):
         path = urlparse(response.headers["location"]).path
         self.path = path[:-5] if path.endswith(".json") else path
         self.response = response
-        PrawcoreException.__init__(self, "Redirect to {}".format(self.path))
+        msg = "Redirect to {}".format(self.path)
+        msg += (
+            " (You may be trying to perform a non-read-only action via a "
+            "read-only instance.)"
+            if "/login/" in self.path
+            else ""
+        )
+        PrawcoreException.__init__(self, msg)
 
 
 class ServerError(ResponseException):
