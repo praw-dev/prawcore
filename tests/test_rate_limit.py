@@ -70,22 +70,22 @@ class RateLimiterTest(unittest.TestCase):
         self.rate_limiter.update(self._headers(60, 100, 60))
         self.assertEqual(60, self.rate_limiter.remaining)
         self.assertEqual(100, self.rate_limiter.used)
-        self.assertEqual(101, self.rate_limiter.next_request_timestamp)
+        self.assertEqual(100, self.rate_limiter.next_request_timestamp)
 
     @patch("time.time")
     def test_update__compute_delay_with_single_client(self, mock_time):
         self.rate_limiter.remaining = 61
         mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(60, 100, 60))
-        self.assertEqual(60, self.rate_limiter.remaining)
+        self.rate_limiter.update(self._headers(50, 100, 60))
+        self.assertEqual(50, self.rate_limiter.remaining)
         self.assertEqual(100, self.rate_limiter.used)
-        self.assertEqual(101, self.rate_limiter.next_request_timestamp)
+        self.assertEqual(105, self.rate_limiter.next_request_timestamp)
 
     @patch("time.time")
     def test_update__compute_delay_with_six_clients(self, mock_time):
         self.rate_limiter.remaining = 66
         mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(60, 100, 60))
+        self.rate_limiter.update(self._headers(60, 100, 72))
         self.assertEqual(60, self.rate_limiter.remaining)
         self.assertEqual(100, self.rate_limiter.used)
         self.assertEqual(106, self.rate_limiter.next_request_timestamp)
