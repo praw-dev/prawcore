@@ -18,6 +18,18 @@ class RateLimiter(object):
         self.next_request_timestamp = None
         self.reset_timestamp = None
         self.used = None
+        self.burst_requests = 0
+
+    def burst_future_requests(self, count_requests_to_burst):
+        """Burst send requests without waiting for the rate limit.
+
+        :param count_requests_to_burst: Skip the sleep on the next
+            count_requests_to_burst requests. This will still sleep if you are
+            completely out of requests. Caution, this may cause a
+            very long sleep if you use up all your requests.
+
+        """
+        self.burst_requests = count_requests_to_burst
 
     def call(self, request_function, set_header_callback, *args, **kwargs):
         """Rate limit the call to request_function.
@@ -39,6 +51,10 @@ class RateLimiter(object):
 
     def delay(self):
         """Sleep for an amount of time to remain under the rate limit."""
+        if self.burst_requests > 0:
+            self.burst_requests -= 1
+            if self.remaining is None or self.remaining > 0:
+                return
         if self.next_request_timestamp is None:
             return
         sleep_seconds = self.next_request_timestamp - time.time()
