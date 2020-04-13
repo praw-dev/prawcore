@@ -46,6 +46,15 @@ class RateLimiterTest(unittest.TestCase):
         self.assertTrue(mock_time.called)
         self.assertFalse(mock_sleep.called)
 
+    @patch("time.sleep")
+    @patch("time.time")
+    def test_delay__with_burst(self, mock_time, mock_sleep):
+        mock_time.return_value = 1
+        self.rate_limiter.burst_future_requests(1)
+        self.rate_limiter.delay()
+        self.assertFalse(mock_sleep.called)
+        self.assertEqual(0, self.rate_limiter.burst_requests)
+
     @patch("time.time")
     def test_update__delay_full_time_with_negative_remaining(self, mock_time):
         mock_time.return_value = 37
