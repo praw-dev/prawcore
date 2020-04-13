@@ -7,6 +7,11 @@ that deprecations will not be announced by a minor release.
 Unreleased
 ----------
 
+**Changed**
+
+* Updated rate limit algorithm to more intelligently rate limit when there
+  are extra requests remaining.
+
 **Removed**
 
 * Drop python 2.7 support.
