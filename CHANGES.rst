@@ -7,6 +7,11 @@ that deprecations will not be announced by a minor release.
 Unreleased
 ----------
 
+**Added**
+
+* Method ``Requestor.request`` can be given a timeout parameter to 
+  control the amount of time to wait for a request to succeed.
+
 **Changed**
 
 * Updated rate limit algorithm to more intelligently rate limit when there
