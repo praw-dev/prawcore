@@ -47,9 +47,9 @@ class Requestor(object):
         """Call close on the underlying session."""
         return self._http.close()
 
-    def request(self, *args, **kwargs):
+    def request(self, *args, timeout=TIMEOUT, **kwargs):
         """Issue the HTTP request capturing any errors that may occur."""
         try:
-            return self._http.request(*args, timeout=TIMEOUT, **kwargs)
+            return self._http.request(*args, timeout=timeout, **kwargs)
         except Exception as exc:
             raise RequestException(exc, args, kwargs)
