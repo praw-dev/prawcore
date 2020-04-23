@@ -148,6 +148,7 @@ class Session(object):
         response,
         retry_strategy_state,
         saved_exception,
+        timeout,
         url,
     ):
         if saved_exception:
@@ -163,12 +164,21 @@ class Session(object):
             json=json,
             method=method,
             params=params,
+            timeout=timeout,
             url=url,
             retry_strategy_state=retry_strategy_state.consume_available_retry(),  # noqa: E501
         )
 
     def _make_request(
-        self, data, files, json, method, params, retry_strategy_state, url
+        self,
+        data,
+        files,
+        json,
+        method,
+        params,
+        retry_strategy_state,
+        timeout,
+        url,
     ):
         try:
             response = self._rate_limiter.call(
@@ -181,6 +191,7 @@ class Session(object):
                 files=files,
                 json=json,
                 params=params,
+                timeout=timeout,
             )
             log.debug(
                 "Response: {} ({} bytes)".format(
@@ -197,7 +208,15 @@ class Session(object):
             return None, exception.original_exception
 
     def _request_with_retries(
-        self, data, files, json, method, params, url, retry_strategy_state=None
+        self,
+        data,
+        files,
+        json,
+        method,
+        params,
+        timeout,
+        url,
+        retry_strategy_state=None,
     ):
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
@@ -205,7 +224,14 @@ class Session(object):
         retry_strategy_state.sleep()
         self._log_request(data, method, params, url)
         response, saved_exception = self._make_request(
-            data, files, json, method, params, retry_strategy_state, url
+            data,
+            files,
+            json,
+            method,
+            params,
+            retry_strategy_state,
+            timeout,
+            url,
         )
 
         do_retry = False
@@ -231,6 +257,7 @@ class Session(object):
                 response,
                 retry_strategy_state,
                 saved_exception,
+                timeout,
                 url,
             )
         elif response.status_code in self.STATUS_EXCEPTIONS:
@@ -265,7 +292,14 @@ class Session(object):
         self._requestor.close()
 
     def request(
-        self, method, path, data=None, files=None, json=None, params=None
+        self,
+        method,
+        path,
+        data=None,
+        files=None,
+        json=None,
+        params=None,
+        timeout=None,
     ):
         """Return the json content from the resource at ``path``.
 
@@ -297,6 +331,7 @@ class Session(object):
             json=json,
             method=method,
             params=params,
+            timeout=timeout,
             url=url,
         )
 
