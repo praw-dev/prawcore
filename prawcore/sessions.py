@@ -13,6 +13,7 @@ from requests.exceptions import (
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
+from .const import TIMEOUT
 from .rate_limit import RateLimiter
 from .exceptions import (
     BadJSON,
@@ -299,7 +300,7 @@ class Session(object):
         files=None,
         json=None,
         params=None,
-        timeout=None,
+        timeout=TIMEOUT,
     ):
         """Return the json content from the resource at ``path``.
 
