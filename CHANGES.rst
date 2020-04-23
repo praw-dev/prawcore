@@ -4,6 +4,15 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* All other requestor methods, most notably :meth:`.Session.request`, now contain
+  a ``timeout`` parameter.
+
+
 1.2.0 (2020-04-23)
 ------------------
 
