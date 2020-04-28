@@ -325,6 +325,9 @@ class Session(object):
             data = deepcopy(data)
             data["api_type"] = "json"
             data = sorted(data.items())
+        if isinstance(json, dict):
+            json = deepcopy(json)
+            json["api_type"] = "json"
         url = urljoin(self._requestor.oauth_url, path)
         return self._request_with_retries(
             data=data,
