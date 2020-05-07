@@ -339,7 +339,9 @@ class ScriptAuthorizer(Authorizer):
             developers.
         :param password: The password associated with ``username``.
         :param otp_function: A function that returns OTPs (One-Time Passcodes),
-            also known as 2FA auth codes.
+            also known as 2FA auth codes. If this function is provided,
+            prawcore will call it when authenticating, each time it needs
+            an OTP code.
 
         """
         super(ScriptAuthorizer, self).__init__(authenticator)
