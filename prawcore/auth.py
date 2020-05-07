@@ -331,23 +331,25 @@ class ScriptAuthorizer(Authorizer):
 
     AUTHENTICATOR_CLASS = TrustedAuthenticator
 
-    def __init__(self, authenticator, username, password, otp_function=None):
+    def __init__(
+        self, authenticator, username, password, two_factor_callback=None
+    ):
         """Represent a single personal-use authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`TrustedAuthenticator`.
         :param username: The Reddit username of one of the application's
             developers.
         :param password: The password associated with ``username``.
-        :param otp_function: A function that returns OTPs (One-Time Passcodes),
-            also known as 2FA auth codes. If this function is provided,
-            prawcore will call it when authenticating, each time it needs
-            an OTP code.
+        :param two_factor_callback: A function that returns OTPs (One-Time
+            Passcodes), also known as 2FA auth codes. If this function is
+            provided, prawcore will call it when authenticating, each time it
+            needs an OTP code.
 
         """
         super(ScriptAuthorizer, self).__init__(authenticator)
         self._username = username
         self._password = password
-        self._otp_function = otp_function
+        self._two_factor_callback = two_factor_callback
 
     def refresh(self):
         """Obtain a new personal-use script type access token."""
@@ -355,5 +357,5 @@ class ScriptAuthorizer(Authorizer):
             grant_type="password",
             username=self._username,
             password=self._password,
-            otp=self._otp_function and self._otp_function(),
+            otp=self._two_factor_callback and self._two_factor_callback(),
         )
