@@ -353,5 +353,5 @@ class ScriptAuthorizer(Authorizer):
             grant_type="password",
             username=self._username,
             password=self._password,
-            otp=self._otp_function and self._otp_function()
+            otp=self._otp_function and self._otp_function(),
         )

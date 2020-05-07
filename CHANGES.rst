@@ -9,8 +9,10 @@ Unreleased
 
 **Added**
 
-When calling :meth:`.Session.request`, we add the key-value pair
+* When calling :meth:`.Session.request`, we add the key-value pair
 ``"api_type": "json"`` to the ``json`` parameter, if it is a ``dict``.
+* :class:`.ScriptAuthorizer` has a new parameter ``otp_function`` that supplies
+  OTPs (One-Time Passcodes) every hour. 
 
 1.3.0 (2020-04-23)
 ------------------
