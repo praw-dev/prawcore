@@ -12,7 +12,7 @@ from .auth import (  # noqa
 )
 from .const import __version__  # noqa
 from .exceptions import *  # noqa
-from .requestor import Requestor  # noqa
+from .requestor import Requestor, RequestorAsync  # noqa
 from .sessions import Session, session  # noqa
 
 
