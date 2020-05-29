@@ -26,7 +26,11 @@ class BaseAuthenticator(object):
 
     def _post(self, url, success_status=codes["ok"], **data):
         response = self._requestor.request(
-            "post", url, auth=self._auth(), data=sorted(data.items())
+            "post",
+            url,
+            auth=self._auth(),
+            data=sorted(data.items()),
+            headers={"Connection": "close"},
         )
         if response.status_code != success_status:
             raise ResponseException(response)
