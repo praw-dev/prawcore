@@ -47,6 +47,7 @@ setup(
     description="Low-level communication layer for PRAW 4+.",
     extras_require=extras,
     install_requires=["requests >=2.6.0, <3.0"],
+    python_requires=">=3.5,<4",
     keywords="praw reddit api",
     license="Simplified BSD License",
     long_description=README,
