@@ -4,6 +4,12 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception
 that deprecations will not be announced by a minor release.
 
+1.5.0 (2020-08-04)
+------------------
+
+**Changed**
+
+* Drop support for Python 3.5, which is end-of-life on 2020-09-13.
 
 1.4.0 (2020-05-28)
 ------------------
