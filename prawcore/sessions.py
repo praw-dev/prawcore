@@ -79,6 +79,33 @@ class FiniteRetryStrategy(RetryStrategy):
         return self._retries > 1
 
 
+class InfiniteRetryStrategy(RetryStrategy):
+    """A ``RetryStrategy`` that retries forever."""
+
+    def _sleep_seconds(self):
+        return self._base_delay + 2 * random.random()
+
+    def __init__(self, base_delay=2, max_delay=60):
+        """Initialize the strategy.
+
+        :param base_delay: Approximate time to sleep on the next retry.
+        :param max_delay: Maximum (approximate) time to sleep on any retry.
+
+        """
+        self._base_delay = max(base_delay, max_delay)
+        self._max_delay = max_delay
+
+    def consume_available_retry(self):
+        """Double the next delay time."""
+        return type(self)(
+            base_delay=self._base_delay * 2, max_delay=self._max_delay
+        )
+
+    def should_retry_on_failure(self):
+        """Retry unconditionally."""
+        return True
+
+
 class Session(object):
     """The low-level connection interface to reddit's API."""
 
@@ -117,10 +144,12 @@ class Session(object):
         log.debug("Data: {}".format(data))
         log.debug("Params: {}".format(params))
 
-    def __init__(self, authorizer):
+    def __init__(self, authorizer, retry_strategy_class):
         """Preprare the connection to reddit's API.
 
         :param authorizer: An instance of :class:`Authorizer`.
+        :param retry_strategy_class: A concrete subclass of
+            :class:`RetryStrategy`.
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
@@ -129,7 +158,7 @@ class Session(object):
             )
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
-        self._retry_strategy_class = FiniteRetryStrategy
+        self._retry_strategy_class = retry_strategy_class
 
     def __enter__(self):
         """Allow this object to be used as a context manager."""
@@ -340,10 +369,13 @@ class Session(object):
         )
 
 
-def session(authorizer=None):
+def session(authorizer=None, retry_strategy_class=FiniteRetryStrategy):
     """Return a :class:`Session` instance.
 
     :param authorizer: An instance of :class:`Authorizer`.
+    :param retry_strategy_class: A concrete subclass of :class:`RetryStrategy`.
 
     """
-    return Session(authorizer=authorizer)
+    return Session(
+        authorizer=authorizer, retry_strategy_class=retry_strategy_class
+    )
