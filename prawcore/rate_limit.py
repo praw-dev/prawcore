@@ -44,9 +44,7 @@ class RateLimiter(object):
         sleep_seconds = self.next_request_timestamp - time.time()
         if sleep_seconds <= 0:
             return
-        message = "Sleeping: {:0.2f} seconds prior to" " call".format(
-            sleep_seconds
-        )
+        message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to call"
         log.debug(message)
         time.sleep(sleep_seconds)
 

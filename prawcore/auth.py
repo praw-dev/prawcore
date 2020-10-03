@@ -168,9 +168,7 @@ class BaseAuthorizer(object):
     def _validate_authenticator(self):
         if not isinstance(self._authenticator, self.AUTHENTICATOR_CLASS):
             raise InvalidInvocation(
-                "Must use a authenticator of type {}.".format(
-                    self.AUTHENTICATOR_CLASS.__name__
-                )
+                f"Must use a authenticator of type {self.AUTHENTICATOR_CLASS.__name__}."
             )
 
     def is_valid(self):

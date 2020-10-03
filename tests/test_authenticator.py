@@ -13,7 +13,7 @@ class TrustedAuthenticatorTest(unittest.TestCase):
         url = authenticator.authorize_url(
             "permanent", ["identity", "read"], "a_state"
         )
-        self.assertIn("client_id={}".format(CLIENT_ID), url)
+        self.assertIn(f"client_id={CLIENT_ID}", url)
         self.assertIn("duration=permanent", url)
         self.assertIn("response_type=code", url)
         self.assertIn("scope=identity+read", url)
@@ -80,7 +80,7 @@ class UntrustedAuthenticatorTest(unittest.TestCase):
         url = authenticator.authorize_url(
             "permanent", ["identity", "read"], "a_state"
         )
-        self.assertIn("client_id={}".format(CLIENT_ID), url)
+        self.assertIn(f"client_id={CLIENT_ID}", url)
         self.assertIn("duration=permanent", url)
         self.assertIn("response_type=code", url)
         self.assertIn("scope=identity+read", url)
@@ -93,7 +93,7 @@ class UntrustedAuthenticatorTest(unittest.TestCase):
         url = authenticator.authorize_url(
             "temporary", ["identity", "read"], "a_state", implicit=True
         )
-        self.assertIn("client_id={}".format(CLIENT_ID), url)
+        self.assertIn(f"client_id={CLIENT_ID}", url)
         self.assertIn("duration=temporary", url)
         self.assertIn("response_type=token", url)
         self.assertIn("scope=identity+read", url)

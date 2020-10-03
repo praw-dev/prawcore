@@ -46,9 +46,7 @@ class RetryStrategy(object):
         """Sleep until we are ready to attempt the request."""
         sleep_seconds = self._sleep_seconds()
         if sleep_seconds is not None:
-            message = "Sleeping: {:0.2f} seconds prior to retry".format(
-                sleep_seconds
-            )
+            message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to retry"
             log.debug(message)
             time.sleep(sleep_seconds)
 
@@ -113,9 +111,9 @@ class Session(object):
 
     @staticmethod
     def _log_request(data, method, params, url):
-        log.debug("Fetching: {} {}".format(method, url))
-        log.debug("Data: {}".format(data))
-        log.debug("Params: {}".format(params))
+        log.debug(f"Fetching: {method} {url}")
+        log.debug(f"Data: {data}")
+        log.debug(f"Params: {params}")
 
     def __init__(self, authorizer):
         """Prepare the connection to reddit's API.
@@ -125,7 +123,7 @@ class Session(object):
         """
         if not isinstance(authorizer, BaseAuthorizer):
             raise InvalidInvocation(
-                "invalid Authorizer: {}".format(authorizer)
+                f"invalid Authorizer: {authorizer}"
             )
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
@@ -157,7 +155,7 @@ class Session(object):
         else:
             status = response.status_code
         log.warning(
-            "Retrying due to {} status: {} {}".format(status, method, url)
+            f"Retrying due to {status} status: {method} {url}"
         )
         return self._request_with_retries(
             data=data,
@@ -195,10 +193,7 @@ class Session(object):
                 timeout=timeout,
             )
             log.debug(
-                "Response: {} ({} bytes)".format(
-                    response.status_code,
-                    response.headers.get("content-length"),
-                )
+                f"Response: {response.status_code} ({response.headers.get('content-length')} bytes)"
             )
             return response, None
         except RequestException as exception:
@@ -267,7 +262,7 @@ class Session(object):
             return
         assert (
             response.status_code in self.SUCCESS_STATUSES
-        ), "Unexpected status code: {}".format(response.status_code)
+        ), f"Unexpected status code: {response.status_code}"
         if response.headers.get("content-length") == "0":
             return ""
         try:
@@ -281,7 +276,7 @@ class Session(object):
         ):
             self._authorizer.refresh()
         return {
-            "Authorization": "bearer {}".format(self._authorizer.access_token)
+            "Authorization": f"bearer {self._authorizer.access_token}"
         }
 
     @property
