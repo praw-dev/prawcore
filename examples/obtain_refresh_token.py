@@ -10,10 +10,11 @@ your web application OAuth2 credentials.
 
 """
 import os
-import prawcore
 import random
 import socket
 import sys
+
+import prawcore
 
 
 def receive_connection():

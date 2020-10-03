@@ -1,6 +1,7 @@
 """Provides the HTTP request handling interface."""
 import requests
-from .const import __version__, TIMEOUT
+
+from .const import TIMEOUT, __version__
 from .exceptions import InvalidInvocation, RequestException
 
 

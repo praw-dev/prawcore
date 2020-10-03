@@ -1,7 +1,6 @@
 """Provide utility for the prawcore package."""
 from .exceptions import Forbidden, InsufficientScope, InvalidToken
 
-
 _auth_error_mapping = {
     403: Forbidden,
     "insufficient_scope": InsufficientScope,

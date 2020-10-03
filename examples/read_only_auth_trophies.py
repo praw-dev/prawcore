@@ -7,8 +7,9 @@ not require an access token to make authenticated requests to reddit.
 
 """
 import os
-import prawcore
 import sys
+
+import prawcore
 
 
 def main():

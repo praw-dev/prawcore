@@ -1,6 +1,10 @@
 """Test for prawcore.auth.Authorizer classes."""
-import prawcore
 import unittest
+
+from betamax import Betamax
+
+import prawcore
+
 from .conftest import (
     CLIENT_ID,
     CLIENT_SECRET,
@@ -12,7 +16,6 @@ from .conftest import (
     TEMPORARY_GRANT_CODE,
     USERNAME,
 )
-from betamax import Betamax
 
 
 class AuthorizerTestBase(unittest.TestCase):
