@@ -1,8 +1,10 @@
 """Test for prawcore.Sessions module."""
-from copy import copy
-from mock import patch
-from prawcore.rate_limit import RateLimiter
 import unittest
+from copy import copy
+
+from mock import patch
+
+from prawcore.rate_limit import RateLimiter
 
 
 class RateLimiterTest(unittest.TestCase):

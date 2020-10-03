@@ -7,8 +7,9 @@ This program demonstrates the use of ``prawcore.DeviceIDAuthorizer``.
 """
 
 import os
-import prawcore
 import sys
+
+import prawcore
 
 
 def main():

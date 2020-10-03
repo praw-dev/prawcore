@@ -3,8 +3,8 @@
 import re
 from codecs import open
 from os import path
-from setuptools import setup
 
+from setuptools import setup
 
 PACKAGE_NAME = "prawcore"
 HERE = path.abspath(path.dirname(__file__))

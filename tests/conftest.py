@@ -2,9 +2,11 @@
 
 import os
 from base64 import b64encode
+
 from betamax import Betamax
 from betamax_matchers.json_body import JSONBodyMatcher
 from betamax_serializers import pretty_json
+
 from prawcore import Requestor
 
 CLIENT_ID = os.environ.get("PRAWCORE_CLIENT_ID", "fake_client_id")

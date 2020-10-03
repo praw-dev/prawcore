@@ -8,8 +8,9 @@ their username and password.
 
 """
 import os
-import prawcore
 import sys
+
+import prawcore
 
 
 def main():

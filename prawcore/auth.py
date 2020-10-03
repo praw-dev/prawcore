@@ -1,9 +1,11 @@
 """Provides Authentication and Authorization classes."""
 import time
-from . import const
-from .exceptions import InvalidInvocation, OAuthException, ResponseException
+
 from requests import Request
 from requests.status_codes import codes
+
+from . import const
+from .exceptions import InvalidInvocation, OAuthException, ResponseException
 
 
 class BaseAuthenticator(object):

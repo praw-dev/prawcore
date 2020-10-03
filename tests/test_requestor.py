@@ -1,9 +1,10 @@
 """Test for prawcore.requestor.Requestor class."""
 import pickle
+import unittest
+
+from mock import Mock, patch
 
 import prawcore
-import unittest
-from mock import patch, Mock
 from prawcore import RequestException
 
 

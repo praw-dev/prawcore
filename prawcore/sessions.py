@@ -1,9 +1,9 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
-from copy import deepcopy
-from urllib.parse import urljoin
 import logging
 import random
 import time
+from copy import deepcopy
+from urllib.parse import urljoin
 
 from requests.exceptions import (
     ChunkedEncodingError,
@@ -14,7 +14,6 @@ from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .const import TIMEOUT
-from .rate_limit import RateLimiter
 from .exceptions import (
     BadJSON,
     BadRequest,
@@ -28,6 +27,7 @@ from .exceptions import (
     TooLarge,
     UnavailableForLegalReasons,
 )
+from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
 log = logging.getLogger(__package__)

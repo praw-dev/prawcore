@@ -1,12 +1,10 @@
 """Test for prawcore.Sessions module."""
 import logging
+import unittest
 from json import dumps
 
-import prawcore
-import unittest
 from betamax import Betamax
 from mock import Mock, patch
-from prawcore.exceptions import RequestException
 from requests.exceptions import (
     ChunkedEncodingError,
     ConnectionError,
@@ -14,13 +12,16 @@ from requests.exceptions import (
 )
 from testfixtures import LogCapture
 
+import prawcore
+from prawcore.exceptions import RequestException
+
 from .conftest import (
     CLIENT_ID,
     CLIENT_SECRET,
+    PASSWORD,
     REFRESH_TOKEN,
     REQUESTOR,
-    PASSWORD,
-    USERNAME,
+    USERNAME
 )
 
 

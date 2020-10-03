@@ -7,10 +7,12 @@ of ``read_only_auth_trophies.py``.
 
 """
 
-import requests
-import prawcore
 import os
 import sys
+
+import requests
+
+import prawcore
 
 
 class CachingSession(requests.Session):
