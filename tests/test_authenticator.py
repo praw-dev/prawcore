@@ -13,9 +13,7 @@ class TrustedAuthenticatorTest(unittest.TestCase):
         authenticator = prawcore.TrustedAuthenticator(
             REQUESTOR, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
         )
-        url = authenticator.authorize_url(
-            "permanent", ["identity", "read"], "a_state"
-        )
+        url = authenticator.authorize_url("permanent", ["identity", "read"], "a_state")
         self.assertIn(f"client_id={CLIENT_ID}", url)
         self.assertIn("duration=permanent", url)
         self.assertIn("response_type=code", url)
@@ -51,9 +49,7 @@ class TrustedAuthenticatorTest(unittest.TestCase):
         authenticator = prawcore.TrustedAuthenticator(
             REQUESTOR, CLIENT_ID, CLIENT_SECRET
         )
-        with Betamax(REQUESTOR).use_cassette(
-            "TrustedAuthenticator_revoke_token"
-        ):
+        with Betamax(REQUESTOR).use_cassette("TrustedAuthenticator_revoke_token"):
             authenticator.revoke_token("dummy token")
 
     def test_revoke_token__with_access_token_hint(self):
@@ -80,9 +76,7 @@ class UntrustedAuthenticatorTest(unittest.TestCase):
         authenticator = prawcore.UntrustedAuthenticator(
             REQUESTOR, CLIENT_ID, REDIRECT_URI
         )
-        url = authenticator.authorize_url(
-            "permanent", ["identity", "read"], "a_state"
-        )
+        url = authenticator.authorize_url("permanent", ["identity", "read"], "a_state")
         self.assertIn(f"client_id={CLIENT_ID}", url)
         self.assertIn("duration=permanent", url)
         self.assertIn("response_type=code", url)
@@ -127,7 +121,5 @@ class UntrustedAuthenticatorTest(unittest.TestCase):
 
     def test_revoke_token(self):
         authenticator = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
-        with Betamax(REQUESTOR).use_cassette(
-            "UntrustedAuthenticator_revoke_token"
-        ):
+        with Betamax(REQUESTOR).use_cassette("UntrustedAuthenticator_revoke_token"):
             authenticator.revoke_token("dummy token")

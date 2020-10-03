@@ -18,9 +18,7 @@ class RequestorTest(unittest.TestCase):
 
     def test_initialize__failures(self):
         for agent in [None, "shorty"]:
-            self.assertRaises(
-                prawcore.InvalidInvocation, prawcore.Requestor, agent
-            )
+            self.assertRaises(prawcore.InvalidInvocation, prawcore.Requestor, agent)
 
     @patch("requests.Session")
     def test_request__wrap_request_exceptions(self, mock_session):
@@ -32,12 +30,8 @@ class RequestorTest(unittest.TestCase):
             requestor.request("get", "http://a.b", data="bar")
         self.assertIsInstance(context_manager.exception, RequestException)
         self.assertIs(exception, context_manager.exception.original_exception)
-        self.assertEqual(
-            ("get", "http://a.b"), context_manager.exception.request_args
-        )
-        self.assertEqual(
-            {"data": "bar"}, context_manager.exception.request_kwargs
-        )
+        self.assertEqual(("get", "http://a.b"), context_manager.exception.request_args)
+        self.assertEqual({"data": "bar"}, context_manager.exception.request_kwargs)
 
     def test_request__use_custom_session(self):
         override = "REQUEST OVERRIDDEN"
@@ -46,17 +40,13 @@ class RequestorTest(unittest.TestCase):
         attrs = {"request.return_value": override, "headers": headers}
         session = Mock(**attrs)
 
-        requestor = prawcore.Requestor(
-            "prawcore:test (by /u/bboe)", session=session
-        )
+        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
 
         self.assertEqual(
             f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}",
             requestor._http.headers["User-Agent"],
         )
-        self.assertEqual(
-            requestor._http.headers["session_header"], custom_header
-        )
+        self.assertEqual(requestor._http.headers["session_header"], custom_header)
 
         self.assertEqual(requestor.request("https://reddit.com"), override)
 

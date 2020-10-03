@@ -12,14 +12,10 @@ from prawcore import Requestor
 CLIENT_ID = os.environ.get("PRAWCORE_CLIENT_ID", "fake_client_id")
 CLIENT_SECRET = os.environ.get("PRAWCORE_CLIENT_SECRET", "fake_client_secret")
 PASSWORD = os.environ.get("PRAWCORE_PASSWORD", "fake_password")
-PERMANENT_GRANT_CODE = os.environ.get(
-    "PRAWCORE_PERMANENT_GRANT_CODE", "fake_perm_code"
-)
+PERMANENT_GRANT_CODE = os.environ.get("PRAWCORE_PERMANENT_GRANT_CODE", "fake_perm_code")
 REDIRECT_URI = os.environ.get("PRAWCORE_REDIRECT_URI", "http://localhost:8080")
 REFRESH_TOKEN = os.environ.get("PRAWCORE_REFRESH_TOKEN", "fake_refresh_token")
-TEMPORARY_GRANT_CODE = os.environ.get(
-    "PRAWCORE_TEMPORARY_GRANT_CODE", "fake_temp_code"
-)
+TEMPORARY_GRANT_CODE = os.environ.get("PRAWCORE_TEMPORARY_GRANT_CODE", "fake_temp_code")
 USERNAME = os.environ.get("PRAWCORE_USERNAME", "fake_username")
 
 

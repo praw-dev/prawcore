@@ -5,11 +5,7 @@ from json import dumps
 
 from betamax import Betamax
 from mock import Mock, patch
-from requests.exceptions import (
-    ChunkedEncodingError,
-    ConnectionError,
-    ReadTimeout,
-)
+from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
 from testfixtures import LogCapture
 
 import prawcore
@@ -21,7 +17,7 @@ from .conftest import (
     PASSWORD,
     REFRESH_TOKEN,
     REQUESTOR,
-    USERNAME
+    USERNAME,
 )
 
 
@@ -36,18 +32,14 @@ class InvalidAuthorizer(prawcore.Authorizer):
 
 
 def client_authorizer():
-    authenticator = prawcore.TrustedAuthenticator(
-        REQUESTOR, CLIENT_ID, CLIENT_SECRET
-    )
+    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
     authorizer.refresh()
     return authorizer
 
 
 def readonly_authorizer(refresh=True, requestor=REQUESTOR):
-    authenticator = prawcore.TrustedAuthenticator(
-        requestor, CLIENT_ID, CLIENT_SECRET
-    )
+    authenticator = prawcore.TrustedAuthenticator(requestor, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
     if refresh:
         authorizer.refresh()
@@ -55,9 +47,7 @@ def readonly_authorizer(refresh=True, requestor=REQUESTOR):
 
 
 def script_authorizer():
-    authenticator = prawcore.TrustedAuthenticator(
-        REQUESTOR, CLIENT_ID, CLIENT_SECRET
-    )
+    authenticator = prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET)
     authorizer = prawcore.ScriptAuthorizer(authenticator, USERNAME, PASSWORD)
     authorizer.refresh()
     return authorizer
@@ -104,8 +94,7 @@ class SessionTest(unittest.TestCase):
         expected = (
             "prawcore",
             "WARNING",
-            "Retrying due to ChunkedEncodingError() status: GET "
-            "https://oauth.reddit.com/",
+            "Retrying due to ChunkedEncodingError() status: GET https://oauth.reddit.com/",
         )
 
         with LogCapture(level=logging.WARNING) as log_capture:
@@ -179,9 +168,7 @@ class SessionTest(unittest.TestCase):
             }
             key_count = len(data)
             response = session.request("POST", "/api/submit", data=data)
-            self.assertIn(
-                "a_test_from_prawcore", response["json"]["data"]["url"]
-            )
+            self.assertIn("a_test_from_prawcore", response["json"]["data"]["url"])
             self.assertEqual(key_count, len(data))  # Ensure data is untouched
 
     def test_request__post__with_files(self):
@@ -206,7 +193,7 @@ class SessionTest(unittest.TestCase):
             session = prawcore.Session(readonly_authorizer())
             response = session.request(
                 "GET",
-                ("/r/reddit_api_test/comments/" "45xjdr/want_raw_json_test/"),
+                "/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
             )
         self.assertEqual(
             "WANT_RAW_JSON test: < > &",
@@ -218,18 +205,14 @@ class SessionTest(unittest.TestCase):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
                 session.request("GET", "/")
-            self.assertEqual(
-                502, context_manager.exception.response.status_code
-            )
+            self.assertEqual(502, context_manager.exception.response.status_code)
 
     def test_request__bad_json(self):
         with Betamax(REQUESTOR).use_cassette("Session_request__bad_json"):
             session = prawcore.Session(script_authorizer())
             with self.assertRaises(prawcore.BadJSON) as context_manager:
                 session.request("GET", "/")
-            self.assertEqual(
-                92, len(context_manager.exception.response.content)
-            )
+            self.assertEqual(92, len(context_manager.exception.response.content))
 
     def test_request__bad_request(self):
         with Betamax(REQUESTOR).use_cassette("Session_request__bad_request"):
@@ -251,9 +234,7 @@ class SessionTest(unittest.TestCase):
                 session.request("GET", "/")
                 session.request("GET", "/")
                 session.request("GET", "/")
-            self.assertEqual(
-                522, context_manager.exception.response.status_code
-            )
+            self.assertEqual(522, context_manager.exception.response.status_code)
 
     def test_request__cloudflare_unknown_error(self):
         with Betamax(REQUESTOR).use_cassette(
@@ -264,9 +245,7 @@ class SessionTest(unittest.TestCase):
                 session.request("GET", "/")
                 session.request("GET", "/")
                 session.request("GET", "/")
-            self.assertEqual(
-                520, context_manager.exception.response.status_code
-            )
+            self.assertEqual(520, context_manager.exception.response.status_code)
 
     def test_request__conflict(self):
         with Betamax(REQUESTOR).use_cassette("Session_request__conflict"):
@@ -282,16 +261,12 @@ class SessionTest(unittest.TestCase):
                         "previous": previous,
                     },
                 )
-            self.assertEqual(
-                409, context_manager.exception.response.status_code
-            )
+            self.assertEqual(409, context_manager.exception.response.status_code)
 
     def test_request__created(self):
         with Betamax(REQUESTOR).use_cassette("Session_request__created"):
             session = prawcore.Session(script_authorizer())
-            response = session.request(
-                "PUT", "/api/v1/me/friends/spez", data="{}"
-            )
+            response = session.request("PUT", "/api/v1/me/friends/spez", data="{}")
             self.assertIn("name", response)
 
     def test_request__forbidden(self):
@@ -305,26 +280,18 @@ class SessionTest(unittest.TestCase):
             )
 
     def test_request__gateway_timeout(self):
-        with Betamax(REQUESTOR).use_cassette(
-            "Session_request__gateway_timeout"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Session_request__gateway_timeout"):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
                 session.request("GET", "/")
-            self.assertEqual(
-                504, context_manager.exception.response.status_code
-            )
+            self.assertEqual(504, context_manager.exception.response.status_code)
 
     def test_request__internal_server_error(self):
-        with Betamax(REQUESTOR).use_cassette(
-            "Session_request__internal_server_error"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Session_request__internal_server_error"):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
                 session.request("GET", "/")
-            self.assertEqual(
-                500, context_manager.exception.response.status_code
-            )
+            self.assertEqual(500, context_manager.exception.response.status_code)
 
     def test_request__no_content(self):
         with Betamax(REQUESTOR).use_cassette("Session_request__no_content"):
@@ -372,8 +339,7 @@ class SessionTest(unittest.TestCase):
         expected = (
             "prawcore",
             "WARNING",
-            "Retrying due to ReadTimeout() status: GET "
-            "https://oauth.reddit.com/",
+            "Retrying due to ReadTimeout() status: GET https://oauth.reddit.com/",
         )
 
         with LogCapture(level=logging.WARNING) as log_capture:
@@ -392,17 +358,13 @@ class SessionTest(unittest.TestCase):
             self.assertTrue(context_manager.exception.path.startswith("/r/"))
 
     def test_request__service_unavailable(self):
-        with Betamax(REQUESTOR).use_cassette(
-            "Session_request__service_unavailable"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Session_request__service_unavailable"):
             session = prawcore.Session(readonly_authorizer())
             with self.assertRaises(prawcore.ServerError) as context_manager:
                 session.request("GET", "/")
                 session.request("GET", "/")
                 session.request("GET", "/")
-            self.assertEqual(
-                503, context_manager.exception.response.status_code
-            )
+            self.assertEqual(503, context_manager.exception.response.status_code)
 
     def test_request__too_large(self):
         with Betamax(REQUESTOR).use_cassette(
@@ -419,9 +381,7 @@ class SessionTest(unittest.TestCase):
                         data=data,
                         files=files,
                     )
-            self.assertEqual(
-                413, context_manager.exception.response.status_code
-            )
+            self.assertEqual(413, context_manager.exception.response.status_code)
 
     def test_request__unavailable_for_legal_reasons(self):
         with Betamax(REQUESTOR).use_cassette(
@@ -431,14 +391,10 @@ class SessionTest(unittest.TestCase):
             exception_class = prawcore.UnavailableForLegalReasons
             with self.assertRaises(exception_class) as context_manager:
                 session.request("GET", "/")
-            self.assertEqual(
-                451, context_manager.exception.response.status_code
-            )
+            self.assertEqual(451, context_manager.exception.response.status_code)
 
     def test_request__unsupported_media_type(self):
-        with Betamax(REQUESTOR).use_cassette(
-            "Session_request__unsupported_media_type"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Session_request__unsupported_media_type"):
             session = prawcore.Session(script_authorizer())
             exception_class = prawcore.SpecialError
             data = {
@@ -447,9 +403,7 @@ class SessionTest(unittest.TestCase):
             }
             with self.assertRaises(exception_class) as context_manager:
                 session.request("POST", "r/ttft/api/wiki/edit/", data=data)
-            self.assertEqual(
-                415, context_manager.exception.response.status_code
-            )
+            self.assertEqual(415, context_manager.exception.response.status_code)
 
     def test_request__with_insufficient_scope(self):
         with Betamax(REQUESTOR).use_cassette(
@@ -472,9 +426,7 @@ class SessionTest(unittest.TestCase):
             "Session_request__with_invalid_access_token"
         ):
             session._authorizer.access_token = "invalid"
-            self.assertRaises(
-                prawcore.InvalidToken, session.request, "get", "/"
-            )
+            self.assertRaises(prawcore.InvalidToken, session.request, "get", "/")
 
     def test_request__with_invalid_access_token__retry(self):
         with Betamax(REQUESTOR).use_cassette(
@@ -487,13 +439,9 @@ class SessionTest(unittest.TestCase):
 
     def test_request__with_invalid_authorizer(self):
         session = prawcore.Session(InvalidAuthorizer())
-        self.assertRaises(
-            prawcore.InvalidInvocation, session.request, "get", "/"
-        )
+        self.assertRaises(prawcore.InvalidInvocation, session.request, "get", "/")
 
 
 class SessionFunctionTest(unittest.TestCase):
     def test_session(self):
-        self.assertIsInstance(
-            prawcore.session(InvalidAuthorizer()), prawcore.Session
-        )
+        self.assertIsInstance(prawcore.session(InvalidAuthorizer()), prawcore.Session)

@@ -31,10 +31,7 @@ def main():
 
     for trophy in data["data"]["trophies"]:
         description = trophy["data"]["description"]
-        print(
-            trophy["data"]["name"]
-            + (f" ({description})" if description else "")
-        )
+        print(trophy["data"]["name"] + (f" ({description})" if description else ""))
 
     return 0
 

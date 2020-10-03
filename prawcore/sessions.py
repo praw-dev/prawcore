@@ -5,11 +5,7 @@ import time
 from copy import deepcopy
 from urllib.parse import urljoin
 
-from requests.exceptions import (
-    ChunkedEncodingError,
-    ConnectionError,
-    ReadTimeout,
-)
+from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
@@ -122,9 +118,7 @@ class Session(object):
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
-            raise InvalidInvocation(
-                f"invalid Authorizer: {authorizer}"
-            )
+            raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
         self._retry_strategy_class = FiniteRetryStrategy
@@ -154,9 +148,7 @@ class Session(object):
             status = repr(saved_exception)
         else:
             status = response.status_code
-        log.warning(
-            f"Retrying due to {status} status: {method} {url}"
-        )
+        log.warning(f"Retrying due to {status} status: {method} {url}")
         return self._request_with_retries(
             data=data,
             files=files,
@@ -197,8 +189,11 @@ class Session(object):
             )
             return response, None
         except RequestException as exception:
-            if not retry_strategy_state.should_retry_on_failure() or not isinstance(  # noqa: E501
-                exception.original_exception, self.RETRY_EXCEPTIONS
+            if (
+                not retry_strategy_state.should_retry_on_failure()
+                or not isinstance(  # noqa: E501
+                    exception.original_exception, self.RETRY_EXCEPTIONS
+                )
             ):
                 raise
             return None, exception.original_exception
@@ -231,18 +226,13 @@ class Session(object):
         )
 
         do_retry = False
-        if (
-            response is not None
-            and response.status_code == codes["unauthorized"]
-        ):
+        if response is not None and response.status_code == codes["unauthorized"]:
             self._authorizer._clear_access_token()
             if hasattr(self._authorizer, "refresh"):
                 do_retry = True
 
         if retry_strategy_state.should_retry_on_failure() and (
-            do_retry
-            or response is None
-            or response.status_code in self.RETRY_STATUSES
+            do_retry or response is None or response.status_code in self.RETRY_STATUSES
         ):
             return self._do_retry(
                 data,
@@ -271,13 +261,9 @@ class Session(object):
             raise BadJSON(response)
 
     def _set_header_callback(self):
-        if not self._authorizer.is_valid() and hasattr(
-            self._authorizer, "refresh"
-        ):
+        if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
             self._authorizer.refresh()
-        return {
-            "Authorization": f"bearer {self._authorizer.access_token}"
-        }
+        return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
     @property
     def _requestor(self):
@@ -300,18 +286,18 @@ class Session(object):
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., get, post, put.
-        :param path: The path of the request. This path will be combined with
-            the ``oauth_url`` of the Requestor.
-        :param data: Dictionary, bytes, or file-like object to send in the body
-            of the request.
-        :param files: Dictionary, mapping ``filename`` to file-like object.
-        :param json: Object to be serialized to JSON in the body of the
+        :param path: The path of the request. This path will be combined with the
+            ``oauth_url`` of the Requestor.
+        :param data: Dictionary, bytes, or file-like object to send in the body of the
             request.
+        :param files: Dictionary, mapping ``filename`` to file-like object.
+        :param json: Object to be serialized to JSON in the body of the request.
         :param params: The query parameters to send with the request.
+        :param timeout: Specifies a particular timeout, in seconds.
 
-        Automatically refreshes the access token if it becomes invalid and a
-        refresh token is available. Raises InvalidInvocation in such a case if
-        a refresh token is not available.
+        Automatically refreshes the access token if it becomes invalid and a refresh
+        token is available. Raises InvalidInvocation in such a case if a refresh token
+        is not available.
 
         """
         params = deepcopy(params) or {}
