@@ -1,4 +1,4 @@
-"""Test for sublcasses of prawcore.auth.BaseAuthenticator class."""
+"""Test for subclasses of prawcore.auth.BaseAuthenticator class."""
 import prawcore
 import unittest
 from .conftest import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REQUESTOR

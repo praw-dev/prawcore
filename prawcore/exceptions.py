@@ -48,7 +48,7 @@ class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
     def __init__(self, response, error, description):
-        """Intialize a OAuthException instance.
+        """Initialize a OAuthException instance.
 
         :param response: A requests.response instance.
         :param error: The error type returned by reddit.
@@ -150,4 +150,4 @@ class TooLarge(ResponseException):
 
 
 class UnavailableForLegalReasons(ResponseException):
-    """Indicate that the requested URL is unavilable due to legal reasons."""
+    """Indicate that the requested URL is unavailable due to legal reasons."""
