@@ -140,9 +140,7 @@ class SpecialError(ResponseException):
         self.message = resp_dict.get("message", "")
         self.reason = resp_dict.get("reason", "")
         self.special_errors = resp_dict.get("special_errors", [])
-        PrawcoreException.__init__(
-            self, f"Special error {self.message!r}"
-        )
+        PrawcoreException.__init__(self, f"Special error {self.message!r}")
 
 
 class TooLarge(ResponseException):

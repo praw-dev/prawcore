@@ -21,7 +21,7 @@ from .conftest import (
     PASSWORD,
     REFRESH_TOKEN,
     REQUESTOR,
-    USERNAME
+    USERNAME,
 )
 
 
@@ -206,7 +206,7 @@ class SessionTest(unittest.TestCase):
             session = prawcore.Session(readonly_authorizer())
             response = session.request(
                 "GET",
-                ("/r/reddit_api_test/comments/" "45xjdr/want_raw_json_test/"),
+                "/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
             )
         self.assertEqual(
             "WANT_RAW_JSON test: < > &",

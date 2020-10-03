@@ -122,9 +122,7 @@ class Session(object):
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
-            raise InvalidInvocation(
-                f"invalid Authorizer: {authorizer}"
-            )
+            raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter()
         self._retry_strategy_class = FiniteRetryStrategy
@@ -154,9 +152,7 @@ class Session(object):
             status = repr(saved_exception)
         else:
             status = response.status_code
-        log.warning(
-            f"Retrying due to {status} status: {method} {url}"
-        )
+        log.warning(f"Retrying due to {status} status: {method} {url}")
         return self._request_with_retries(
             data=data,
             files=files,
@@ -193,12 +189,16 @@ class Session(object):
                 timeout=timeout,
             )
             log.debug(
-                f"Response: {response.status_code} ({response.headers.get('content-length')} bytes)"
+                f"Response: {response.status_code}"
+                f" ({response.headers.get('content-length')} bytes)"
             )
             return response, None
         except RequestException as exception:
-            if not retry_strategy_state.should_retry_on_failure() or not isinstance(  # noqa: E501
-                exception.original_exception, self.RETRY_EXCEPTIONS
+            if (
+                not retry_strategy_state.should_retry_on_failure()
+                or not isinstance(  # noqa: E501
+                    exception.original_exception, self.RETRY_EXCEPTIONS
+                )
             ):
                 raise
             return None, exception.original_exception
@@ -275,9 +275,7 @@ class Session(object):
             self._authorizer, "refresh"
         ):
             self._authorizer.refresh()
-        return {
-            "Authorization": f"bearer {self._authorizer.access_token}"
-        }
+        return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
     @property
     def _requestor(self):
