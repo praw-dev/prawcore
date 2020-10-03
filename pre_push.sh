@@ -5,6 +5,7 @@ function exit_error() {
     exit 1
 }
 
+flynt -q -tc -ll  1000 . || exit_error "Please install flynt: pip install flynt"
 black *.py examples prawcore tests || exit_error "Please install black: pip install black"
 
 python setup.py test || exit_error "Please fix test issues."

@@ -39,7 +39,7 @@ class CachingSession(requests.Session):
 def main():
     """Provide the program's entry point when directly executed."""
     if len(sys.argv) != 2:
-        print("Usage: {} USERNAME".format(sys.argv[0]))
+        print(f"Usage: {sys.argv[0]} USERNAME")
         return 1
 
     caching_requestor = prawcore.Requestor(
@@ -55,17 +55,17 @@ def main():
 
     user = sys.argv[1]
     with prawcore.session(authorizer) as session:
-        data1 = session.request("GET", "/api/v1/user/{}/trophies".format(user))
+        data1 = session.request("GET", f"/api/v1/user/{user}/trophies")
 
     with prawcore.session(authorizer) as session:
-        data2 = session.request("GET", "/api/v1/user/{}/trophies".format(user))
+        data2 = session.request("GET", f"/api/v1/user/{user}/trophies")
 
     for trophy in data1["data"]["trophies"]:
         description = trophy["data"]["description"]
         print(
             "Original:",
             trophy["data"]["name"]
-            + (" ({})".format(description) if description else ""),
+            + (f" ({description})" if description else ""),
         )
 
     for trophy in data2["data"]["trophies"]:
@@ -73,7 +73,7 @@ def main():
         print(
             "Cached:",
             trophy["data"]["name"]
-            + (" ({})".format(description) if description else ""),
+            + (f" ({description})" if description else ""),
         )
     print(
         "----\nCached == Original:",

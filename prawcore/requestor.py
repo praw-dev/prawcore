@@ -36,9 +36,7 @@ class Requestor(object):
             raise InvalidInvocation("user_agent is not descriptive")
 
         self._http = session or requests.Session()
-        self._http.headers["User-Agent"] = "{} prawcore/{}".format(
-            user_agent, __version__
-        )
+        self._http.headers["User-Agent"] = f"{user_agent} prawcore/{__version__}"
 
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url

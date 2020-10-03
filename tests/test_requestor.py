@@ -11,9 +11,7 @@ class RequestorTest(unittest.TestCase):
     def test_initialize(self):
         requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
         self.assertEqual(
-            "prawcore:test (by /u/bboe) prawcore/{}".format(
-                prawcore.__version__
-            ),
+            f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}",
             requestor._http.headers["User-Agent"],
         )
 
@@ -52,9 +50,7 @@ class RequestorTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            "prawcore:test (by /u/bboe) prawcore/{}".format(
-                prawcore.__version__
-            ),
+            f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}",
             requestor._http.headers["User-Agent"],
         )
         self.assertEqual(

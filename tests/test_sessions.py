@@ -347,9 +347,7 @@ class SessionTest(unittest.TestCase):
         ):
             session = prawcore.Session(script_authorizer())
             data = {"model": dumps({"name": "redditdev"})}
-            path = "/api/multi/user/{}/m/praw_x5g968f66a/r/redditdev".format(
-                USERNAME
-            )
+            path = f"/api/multi/user/{USERNAME}/m/praw_x5g968f66a/r/redditdev"
             response = session.request("DELETE", path, data=data)
             self.assertEqual("", response)
 

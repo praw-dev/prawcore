@@ -34,14 +34,14 @@ def receive_connection():
 def send_message(client, message):
     """Send message to client and close the connection."""
     print(message)
-    client.send("HTTP/1.1 200 OK\r\n\r\n{}".format(message).encode("utf-8"))
+    client.send(f"HTTP/1.1 200 OK\r\n\r\n{message}".encode("utf-8"))
     client.close()
 
 
 def main():
     """Provide the program's entry point when directly executed."""
     if len(sys.argv) < 2:
-        print("Usage: {} SCOPE...".format(sys.argv[0]))
+        print(f"Usage: {sys.argv[0]} SCOPE...")
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
@@ -66,9 +66,7 @@ def main():
     if state != params["state"]:
         send_message(
             client,
-            "State mismatch. Expected: {} Received: {}".format(
-                state, params["state"]
-            ),
+            f"State mismatch. Expected: {state} Received: {params['state']}",
         )
         return 1
     elif "error" in params:
@@ -78,7 +76,7 @@ def main():
     authorizer = prawcore.Authorizer(authenticator)
     authorizer.authorize(params["code"])
 
-    send_message(client, "Refresh token: {}".format(authorizer.refresh_token))
+    send_message(client, f"Refresh token: {authorizer.refresh_token}")
     return 0
 
 
