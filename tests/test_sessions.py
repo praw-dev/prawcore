@@ -452,7 +452,7 @@ class SessionTest(unittest.TestCase):
                 415, context_manager.exception.response.status_code
             )
 
-    def test_request__with_insufficent_scope(self):
+    def test_request__with_insufficient_scope(self):
         with Betamax(REQUESTOR).use_cassette(
             "Session_request__with_insufficient_scope"
         ):

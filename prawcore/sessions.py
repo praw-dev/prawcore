@@ -118,7 +118,7 @@ class Session(object):
         log.debug("Params: {}".format(params))
 
     def __init__(self, authorizer):
-        """Preprare the connection to reddit's API.
+        """Prepare the connection to reddit's API.
 
         :param authorizer: An instance of :class:`Authorizer`.
 
