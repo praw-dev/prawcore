@@ -14,7 +14,7 @@ flake8 --version > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     exit_error "Please install flake8: pip install flake8"
 fi
-flake8 || exit_error "Please correct flake8 issues."
+flake8 --exclude=.eggs,.venv || exit_error "Please correct flake8 issues."
 echo "style pass!"
 
 pydocstyle --version > /dev/null 2>&1
