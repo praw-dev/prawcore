@@ -16,10 +16,10 @@ class BaseAuthenticator(object):
 
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
-        :param redirect_uri: (optional) The redirect URI exactly as specified
-            in your OAuth application settings on Reddit. This parameter is
-            required if you want to use the ``authorize_url`` method, or the
-            ``authorize`` method of the ``Authorizer`` class.
+        :param redirect_uri: (optional) The redirect URI exactly as specified in your
+            OAuth application settings on Reddit. This parameter is required if you want
+            to use the ``authorize_url`` method, or the ``authorize`` method of the
+            ``Authorizer`` class.
 
         """
         self._requestor = requestor
@@ -42,17 +42,16 @@ class BaseAuthenticator(object):
         """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``permanent`` or ``temporary``. ``temporary``
-            authorizations generate access tokens that last only 1
-            hour. ``permanent`` authorizations additionally generate a refresh
-            token that can be indefinitely used to generate new hour-long
-            access tokens. Only ``temporary`` can be specified if ``implicit``
-            is set to ``True``.
+            authorizations generate access tokens that last only 1 hour. ``permanent``
+            authorizations additionally generate a refresh token that can be
+            indefinitely used to generate new hour-long access tokens. Only
+            ``temporary`` can be specified if ``implicit`` is set to ``True``.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
-            ``redirect_uri``. This value should be temporarily unique to the
-            client for whom the URL was generated for.
-        :param implicit: (optional) Use the implicit grant flow (default:
-            False). This flow is only available for UntrustedAuthenticators.
+            ``redirect_uri``. This value should be temporarily unique to the client for
+            whom the URL was generated for.
+        :param implicit: (optional) Use the implicit grant flow (default: False). This
+            flow is only available for UntrustedAuthenticators.
 
         """
         if self.redirect_uri is None:
@@ -84,9 +83,9 @@ class BaseAuthenticator(object):
         """Ask Reddit to revoke the provided token.
 
         :param token: The access or refresh token to revoke.
-        :param token_type: (Optional) When provided, hint to Reddit what the
-            token type is for a possible efficiency gain. The value can be
-            either ``access_token`` or ``refresh_token``.
+        :param token_type: (Optional) When provided, hint to Reddit what the token type
+            is for a possible efficiency gain. The value can be either ``access_token``
+            or ``refresh_token``.
 
         """
         data = {"token": token}
@@ -107,10 +106,10 @@ class TrustedAuthenticator(BaseAuthenticator):
         :param requestor: An instance of :class:`Requestor`.
         :param client_id: The OAuth2 client ID to use with the session.
         :param client_secret: The OAuth2 client secret to use with the session.
-        :param redirect_uri: (optional) The redirect URI exactly as specified
-            in your OAuth application settings on Reddit. This parameter is
-            required if you want to use the ``authorize_url`` method, or the
-            ``authorize`` method of the ``Authorizer`` class.
+        :param redirect_uri: (optional) The redirect URI exactly as specified in your
+            OAuth application settings on Reddit. This parameter is required if you want
+            to use the ``authorize_url`` method, or the ``authorize`` method of the
+            ``Authorizer`` class.
 
         """
         super(TrustedAuthenticator, self).__init__(
@@ -119,14 +118,14 @@ class TrustedAuthenticator(BaseAuthenticator):
         self.client_secret = client_secret
 
     def _auth(self):
-        return (self.client_id, self.client_secret)
+        return self.client_id, self.client_secret
 
 
 class UntrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for installed applications."""
 
     def _auth(self):
-        return (self.client_id, "")
+        return self.client_id, ""
 
 
 class BaseAuthorizer(object):
@@ -177,8 +176,8 @@ class BaseAuthorizer(object):
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
 
-        A ``True`` return value does not guarantee that the access_token is
-        actually valid on the server side.
+        A ``True`` return value does not guarantee that the access_token is actually
+        valid on the server side.
 
         """
         return (
@@ -203,8 +202,7 @@ class Authorizer(BaseAuthorizer):
     def __init__(self, authenticator, refresh_token=None):
         """Represent a single authorization to Reddit's API.
 
-        :param authenticator: An instance of a subclass of
-            :class:`BaseAuthenticator`.
+        :param authenticator: An instance of a subclass of :class:`BaseAuthenticator`.
         :param refresh_token: (Optional) Enables the ability to refresh the
             authorization.
 
@@ -215,8 +213,8 @@ class Authorizer(BaseAuthorizer):
     def authorize(self, code):
         """Obtain and set authorization tokens based on ``code``.
 
-        :param code: The code obtained by an out-of-band authorization request
-            to Reddit.
+        :param code: The code obtained by an out-of-band authorization request to
+            Reddit.
 
         """
         if self._authenticator.redirect_uri is None:
@@ -238,11 +236,11 @@ class Authorizer(BaseAuthorizer):
     def revoke(self, only_access=False):
         """Revoke the current Authorization.
 
-        :param only_access: (Optional) When explicitly set to True, do not
-            evict the refresh token if one is set.
+        :param only_access: (Optional) When explicitly set to True, do not evict the
+            refresh token if one is set.
 
-        Revoking a refresh token will in-turn revoke all access tokens
-        associated with that authorization.
+        Revoking a refresh token will in-turn revoke all access tokens associated with
+        that authorization.
 
         """
         if only_access or self.refresh_token is None:
@@ -258,8 +256,8 @@ class Authorizer(BaseAuthorizer):
 class DeviceIDAuthorizer(BaseAuthorizer):
     """Manages app-only OAuth2 for 'installed' applications.
 
-    While the '*' scope will be available, some endpoints simply will not work
-    due to the lack of an associated Reddit account.
+    While the '*' scope will be available, some endpoints simply will not work due to
+    the lack of an associated Reddit account.
 
     """
 
@@ -269,10 +267,10 @@ class DeviceIDAuthorizer(BaseAuthorizer):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
         :param authenticator: An instance of :class:`UntrustedAuthenticator`.
-        :param device_id: (optional) A unique ID (20-30 character ASCII string)
-            (default DO_NOT_TRACK_THIS_DEVICE). For more information about this
-            parameter, see:
+        :param device_id: (optional) A unique ID (20-30 character ASCII string) (default
+            DO_NOT_TRACK_THIS_DEVICE). For more information about this parameter, see:
             https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
+
         """
         super(DeviceIDAuthorizer, self).__init__(authenticator)
         self._device_id = device_id
@@ -292,17 +290,15 @@ class ImplicitAuthorizer(BaseAuthorizer):
         """Represent a single implicit authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`UntrustedAuthenticator`.
-        :param access_token: The access_token obtained from Reddit via callback
-            to the authenticator's redirect_uri.
-        :param expires_in: The number of seconds the ``access_token`` is valid
-            for. The origin of this value was returned from Reddit via callback
-            to the authenticator's redirect uri. Note, you may need to subtract
-            an offset before passing in this number to account for a delay
-            between when Reddit prepared the response, and when you make this
-            function call.
-        :param scope: A space-delimited string of Reddit OAuth2 scope names as
-            returned from Reddit in the callback to the authenticator's
-            redirect uri.
+        :param access_token: The access_token obtained from Reddit via callback to the
+            authenticator's redirect_uri.
+        :param expires_in: The number of seconds the ``access_token`` is valid for. The
+            origin of this value was returned from Reddit via callback to the
+            authenticator's redirect uri. Note, you may need to subtract an offset
+            before passing in this number to account for a delay between when Reddit
+            prepared the response, and when you make this function call.
+        :param scope: A space-delimited string of Reddit OAuth2 scope names as returned
+            from Reddit in the callback to the authenticator's redirect uri.
 
         """
         super(ImplicitAuthorizer, self).__init__(authenticator)
@@ -314,8 +310,8 @@ class ImplicitAuthorizer(BaseAuthorizer):
 class ReadOnlyAuthorizer(Authorizer):
     """Manages authorizations that are not associated with a Reddit account.
 
-    While the '*' scope will be available, some endpoints simply will not work
-    due to the lack of an associated Reddit account.
+    While the '*' scope will be available, some endpoints simply will not work due to
+    the lack of an associated Reddit account.
 
     """
 
@@ -329,8 +325,8 @@ class ReadOnlyAuthorizer(Authorizer):
 class ScriptAuthorizer(Authorizer):
     """Manages personal-use script type authorizations.
 
-    Only users who are listed as developers for the application will be
-    granted access tokens.
+    Only users who are listed as developers for the application will be granted access
+    tokens.
 
     """
 
@@ -340,8 +336,7 @@ class ScriptAuthorizer(Authorizer):
         """Represent a single personal-use authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`TrustedAuthenticator`.
-        :param username: The Reddit username of one of the application's
-            developers.
+        :param username: The Reddit username of one of the application's developers.
         :param password: The password associated with ``username``.
 
         """

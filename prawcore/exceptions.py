@@ -95,16 +95,15 @@ class NotFound(ResponseException):
 class Redirect(ResponseException):
     """Indicate the request resulted in a redirect.
 
-    This class adds the attribute ``path``, which is the path to which the
-    response redirects.
+    This class adds the attribute ``path``, which is the path to which the response
+    redirects.
 
     """
 
     def __init__(self, response):
         """Initialize a Redirect exception instance.
 
-        :param response: A requests.response instance containing a location
-        header.
+        :param response: A requests.response instance containing a location header.
 
         """
         path = urlparse(response.headers["location"]).path
@@ -130,8 +129,8 @@ class SpecialError(ResponseException):
     def __init__(self, response):
         """Initialize a SpecialError exception instance.
 
-        :param response: A requests.response instance containing a message
-        and a list of special errors.
+        :param response: A requests.response instance containing a message and a list of
+            special errors.
 
         """
         self.response = response
