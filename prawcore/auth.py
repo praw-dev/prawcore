@@ -50,7 +50,7 @@ class BaseAuthenticator(object):
         :param state: A string that will be reflected in the callback to
             ``redirect_uri``. Elements must be printable ASCII characters in the range
             0x20 through 0x7E inclusive. This value should be temporarily unique to the
-            client for whom the URL was generated for.
+            client for whom the URL was generated.
         :param implicit: (optional) Use the implicit grant flow (default: False). This
             flow is only available for UntrustedAuthenticators.
 
