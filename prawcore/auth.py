@@ -48,8 +48,9 @@ class BaseAuthenticator(object):
             ``temporary`` can be specified if ``implicit`` is set to ``True``.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
-            ``redirect_uri``. This value should be temporarily unique to the client for
-            whom the URL was generated for.
+            ``redirect_uri``. Elements must be printable ASCII characters in the range
+            0x20 through 0x7E inclusive. This value should be temporarily unique to the
+            client for whom the URL was generated.
         :param implicit: (optional) Use the implicit grant flow (default: False). This
             flow is only available for UntrustedAuthenticators.
 
