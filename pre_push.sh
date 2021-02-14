@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function exit_error() {
+exit_error () {
     echo $1
     exit 1
 }
