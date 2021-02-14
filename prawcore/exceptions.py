@@ -25,7 +25,7 @@ class RequestException(PrawcoreException):
         self.request_args = request_args
         self.request_kwargs = request_kwargs
         super(RequestException, self).__init__(
-            "error with request {}".format(original_exception)
+            f"error with request {original_exception}"
         )
 
 
@@ -40,7 +40,7 @@ class ResponseException(PrawcoreException):
         """
         self.response = response
         super(ResponseException, self).__init__(
-            "received {} HTTP response".format(response.status_code)
+            f"received {response.status_code} HTTP response"
         )
 
 
@@ -48,7 +48,7 @@ class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
     def __init__(self, response, error, description):
-        """Intialize a OAuthException instance.
+        """Initialize a OAuthException instance.
 
         :param response: A requests.response instance.
         :param error: The error type returned by reddit.
@@ -58,9 +58,9 @@ class OAuthException(PrawcoreException):
         self.error = error
         self.description = description
         self.response = response
-        message = "{} error processing request".format(error)
+        message = f"{error} error processing request"
         if description:
-            message += " ({})".format(description)
+            message += f" ({description})"
         PrawcoreException.__init__(self, message)
 
 
@@ -95,22 +95,21 @@ class NotFound(ResponseException):
 class Redirect(ResponseException):
     """Indicate the request resulted in a redirect.
 
-    This class adds the attribute ``path``, which is the path to which the
-    response redirects.
+    This class adds the attribute ``path``, which is the path to which the response
+    redirects.
 
     """
 
     def __init__(self, response):
         """Initialize a Redirect exception instance.
 
-        :param response: A requests.response instance containing a location
-        header.
+        :param response: A requests.response instance containing a location header.
 
         """
         path = urlparse(response.headers["location"]).path
         self.path = path[:-5] if path.endswith(".json") else path
         self.response = response
-        msg = "Redirect to {}".format(self.path)
+        msg = f"Redirect to {self.path}"
         msg += (
             " (You may be trying to perform a non-read-only action via a "
             "read-only instance.)"
@@ -130,8 +129,8 @@ class SpecialError(ResponseException):
     def __init__(self, response):
         """Initialize a SpecialError exception instance.
 
-        :param response: A requests.response instance containing a message
-        and a list of special errors.
+        :param response: A requests.response instance containing a message and a list of
+            special errors.
 
         """
         self.response = response
@@ -140,9 +139,7 @@ class SpecialError(ResponseException):
         self.message = resp_dict.get("message", "")
         self.reason = resp_dict.get("reason", "")
         self.special_errors = resp_dict.get("special_errors", [])
-        PrawcoreException.__init__(
-            self, "Special error {!r}".format(self.message)
-        )
+        PrawcoreException.__init__(self, f"Special error {self.message!r}")
 
 
 class TooLarge(ResponseException):
@@ -150,4 +147,4 @@ class TooLarge(ResponseException):
 
 
 class UnavailableForLegalReasons(ResponseException):
-    """Indicate that the requested URL is unavilable due to legal reasons."""
+    """Indicate that the requested URL is unavailable due to legal reasons."""

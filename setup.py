@@ -3,8 +3,8 @@
 import re
 from codecs import open
 from os import path
-from setuptools import setup
 
+from setuptools import setup
 
 PACKAGE_NAME = "prawcore"
 HERE = path.abspath(path.dirname(__file__))
@@ -15,7 +15,7 @@ with open(path.join(HERE, PACKAGE_NAME, "const.py"), encoding="utf-8") as fp:
 
 extras = {
     "ci": ["coveralls"],
-    "lint": ["black", "flake8", "pre-commit", "pydocstyle"],
+    "lint": ["black", "flake8", "pre-commit", "pydocstyle", "flynt"],
     "test": [
         "betamax >=0.8, <0.9",
         "betamax_matchers >=0.4.0, <0.5",

@@ -1,12 +1,10 @@
 """Test for prawcore.Sessions module."""
 import logging
+import unittest
 from json import dumps
 
-import prawcore
-import unittest
 from betamax import Betamax
 from mock import Mock, patch
-from prawcore.exceptions import RequestException
 from requests.exceptions import (
     ChunkedEncodingError,
     ConnectionError,
@@ -14,12 +12,15 @@ from requests.exceptions import (
 )
 from testfixtures import LogCapture
 
+import prawcore
+from prawcore.exceptions import RequestException
+
 from .conftest import (
     CLIENT_ID,
     CLIENT_SECRET,
+    PASSWORD,
     REFRESH_TOKEN,
     REQUESTOR,
-    PASSWORD,
     USERNAME,
 )
 
@@ -205,7 +206,7 @@ class SessionTest(unittest.TestCase):
             session = prawcore.Session(readonly_authorizer())
             response = session.request(
                 "GET",
-                ("/r/reddit_api_test/comments/" "45xjdr/want_raw_json_test/"),
+                "/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
             )
         self.assertEqual(
             "WANT_RAW_JSON test: < > &",
@@ -347,9 +348,7 @@ class SessionTest(unittest.TestCase):
         ):
             session = prawcore.Session(script_authorizer())
             data = {"model": dumps({"name": "redditdev"})}
-            path = "/api/multi/user/{}/m/praw_x5g968f66a/r/redditdev".format(
-                USERNAME
-            )
+            path = f"/api/multi/user/{USERNAME}/m/praw_x5g968f66a/r/redditdev"
             response = session.request("DELETE", path, data=data)
             self.assertEqual("", response)
 
@@ -452,7 +451,7 @@ class SessionTest(unittest.TestCase):
                 415, context_manager.exception.response.status_code
             )
 
-    def test_request__with_insufficent_scope(self):
+    def test_request__with_insufficient_scope(self):
         with Betamax(REQUESTOR).use_cassette(
             "Session_request__with_insufficient_scope"
         ):

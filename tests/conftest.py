@@ -2,9 +2,11 @@
 
 import os
 from base64 import b64encode
+
 from betamax import Betamax
 from betamax_matchers.json_body import JSONBodyMatcher
 from betamax_serializers import pretty_json
+
 from prawcore import Requestor
 
 CLIENT_ID = os.environ.get("PRAWCORE_CLIENT_ID", "fake_client_id")
@@ -39,7 +41,7 @@ with Betamax.configure() as config:
     config.default_cassette_options["serialize_with"] = "prettyjson"
     config.default_cassette_options["match_requests_on"].append("body")
     config.define_cassette_placeholder(
-        "<BASIC_AUTH>", b64_string("{}:{}".format(CLIENT_ID, CLIENT_SECRET))
+        "<BASIC_AUTH>", b64_string(f"{CLIENT_ID}:{CLIENT_SECRET}")
     )
     config.define_cassette_placeholder("<CLIENT_ID>", CLIENT_ID)
     config.define_cassette_placeholder("<CLIENT_SECRET>", CLIENT_SECRET)
