@@ -4,6 +4,23 @@ Change Log
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception that
 deprecations will not be announced by a minor release.
 
+Unreleased
+----------
+
+**Added**
+
+* ``Authorizer`` optionally takes a ``pre_refresh_callback`` keyword
+  argument. If provided, the function will called with the instance of
+  ``Authorizer`` prior to refreshing the access and refresh tokens.
+* ``Authorizer`` optionally takes a ``post_refresh_callback`` keyword
+  argument. If provided, the function will called with the instance of
+  ``Authorizer`` after refreshing the access and refresh tokens.
+
+**Changed**
+
+* The ``refresh_token`` argument to ``Authorizer`` must now be passed by
+  keyword, and cannot be passed as a positional argument.
+
 1.5.0 (2020-08-04)
 ------------------
 
