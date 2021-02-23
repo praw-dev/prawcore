@@ -49,7 +49,7 @@ def main():
         prawcore.Requestor("prawcore_refresh_token_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
-        os.environ["PRAWCORE_REDIRECT_URI"],
+        "http://localhost:8080",
     )
 
     state = str(random.randint(0, 65000))

@@ -39,7 +39,9 @@ def client_authorizer():
     authenticator = prawcore.TrustedAuthenticator(
         REQUESTOR, CLIENT_ID, CLIENT_SECRET
     )
-    authorizer = prawcore.Authorizer(authenticator, REFRESH_TOKEN)
+    authorizer = prawcore.Authorizer(
+        authenticator, refresh_token=REFRESH_TOKEN
+    )
     authorizer.refresh()
     return authorizer
 
