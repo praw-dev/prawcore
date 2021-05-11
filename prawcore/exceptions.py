@@ -148,3 +148,7 @@ class TooLarge(ResponseException):
 
 class UnavailableForLegalReasons(ResponseException):
     """Indicate that the requested URL is unavailable due to legal reasons."""
+
+
+class URITooLong(ResponseException):
+    """Indicate that the length of the request URI exceeds the allowed limit."""

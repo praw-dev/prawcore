@@ -15,4 +15,5 @@ Contributors
 - Watchful1 `@Watchful1 <https://github.com/Watchful1>`_
 - PythonCoderAS `@PythonCoderAS <https://github.com/PythonCoderAS>`_
 - LilSpazJoekp `@LilSpazJoekp <https://github.com/LilSpazJoekp>`_
+- MaybeNetwork `@MaybeNetwork <https://github.com/MaybeNetwork>`_
 - Add "Name <email (optional)> and github profile link" above this line.
