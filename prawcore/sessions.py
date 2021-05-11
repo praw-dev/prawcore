@@ -26,6 +26,7 @@ from .exceptions import (
     SpecialError,
     TooLarge,
     UnavailableForLegalReasons,
+    URITooLong,
 )
 from .rate_limit import RateLimiter
 from .util import authorization_error_class
@@ -100,6 +101,7 @@ class Session(object):
         codes["media_type"]: SpecialError,
         codes["not_found"]: NotFound,
         codes["request_entity_too_large"]: TooLarge,
+        codes["request_uri_too_large"]: URITooLong,
         codes["service_unavailable"]: ServerError,
         codes["unauthorized"]: authorization_error_class,
         codes["unavailable_for_legal_reasons"]: UnavailableForLegalReasons,
