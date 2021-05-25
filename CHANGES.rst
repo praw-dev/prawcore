@@ -10,6 +10,7 @@ Unreleased
 **Added**
 
 - Add a ``URITooLarge`` exception.
+- Add a ``TooManyRequests`` exception.
 
 2.0.0 (2021-02-23)
 ------------------

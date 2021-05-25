@@ -146,6 +146,29 @@ class TooLarge(ResponseException):
     """Indicate that the request data exceeds the allowed limit."""
 
 
+class TooManyRequests(ResponseException):
+    """Indicate that the user has sent too many requests in a given amount of time."""
+
+    def __init__(self, response):
+        """Initialize a TooManyRequests exception instance.
+
+        :param response: A requests.response instance that may contain a retry-after
+        header and a message.
+
+        """
+        self.response = response
+        self.retry_after = response.headers.get("retry-after")
+        self.message = response.text  # Not all response bodies are valid JSON
+
+        msg = f"received {response.status_code} HTTP response"
+        if self.retry_after:
+            msg += (
+                f". Please wait at least {float(self.retry_after)} seconds "
+                "before re-trying this request."
+            )
+        PrawcoreException.__init__(self, msg)
+
+
 class UnavailableForLegalReasons(ResponseException):
     """Indicate that the requested URL is unavailable due to legal reasons."""
 
