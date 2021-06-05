@@ -12,6 +12,7 @@ Unreleased
 - Add a ``URITooLarge`` exception.
 - :class:`.ScriptAuthorizer` has a new parameter ``two_factor_callback `` that supplies
   OTPs (One-Time Passcodes) when :meth:`.ScriptAuthorizer.refresh` is called.
+- Add a ``TooManyRequests`` exception.
 
 2.0.0 (2021-02-23)
 ------------------

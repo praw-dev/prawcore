@@ -428,6 +428,66 @@ class SessionTest(unittest.TestCase):
                 413, context_manager.exception.response.status_code
             )
 
+    def test_request__too__many_requests__with_retry_headers(self):
+        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
+
+        with Betamax(requestor).use_cassette(
+            "Session_request__too__many_requests__with_retry_headers"
+        ):
+            session = prawcore.Session(
+                readonly_authorizer(requestor=requestor)
+            )
+            session._requestor._http.headers.update(
+                {"User-Agent": "python-requests/2.25.1"}
+            )
+            with self.assertRaises(
+                prawcore.TooManyRequests
+            ) as context_manager:
+                session.request("GET", "/api/v1/me")
+            self.assertEqual(
+                429, context_manager.exception.response.status_code
+            )
+            self.assertTrue(
+                context_manager.exception.response.headers.get("retry-after")
+            )
+            self.assertEqual(
+                "Too Many Requests", context_manager.exception.response.reason
+            )
+            self.assertTrue(
+                str(context_manager.exception).startswith(
+                    "received 429 HTTP response. Please wait at least"
+                )
+            )
+            self.assertTrue(
+                context_manager.exception.message.startswith(
+                    "\n<!doctype html>"
+                )
+            )
+
+    def test_request__too__many_requests__without_retry_headers(self):
+        requestor = prawcore.Requestor("python-requests/2.25.1")
+
+        with Betamax(requestor).use_cassette(
+            "Session_request__too__many_requests__without_retry_headers"
+        ):
+            with self.assertRaises(
+                prawcore.exceptions.ResponseException
+            ) as context_manager:
+                prawcore.Session(readonly_authorizer(requestor=requestor))
+            self.assertEqual(
+                429, context_manager.exception.response.status_code
+            )
+            self.assertFalse(
+                context_manager.exception.response.headers.get("retry-after")
+            )
+            self.assertEqual(
+                "Too Many Requests", context_manager.exception.response.reason
+            )
+            self.assertEqual(
+                context_manager.exception.response.json(),
+                {"message": "Too Many Requests", "error": 429},
+            )
+
     def test_request__unavailable_for_legal_reasons(self):
         with Betamax(REQUESTOR).use_cassette(
             "Session_request__unavailable_for_legal_reasons"
