@@ -5,7 +5,7 @@ from betamax import Betamax
 
 import prawcore
 
-from .conftest import (
+from .conftest import (  # noqa F401
     CLIENT_ID,
     CLIENT_SECRET,
     PASSWORD,
@@ -14,6 +14,7 @@ from .conftest import (
     REFRESH_TOKEN,
     REQUESTOR,
     TEMPORARY_GRANT_CODE,
+    two_factor_callback,
     USERNAME,
 )
 
@@ -339,6 +340,40 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         self.assertIsNotNone(authorizer.access_token)
         self.assertEqual(set(["*"]), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
+
+    def test_refresh_with__valid_otp(self):
+        authorizer = prawcore.ScriptAuthorizer(
+            self.authentication,
+            USERNAME,
+            PASSWORD,
+            lambda: "000000",
+        )
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(REQUESTOR).use_cassette(
+            "ScriptAuthorizer_refresh_with__valid_otp"
+        ):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(["*"]), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_refresh_with__invalid_otp(self):
+        authorizer = prawcore.ScriptAuthorizer(
+            self.authentication,
+            USERNAME,
+            PASSWORD,
+            lambda: "fake",
+        )
+
+        with Betamax(REQUESTOR).use_cassette(
+            "ScriptAuthorizer_refresh_with__invalid_otp"
+        ):
+            self.assertRaises(prawcore.OAuthException, authorizer.refresh)
+            self.assertFalse(authorizer.is_valid())
 
     def test_refresh__with_invalid_username_or_password(self):
         authorizer = prawcore.ScriptAuthorizer(

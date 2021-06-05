@@ -22,6 +22,7 @@ from .conftest import (
     REFRESH_TOKEN,
     REQUESTOR,
     USERNAME,
+    two_factor_callback,
 )
 
 
@@ -60,7 +61,9 @@ def script_authorizer():
     authenticator = prawcore.TrustedAuthenticator(
         REQUESTOR, CLIENT_ID, CLIENT_SECRET
     )
-    authorizer = prawcore.ScriptAuthorizer(authenticator, USERNAME, PASSWORD)
+    authorizer = prawcore.ScriptAuthorizer(
+        authenticator, USERNAME, PASSWORD, two_factor_callback
+    )
     authorizer.refresh()
     return authorizer
 

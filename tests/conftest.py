@@ -31,6 +31,11 @@ def b64_string(input_string):
     return b64encode(input_string.encode("utf-8")).decode("utf-8")
 
 
+def two_factor_callback():
+    """Return an OTP code."""
+    return None
+
+
 Betamax.register_request_matcher(JSONBodyMatcher)
 Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
 
