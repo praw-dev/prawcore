@@ -1,10 +1,9 @@
 Change Log
 ==========
 
-prawcore follows `semantic versioning <http://semver.org/>`_ with the exception that
-deprecations will not be announced by a minor release.
+prawcore follows `semantic versioning <http://semver.org/>`_.
 
-Unreleased
+2.1.0 (2021-06-07)
 ------------------
 
 **Added**
