@@ -111,7 +111,7 @@ class Session(object):
         520: ServerError,
         522: ServerError,
     }
-    SUCCESS_STATUSES = {codes["created"], codes["ok"]}
+    SUCCESS_STATUSES = {codes["accepted"], codes["created"], codes["ok"]}
 
     @staticmethod
     def _log_request(data, method, params, url):
