@@ -1,45 +1,98 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2016-02-14T23:49:47",
+      "recorded_at": "2021-06-07T10:30:40",
       "request": {
         "body": {
           "encoding": "utf-8",
           "string": "code=<TEMP_CODE>&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8080"
         },
         "headers": {
-          "Accept": "*/*",
-          "Accept-Encoding": "gzip, deflate",
-          "Authorization": "Basic <BASIC_AUTH>",
-          "Connection": "keep-alive",
-          "Content-Length": "105",
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972",
-          "User-Agent": "prawcore/0.0.1a1"
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "108"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=f5KZ6I9GmO6zC9InB3; loid=0000000000cksuire2.2.1623058268671.Z0FBQUFBQmd2ZWRjZ3VXVUluMld4VXBuVFNpVUtmdUo5Qmlac0xqQmw4RnNaNzZkN3RGcW9SMzVDTWJTUW81OFVtME9rcW5yak5iX3djdXVDNDk5Znl1clZkdERSM1EyR2NFQUlKbUFldVlWSVhDRTRHVUpwT3cxTW1tSXhfbWUxRTFiWldBc29LaFo; session_tracker=whsHxMuMAvrj45AdCl.0.1623058268671.Z0FBQUFBQmd2ZWRjSWVNelA3U1Z6elpFUGJSc3l5X3ktZHlUdFRmbkhidGpFYmhOYnZ4UHlxRzdOM0p6a0dsOEFiY3NBcjBZN0JoMWc5TTBiU3Jmb1NHcFpTLTJtSEhiZjRELVdYb0tRMFNvNUFlU053SHZ2eUkwdGFZWjkzZ2s4WDJrZmxvcE96R20"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.0.0"
+          ]
         },
         "method": "POST",
         "uri": "https://www.reddit.com/api/v1/access_token"
       },
       "response": {
         "body": {
-          "base64_string": "H4sIAAAAAAAAA6tWSkxOTi0uji/Jz07NU7JSUDI3NjCyMDPXDXFOcinOCPAz9SwPdo0vKsg3NXKyzE91jDD2VdJRUAKrjy+pLEgFaUpKTSxKLQKJp1YUZBalFsdnggwzNjMw0FFQKk7OhyjLTEnNK8ksqVSqBQBlFVapeAAAAA==",
           "encoding": "UTF-8",
-          "string": ""
+          "string": "{\"access_token\": \"1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"identity\"}"
         },
         "headers": {
-          "CF-RAY": "274cabe9e92639b8-PHX",
-          "Connection": "keep-alive",
-          "Content-Encoding": "gzip",
-          "Content-Type": "application/json; charset=UTF-8",
-          "Date": "Sun, 14 Feb 2016 23:49:47 GMT",
-          "Server": "cloudflare-nginx",
-          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
-          "Transfer-Encoding": "chunked",
-          "X-Moose": "majestic",
-          "cache-control": "max-age=0, must-revalidate",
-          "x-content-type-options": "nosniff",
-          "x-frame-options": "SAMEORIGIN",
-          "x-xss-protection": "1; mode=block"
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "124"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Mon, 07 Jun 2021 10:30:40 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "299"
+          ],
+          "x-ratelimit-reset": [
+            "560"
+          ],
+          "x-ratelimit-used": [
+            "1"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
         },
         "status": {
           "code": 200,
@@ -49,21 +102,37 @@
       }
     },
     {
-      "recorded_at": "2016-02-14T23:49:47",
+      "recorded_at": "2021-06-07T10:30:40",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "token=7302867-TCbDshPN5IwSE_rpo52B9oeAX3M&token_type_hint=access_token"
+          "string": "token=1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&token_type_hint=access_token"
         },
         "headers": {
-          "Accept": "*/*",
-          "Accept-Encoding": "gzip, deflate",
-          "Authorization": "Basic <BASIC_AUTH>",
-          "Connection": "keep-alive",
-          "Content-Length": "70",
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972",
-          "User-Agent": "prawcore/0.0.1a1"
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "74"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=f5KZ6I9GmO6zC9InB3; loid=0000000000cksuire2.2.1623058268671.Z0FBQUFBQmd2ZWRjZ3VXVUluMld4VXBuVFNpVUtmdUo5Qmlac0xqQmw4RnNaNzZkN3RGcW9SMzVDTWJTUW81OFVtME9rcW5yak5iX3djdXVDNDk5Znl1clZkdERSM1EyR2NFQUlKbUFldVlWSVhDRTRHVUpwT3cxTW1tSXhfbWUxRTFiWldBc29LaFo; session_tracker=whsHxMuMAvrj45AdCl.0.1623058268671.Z0FBQUFBQmd2ZWRjSWVNelA3U1Z6elpFUGJSc3l5X3ktZHlUdFRmbkhidGpFYmhOYnZ4UHlxRzdOM0p6a0dsOEFiY3NBcjBZN0JoMWc5TTBiU3Jmb1NHcFpTLTJtSEhiZjRELVdYb0tRMFNvNUFlU053SHZ2eUkwdGFZWjkzZ2s4WDJrZmxvcE96R20"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.0.0"
+          ]
         },
         "method": "POST",
         "uri": "https://www.reddit.com/api/v1/revoke_token"
@@ -74,26 +143,65 @@
           "string": ""
         },
         "headers": {
-          "CF-RAY": "274cabeab92839b8-PHX",
-          "Connection": "keep-alive",
-          "Content-Length": "0",
-          "Content-Type": "application/json; charset=UTF-8",
-          "Date": "Sun, 14 Feb 2016 23:49:47 GMT",
-          "Server": "cloudflare-nginx",
-          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
-          "X-Moose": "majestic",
-          "cache-control": "max-age=0, must-revalidate",
-          "x-content-type-options": "nosniff",
-          "x-frame-options": "SAMEORIGIN",
-          "x-xss-protection": "1; mode=block"
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Mon, 07 Jun 2021 10:30:40 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "298"
+          ],
+          "x-ratelimit-reset": [
+            "560"
+          ],
+          "x-ratelimit-used": [
+            "2"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
         },
         "status": {
-          "code": 204,
-          "message": "No Content"
+          "code": 200,
+          "message": "OK"
         },
         "url": "https://www.reddit.com/api/v1/revoke_token"
       }
     }
   ],
-  "recorded_with": "betamax/0.5.1"
+  "recorded_with": "betamax/0.8.1"
 }
