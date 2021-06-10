@@ -10,6 +10,11 @@ Unreleased
 
 - Support 202 "Accepted" HTTP responses.
 
+**Fixed**
+
+- The expected HTTP response status code for a request made with the proper credentials
+  to api/v1/revoke_token has been changed from 204 to 200.
+
 2.1.0 (2021-06-07)
 ------------------
 
