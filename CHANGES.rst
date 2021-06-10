@@ -3,6 +3,13 @@ Change Log
 
 prawcore follows `semantic versioning <http://semver.org/>`_.
 
+Unreleased
+----------
+
+**Added**
+
+- Support 202 "Accepted" HTTP responses.
+
 2.1.0 (2021-06-07)
 ------------------
 

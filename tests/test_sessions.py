@@ -89,6 +89,15 @@ class SessionTest(unittest.TestCase):
         authorizer = prawcore.ImplicitAuthorizer(authenticator, None, 0, "")
         prawcore.Session(authorizer)
 
+    def test_request__accepted(self):
+        with Betamax(REQUESTOR).use_cassette("Session_request__accepted"):
+            session = prawcore.Session(script_authorizer())
+            with LogCapture(level=logging.DEBUG) as log_capture:
+                session.request("POST", "api/read_all_messages")
+            log_capture.check_present(
+                ("prawcore", "DEBUG", "Response: 202 (2 bytes)")
+            )
+
     @patch("requests.Session")
     def test_request__chunked_encoding_retry(self, mock_session):
         session_instance = mock_session.return_value
