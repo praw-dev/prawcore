@@ -1,6 +1,7 @@
 """Test for prawcore.requestor.Requestor class."""
 import pickle
 import unittest
+from inspect import signature
 
 from mock import Mock, patch
 
@@ -59,6 +60,13 @@ class RequestorTest(unittest.TestCase):
         )
 
         self.assertEqual(requestor.request("https://reddit.com"), override)
+
+    def test_request__session_timeout_default(self):
+        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
+        requestor_signature = signature(requestor._http.request)
+        self.assertEqual(
+            str(requestor_signature.parameters["timeout"]), "timeout=None"
+        )
 
     def test_pickle(self):
         requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
