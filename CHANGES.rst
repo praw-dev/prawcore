@@ -10,6 +10,8 @@ Unreleased
 
 - 301 redirects result in a ``Redirect`` exception.
 - ``Requestor`` is now initialzed with a ``timeout`` parameter.
+- ``ScriptAuthorizer``, ``ReadOnlyAuthorizer``, and ``DeviceIDAuthorizer`` have a
+  new parameter, ``scopes``, which determines the scope of access requests.
 
 2.2.0 (2021-06-10)
 ------------------

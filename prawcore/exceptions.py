@@ -153,7 +153,7 @@ class TooManyRequests(ResponseException):
         """Initialize a TooManyRequests exception instance.
 
         :param response: A requests.response instance that may contain a retry-after
-        header and a message.
+            header and a message.
 
         """
         self.response = response
