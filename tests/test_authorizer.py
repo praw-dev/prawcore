@@ -263,6 +263,21 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
         self.assertEqual(set(["*"]), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
 
+    def test_refresh__with_scopes(self):
+        scope_list = ["adsedit", "adsread", "creddits", "history"]
+        authorizer = prawcore.DeviceIDAuthorizer(
+            self.authentication,
+            scopes=scope_list,
+        )
+        with Betamax(REQUESTOR).use_cassette(
+            "DeviceIDAuthorizer_refresh__with_scopes"
+        ):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(scope_list), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
     def test_refresh__with_short_device_id(self):
         authorizer = prawcore.DeviceIDAuthorizer(self.authentication, "a" * 19)
         with Betamax(REQUESTOR).use_cassette(
@@ -314,6 +329,24 @@ class ReadOnlyAuthorizerTest(AuthorizerTestBase):
         self.assertEqual(set(["*"]), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
 
+    def test_refresh__with_scopes(self):
+        scope_list = ["adsedit", "adsread", "creddits", "history"]
+        authorizer = prawcore.ReadOnlyAuthorizer(
+            self.authentication, scopes=scope_list
+        )
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(REQUESTOR).use_cassette(
+            "ReadOnlyAuthorizer_refresh__with_scopes"
+        ):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(scope_list), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
 
 class ScriptAuthorizerTest(AuthorizerTestBase):
     def test_initialize__with_untrusted_authenticator(self):
@@ -341,27 +374,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         self.assertEqual(set(["*"]), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
 
-    def test_refresh_with__valid_otp(self):
-        authorizer = prawcore.ScriptAuthorizer(
-            self.authentication,
-            USERNAME,
-            PASSWORD,
-            lambda: "000000",
-        )
-        self.assertIsNone(authorizer.access_token)
-        self.assertIsNone(authorizer.scopes)
-        self.assertFalse(authorizer.is_valid())
-
-        with Betamax(REQUESTOR).use_cassette(
-            "ScriptAuthorizer_refresh_with__valid_otp"
-        ):
-            authorizer.refresh()
-
-        self.assertIsNotNone(authorizer.access_token)
-        self.assertEqual(set(["*"]), authorizer.scopes)
-        self.assertTrue(authorizer.is_valid())
-
-    def test_refresh_with__invalid_otp(self):
+    def test_refresh__with_invalid_otp(self):
         authorizer = prawcore.ScriptAuthorizer(
             self.authentication,
             USERNAME,
@@ -370,7 +383,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         )
 
         with Betamax(REQUESTOR).use_cassette(
-            "ScriptAuthorizer_refresh_with__invalid_otp"
+            "ScriptAuthorizer_refresh__with_invalid_otp"
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
             self.assertFalse(authorizer.is_valid())
@@ -384,3 +397,37 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
             self.assertFalse(authorizer.is_valid())
+
+    def test_refresh__with_scopes(self):
+        scope_list = ["adsedit", "adsread", "creddits", "history"]
+        authorizer = prawcore.ScriptAuthorizer(
+            self.authentication, USERNAME, PASSWORD, scopes=scope_list
+        )
+        with Betamax(REQUESTOR).use_cassette(
+            "ScriptAuthorizer_refresh__with_scopes"
+        ):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(scope_list), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
+
+    def test_refresh__with_valid_otp(self):
+        authorizer = prawcore.ScriptAuthorizer(
+            self.authentication,
+            USERNAME,
+            PASSWORD,
+            lambda: "000000",
+        )
+        self.assertIsNone(authorizer.access_token)
+        self.assertIsNone(authorizer.scopes)
+        self.assertFalse(authorizer.is_valid())
+
+        with Betamax(REQUESTOR).use_cassette(
+            "ScriptAuthorizer_refresh__with_valid_otp"
+        ):
+            authorizer.refresh()
+
+        self.assertIsNotNone(authorizer.access_token)
+        self.assertEqual(set(["*"]), authorizer.scopes)
+        self.assertTrue(authorizer.is_valid())
