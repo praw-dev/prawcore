@@ -405,6 +405,13 @@ class SessionTest(unittest.TestCase):
                 session.request("GET", "/r/random")
             self.assertTrue(context_manager.exception.path.startswith("/r/"))
 
+    def test_request__redirect_301(self):
+        with Betamax(REQUESTOR).use_cassette("Session_request__redirect_301"):
+            session = prawcore.Session(readonly_authorizer())
+            with self.assertRaises(prawcore.Redirect) as context_manager:
+                session.request("GET", "t/bird")
+            self.assertTrue(context_manager.exception.path == "/r/t:bird/")
+
     def test_request__service_unavailable(self):
         with Betamax(REQUESTOR).use_cassette(
             "Session_request__service_unavailable"

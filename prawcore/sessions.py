@@ -100,6 +100,7 @@ class Session(object):
         codes["gateway_timeout"]: ServerError,
         codes["internal_server_error"]: ServerError,
         codes["media_type"]: SpecialError,
+        codes["moved_permanently"]: Redirect,
         codes["not_found"]: NotFound,
         codes["request_entity_too_large"]: TooLarge,
         codes["request_uri_too_large"]: URITooLong,

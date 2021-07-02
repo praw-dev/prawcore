@@ -3,6 +3,13 @@ Change Log
 
 prawcore follows `semantic versioning <http://semver.org/>`_.
 
+Unreleased
+----------
+
+**Added**
+
+- 301 redirects result in a ``Redirect`` exception.
+
 2.2.0 (2021-06-10)
 ------------------
 
@@ -21,7 +28,7 @@ prawcore follows `semantic versioning <http://semver.org/>`_.
 **Added**
 
 - Add a ``URITooLarge`` exception.
-- :class:`.ScriptAuthorizer` has a new parameter ``two_factor_callback `` that supplies
+- :class:`.ScriptAuthorizer` has a new parameter ``two_factor_callback`` that supplies
   OTPs (One-Time Passcodes) when :meth:`.ScriptAuthorizer.refresh` is called.
 - Add a ``TooManyRequests`` exception.
 
