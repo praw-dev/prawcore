@@ -7,11 +7,11 @@ prawcore
     :alt: Latest prawcore Version
     :target: https://pypi.python.org/pypi/prawcore
 
-.. image:: https://travis-ci.org/praw-dev/prawcore.svg?branch=master
+.. image:: https://travis-ci.org/praw-dev/prawcore.svg?branch=main
     :target: https://travis-ci.org/praw-dev/prawcore
 
-.. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=master
-    :target: https://coveralls.io/github/praw-dev/prawcore?branch=master
+.. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=main
+    :target: https://coveralls.io/github/praw-dev/prawcore?branch=main
 
 prawcore is a low-level communication layer used by PRAW 4+.
 
@@ -57,7 +57,7 @@ Save the above as ``trophies.py`` and then execute via:
     python trophies.py
 
 Additional examples can be found at:
-https://github.com/praw-dev/prawcore/tree/master/examples
+https://github.com/praw-dev/prawcore/tree/main/examples
 
 Depending on prawcore
 ---------------------
