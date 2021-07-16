@@ -355,7 +355,7 @@ class ReadOnlyAuthorizer(Authorizer):
     AUTHENTICATOR_CLASS = TrustedAuthenticator
 
     def __init__(self, authenticator, scopes=None):
-        """Represent a single personal-use authorization to Reddit's API.
+        """Represent a ReadOnly authorization to Reddit's API.
 
         :param scopes: (Optional) A list of OAuth scopes to request authorization for
             (default: None). The scope ``*`` is requested when the default argument is
@@ -407,19 +407,19 @@ class ScriptAuthorizer(Authorizer):
 
         """
         super(ScriptAuthorizer, self).__init__(authenticator)
-        self._username = username
         self._password = password
-        self._two_factor_callback = two_factor_callback
         self._scopes = scopes
+        self._two_factor_callback = two_factor_callback
+        self._username = username
 
     def refresh(self):
         """Obtain a new personal-use script type access token."""
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        otp = self._two_factor_callback and self._two_factor_callback()
-        if otp:
-            additional_kwargs["otp"] = otp
+        two_factor_code = self._two_factor_callback and self._two_factor_callback()
+        if two_factor_code:
+            additional_kwargs["otp"] = two_factor_code
         self._request_token(
             grant_type="password",
             username=self._username,

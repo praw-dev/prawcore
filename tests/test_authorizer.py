@@ -386,7 +386,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
             "ScriptAuthorizer_refresh__with_invalid_otp"
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
-            self.assertFalse(authorizer.is_valid())
+        self.assertFalse(authorizer.is_valid())
 
     def test_refresh__with_invalid_username_or_password(self):
         authorizer = prawcore.ScriptAuthorizer(
@@ -396,7 +396,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
             "ScriptAuthorizer_refresh__with_invalid_username_or_password"
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
-            self.assertFalse(authorizer.is_valid())
+        self.assertFalse(authorizer.is_valid())
 
     def test_refresh__with_scopes(self):
         scope_list = ["adsedit", "adsread", "creddits", "history"]
