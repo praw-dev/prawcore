@@ -14,8 +14,8 @@ from .conftest import (  # noqa F401
     REFRESH_TOKEN,
     REQUESTOR,
     TEMPORARY_GRANT_CODE,
-    two_factor_callback,
     USERNAME,
+    two_factor_callback,
 )
 
 
@@ -246,8 +246,10 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
         self.assertIsNone(authorizer.scopes)
         self.assertFalse(authorizer.is_valid())
 
-    def test_initialize__with_trusted_authenticator(self):
-        authenticator = prawcore.TrustedAuthenticator(None, None, None)
+    def test_initialize__with_base_authenticator(self):
+        authenticator = prawcore.Authorizer(
+            prawcore.auth.BaseAuthenticator(None, None, None)
+        )
         self.assertRaises(
             prawcore.InvalidInvocation,
             prawcore.DeviceIDAuthorizer,
@@ -263,14 +265,14 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
         self.assertEqual(set(["*"]), authorizer.scopes)
         self.assertTrue(authorizer.is_valid())
 
-    def test_refresh__with_scopes(self):
+    def test_refresh__with_scopes_and_trusted_authenticator(self):
         scope_list = ["adsedit", "adsread", "creddits", "history"]
         authorizer = prawcore.DeviceIDAuthorizer(
-            self.authentication,
+            prawcore.TrustedAuthenticator(REQUESTOR, CLIENT_ID, CLIENT_SECRET),
             scopes=scope_list,
         )
         with Betamax(REQUESTOR).use_cassette(
-            "DeviceIDAuthorizer_refresh__with_scopes"
+            "DeviceIDAuthorizer_refresh__with_scopes_and_trusted_authenticator"
         ):
             authorizer.refresh()
 

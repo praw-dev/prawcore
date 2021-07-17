@@ -13,6 +13,10 @@ Unreleased
 - ``ScriptAuthorizer``, ``ReadOnlyAuthorizer``, and ``DeviceIDAuthorizer`` have a
   new parameter, ``scopes``, which determines the scope of access requests.
 
+**Changed**
+
+- ``DeviceIDAuthorizer`` can be now used with ``TrustedAuthenticator``.
+
 2.2.0 (2021-06-10)
 ------------------
 
