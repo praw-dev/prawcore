@@ -1,7 +1,9 @@
 """Test for prawcore.auth.Authorizer classes."""
 import unittest
+from traceback import format_exc
 
 from betamax import Betamax
+from mock import Mock, patch
 
 import prawcore
 
@@ -14,8 +16,8 @@ from .conftest import (  # noqa F401
     REFRESH_TOKEN,
     REQUESTOR,
     TEMPORARY_GRANT_CODE,
-    two_factor_callback,
     USERNAME,
+    two_factor_callback,
 )
 
 
@@ -386,7 +388,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
             "ScriptAuthorizer_refresh__with_invalid_otp"
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
-        self.assertFalse(authorizer.is_valid())
+            self.assertFalse(authorizer.is_valid())
 
     def test_refresh__with_invalid_username_or_password(self):
         authorizer = prawcore.ScriptAuthorizer(
@@ -397,6 +399,29 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         ):
             self.assertRaises(prawcore.OAuthException, authorizer.refresh)
         self.assertFalse(authorizer.is_valid())
+
+    @patch("time.sleep", return_value=None)
+    @patch("prawcore.Requestor.request")
+    def test_refresh_with_retries(self, mock_post, _):
+        response = Mock(
+            json=lambda: {"error": "invalid grant"}, status_code=200
+        )
+        mock_post.return_value = response
+        mock_callback = Mock(return_value="123456")
+        authorizer = prawcore.ScriptAuthorizer(
+            self.authentication,
+            "dummy",
+            "dummy",
+            two_factor_callback=mock_callback,
+            retries=13,
+        )
+        try:
+            authorizer.refresh()
+        except prawcore.OAuthException:
+            traceback = format_exc()
+        assert traceback.count("prawcore.exceptions.OAuthException") == 11
+        assert mock_callback.call_count == 11
+        assert mock_post.call_count == 11
 
     def test_refresh__with_scopes(self):
         scope_list = ["adsedit", "adsread", "creddits", "history"]
