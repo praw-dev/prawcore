@@ -89,6 +89,7 @@ class Session(object):
         codes["bad_gateway"],
         codes["gateway_timeout"],
         codes["internal_server_error"],
+        codes["request_timeout"],
         codes["service_unavailable"],
     }
     STATUS_EXCEPTIONS = {
