@@ -33,7 +33,7 @@ jobs:
     - name: Run flake8
       run: flake8 . --statistics
     - name: Run pydocstyle
-      run: pydocstyle
+      run: pydocstyle prawcore
   test:
     runs-on: ubuntu-latest
     steps:
