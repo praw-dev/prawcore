@@ -457,6 +457,7 @@ class LocalWSGIServerAuthorizer(Authorizer):
 
         self.scopes = scopes
         self.duration = duration
+        self.localserver_url = f"http://{redirect_netloc}/"
 
     def authorize_local_server(self, state=str(uuid4())):
         auth_app = _OAuth2ClientUserAuthApp(

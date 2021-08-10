@@ -2,6 +2,7 @@
 import logging
 import random
 import time
+import webbrowser
 from copy import deepcopy
 from urllib.parse import urljoin
 
@@ -282,8 +283,10 @@ class Session(object):
             and not self._authorizer.is_valid()
             and hasattr(self._authorizer, "authorize_local_server")
         ):
+            webbrowser.open(self._authorizer.localserver_url)
             self._authorizer.authorize_local_server()
-        if not self._authorizer.is_valid() and hasattr(
+            
+        elif not self._authorizer.is_valid() and hasattr(
             self._authorizer, "refresh"
         ):
             self._authorizer.refresh()
