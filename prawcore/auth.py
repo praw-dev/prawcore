@@ -283,11 +283,20 @@ class Authorizer(BaseAuthorizer):
 
 
 class _OAuth2ClientUserAuthApp(object):
-    def __init__(self, authenticator, state, scopes, implicit=False, duration="permanent") -> None:
+    def __init__(
+        self,
+        authenticator,
+        state,
+        scopes,
+        implicit=False,
+        duration="permanent",
+    ) -> None:
         super().__init__()
         self.__finished = False
         self.__state = state
-        self.__auth_url = authenticator.authorize_url(duration, scopes, state, implicit)
+        self.__auth_url = authenticator.authorize_url(
+            duration, scopes, state, implicit
+        )
         self.__redirect_uri = authenticator.redirect_uri
         self.__callback_uri = urlparse(self.__redirect_uri).path
         self.__auth_exchange_data = {}
@@ -300,11 +309,21 @@ class _OAuth2ClientUserAuthApp(object):
 
             if req_method == "GET":
                 if req_uri == "/":
-                    start_resp("200 OK", [("Content-type", "text/html; charset=utf-8")])
-                    return ['<a href="/auth">Authenticate with reddit</a>'.encode("utf8")]
+                    start_resp(
+                        "200 OK",
+                        [("Content-type", "text/html; charset=utf-8")],
+                    )
+                    return [
+                        '<a href="/auth">Authenticate with reddit</a>'.encode(
+                            "utf8"
+                        )
+                    ]
 
                 elif req_uri == "/auth":
-                    start_resp("302 Moved Temporarily", [("Location", self.__auth_url)])
+                    start_resp(
+                        "302 Moved Temporarily",
+                        [("Location", self.__auth_url)],
+                    )
                     return []
 
                 elif req_uri == self.__callback_uri:
@@ -313,23 +332,43 @@ class _OAuth2ClientUserAuthApp(object):
 
                         if req_state == self.__state:
                             if "code" in req_query:
-                                self.__auth_exchange_data.update({"code": req_query["code"][0]})
+                                self.__auth_exchange_data.update(
+                                    {"code": req_query["code"][0]}
+                                )
 
                             else:
-                                self.__auth_exchange_data.update({
-                                    "access_token": req_query["access_token"][0],
-                                    "expires_in": req_query["expires_in"][0],
-                                    "scope": req_query["scope"][0]
-                                })
+                                self.__auth_exchange_data.update(
+                                    {
+                                        "access_token": req_query[
+                                            "access_token"
+                                        ][0],
+                                        "expires_in": req_query["expires_in"][
+                                            0
+                                        ],
+                                        "scope": req_query["scope"][0],
+                                    }
+                                )
 
                             start_resp("200 OK", [])
-                            received = "Authorization Code" if "code" in self.__auth_exchange_data else "User Access Token"
+                            received = (
+                                "Authorization Code"
+                                if "code" in self.__auth_exchange_data
+                                else "User Access Token"
+                            )
                             self.__finished = True
-                            return [f"Received {received} Successfully! You may safely close this page.".encode("utf8")]
+                            return [
+                                f"Received {received} Successfully! You may safely close this page.".encode(
+                                    "utf8"
+                                )
+                            ]
 
                         else:
                             start_resp("200 OK", [])
-                            return [f"State mismatch!\nExpected State: {self.__state}\nReceived State: {req_state}".encode("utf8")]
+                            return [
+                                f"State mismatch!\nExpected State: {self.__state}\nReceived State: {req_state}".encode(
+                                    "utf8"
+                                )
+                            ]
 
                     else:
                         start_resp("200 OK", [])
@@ -339,16 +378,29 @@ class _OAuth2ClientUserAuthApp(object):
                             return ["User denied permission!".encode("utf8")]
 
                         elif err_val == "unsupported_response_type":
-                            return ["Invalid initial authorization response_type!".encode("utf8")]
+                            return [
+                                "Invalid initial authorization response_type!".encode(
+                                    "utf8"
+                                )
+                            ]
 
                         elif err_val == "invalid_scope":
-                            return ["Invalid authorization scope(s) requested!".encode("utf8")]
+                            return [
+                                "Invalid authorization scope(s) requested!".encode(
+                                    "utf8"
+                                )
+                            ]
 
                         elif err_val == "invalid_request":
-                            return ["Invalid authorization request!".encode("utf8")]
+                            return [
+                                "Invalid authorization request!".encode("utf8")
+                            ]
 
                         else:
-                            return ["Unknown Error!" + f"\nERROR: {err_val}".encode("utf8")]
+                            return [
+                                "Unknown Error!"
+                                + f"\nERROR: {err_val}".encode("utf8")
+                            ]
 
                 else:
                     start_resp("404 Not Found", [])
@@ -356,7 +408,11 @@ class _OAuth2ClientUserAuthApp(object):
 
             else:
                 start_resp("405 Method Not Allowed", [])
-                return ["Specified HTTP Request Method is not accepted by server!".encode("utf8")]
+                return [
+                    "Specified HTTP Request Method is not accepted by server!".encode(
+                        "utf8"
+                    )
+                ]
 
     @property
     def finished(self) -> bool:
@@ -364,11 +420,19 @@ class _OAuth2ClientUserAuthApp(object):
 
     @property
     def auth_code(self) -> Optional[str]:
-        return self.__auth_exchange_data["code"] if "code" in self.__auth_exchange_data else None
+        return (
+            self.__auth_exchange_data["code"]
+            if "code" in self.__auth_exchange_data
+            else None
+        )
 
     @property
     def implicit_grant(self) -> Optional[Dict[str, Any]]:
-        return self.__auth_exchange_data if "access_token" in self.__auth_exchange_data else None
+        return (
+            self.__auth_exchange_data
+            if "access_token" in self.__auth_exchange_data
+            else None
+        )
 
 
 class LocalWSGIServerAuthorizer(Authorizer):
@@ -383,8 +447,12 @@ class LocalWSGIServerAuthorizer(Authorizer):
         super(LocalWSGIServerAuthorizer, self).__init__(authenticator)
 
         redirect_netloc = urlparse(authenticator.redirect_uri).netloc
-        if not redirect_netloc.startswith("localhost") or not redirect_netloc.startswith("127.0.0.1"):
-            raise InvalidInvocation("Redirect URL specified is not a local server location!")
+        if not redirect_netloc.startswith(
+            "localhost"
+        ) or not redirect_netloc.startswith("127.0.0.1"):
+            raise InvalidInvocation(
+                "Redirect URL specified is not a local server location!"
+            )
 
         self.scopes = scopes
         self.duration = duration
@@ -401,8 +469,10 @@ class LocalWSGIServerAuthorizer(Authorizer):
         redirect_uri = urlparse(self._authenticator.redirect_uri)
         auth_server = make_server(
             redirect_uri.netloc.split(":")[0],
-            redirect_uri.netloc.split(":")[1] if ":" in redirect_uri.netloc else 80,
-            auth_app
+            redirect_uri.netloc.split(":")[1]
+            if ":" in redirect_uri.netloc
+            else 80,
+            auth_app,
         )
 
         while not auth_app.finished:
