@@ -283,11 +283,11 @@ class Authorizer(BaseAuthorizer):
 
 
 class _OAuth2ClientUserAuthApp(object):
-    def __init__(self, authenticator, scopes, implicit=False, duration="permanent") -> None:
+    def __init__(self, authenticator, state, scopes, implicit=False, duration="permanent") -> None:
         super().__init__()
         self.__finished = False
-        self.__state = str(uuid4())
-        self.__auth_url = authenticator.authorize_url(duration, scopes, self.__state, implicit)
+        self.__state = state
+        self.__auth_url = authenticator.authorize_url(duration, scopes, state, implicit)
         self.__redirect_uri = authenticator.redirect_uri
         self.__callback_uri = urlparse(self.__redirect_uri).path
         self.__auth_exchange_data = {}
@@ -381,12 +381,18 @@ class LocalWSGIServerAuthorizer(Authorizer):
         duration="permanent",
     ):
         super(LocalWSGIServerAuthorizer, self).__init__(authenticator)
+
+        redirect_netloc = urlparse(authenticator.redirect_uri).netloc
+        if not redirect_netloc.startswith("localhost") or not redirect_netloc.startswith("127.0.0.1"):
+            raise InvalidInvocation("Redirect URL specified is not a local server location!")
+
         self.scopes = scopes
         self.duration = duration
 
-    def authorize_local_server(self):
+    def authorize_local_server(self, state=str(uuid4())):
         auth_app = _OAuth2ClientUserAuthApp(
             self._authenticator,
+            state,
             self.scopes,
             implicit=False,
             duration=self.duration,
