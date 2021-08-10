@@ -447,9 +447,10 @@ class LocalWSGIServerAuthorizer(Authorizer):
         super(LocalWSGIServerAuthorizer, self).__init__(authenticator)
 
         redirect_netloc = urlparse(authenticator.redirect_uri).netloc
-        if not redirect_netloc.startswith(
-            "localhost"
-        ) or not redirect_netloc.startswith("127.0.0.1"):
+        if not (
+            redirect_netloc.startswith("localhost")
+            or redirect_netloc.startswith("127.0.0.1")
+        ):
             raise InvalidInvocation(
                 "Redirect URL specified is not a local server location!"
             )
@@ -469,7 +470,7 @@ class LocalWSGIServerAuthorizer(Authorizer):
         redirect_uri = urlparse(self._authenticator.redirect_uri)
         auth_server = make_server(
             redirect_uri.netloc.split(":")[0],
-            redirect_uri.netloc.split(":")[1]
+            int(redirect_uri.netloc.split(":")[1])
             if ":" in redirect_uri.netloc
             else 80,
             auth_app,
