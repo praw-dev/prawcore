@@ -277,6 +277,12 @@ class Session(object):
             raise BadJSON(response)
 
     def _set_header_callback(self):
+        if (
+            self._authorizer.refresh_token is None
+            and not self._authorizer.is_valid()
+            and hasattr(self._authorizer, "authorize_local_server")
+        ):
+            self._authorizer.authorize_local_server()
         if not self._authorizer.is_valid() and hasattr(
             self._authorizer, "refresh"
         ):
