@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 from uuid import uuid4
 from urllib.parse import parse_qs, urlparse
-from wsgiref.simple_server import make_server
+from wsgiref.simple_server import make_server, WSGIRequestHandler
 
 from requests import Request
 from requests.status_codes import codes
@@ -435,6 +435,11 @@ class _OAuth2ClientUserAuthApp(object):
         )
 
 
+class _NoLoggingWSGIRequestHandler(WSGIRequestHandler):
+    def log_message(self, format, *args):
+        pass
+
+
 class LocalWSGIServerAuthorizer(Authorizer):
     AUTHENTICATOR_CLASS = TrustedAuthenticator
 
@@ -475,6 +480,7 @@ class LocalWSGIServerAuthorizer(Authorizer):
             if ":" in redirect_uri.netloc
             else 80,
             auth_app,
+            handler_class=_NoLoggingWSGIRequestHandler,
         )
 
         while not auth_app.finished:
