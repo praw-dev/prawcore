@@ -13,7 +13,7 @@ from requests.exceptions import (
 )
 from requests.status_codes import codes
 
-from .auth import BaseAuthorizer
+from .auth import BaseAuthorizer, LocalWSGIServerAuthorizer
 from .const import TIMEOUT
 from .exceptions import (
     BadJSON,
@@ -279,13 +279,13 @@ class Session(object):
 
     def _set_header_callback(self):
         if (
-            self._authorizer.refresh_token is None
-            and not self._authorizer.is_valid()
-            and hasattr(self._authorizer, "authorize_local_server")
+            not self._authorizer.is_valid()
+            and isinstance(self._authorizer, LocalWSGIServerAuthorizer)
+            and self._authorizer.refresh_token is None
         ):
             webbrowser.open(self._authorizer.localserver_url)
             self._authorizer.authorize_local_server()
-            
+
         elif not self._authorizer.is_valid() and hasattr(
             self._authorizer, "refresh"
         ):
