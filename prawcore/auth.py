@@ -441,6 +441,8 @@ class _NoLoggingWSGIRequestHandler(WSGIRequestHandler):
 
 
 class LocalWSGIServerAuthorizer(Authorizer):
+    """Manages OAuth2 authorization tokens and scopes for 'web' applications via local WSGI server."""
+
     AUTHENTICATOR_CLASS = TrustedAuthenticator
 
     def __init__(
@@ -449,6 +451,13 @@ class LocalWSGIServerAuthorizer(Authorizer):
         scopes,
         duration="permanent",
     ):
+        """Represent a single authorization to Reddit's API.
+
+        :param authenticator: An instance of a subclass of :class:`TrustedAuthenticator`.
+        :param scopes: List of authorization scopes.
+        :param duration: (Optional) Set the duration of authorization.
+
+        """
         super(LocalWSGIServerAuthorizer, self).__init__(authenticator)
 
         redirect_netloc = urlparse(authenticator.redirect_uri).netloc
@@ -465,6 +474,11 @@ class LocalWSGIServerAuthorizer(Authorizer):
         self.localserver_url = f"http://{redirect_netloc}/"
 
     def authorize_local_server(self, state=str(uuid4())):
+        """Start new authorization flow via local WSGI server and wait until user grants authorization.
+
+        :param state: (Optional) The state for authorization.
+
+        """
         auth_app = _OAuth2ClientUserAuthApp(
             self._authenticator,
             state,
