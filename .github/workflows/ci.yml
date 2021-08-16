@@ -4,7 +4,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
-      uses: coverallsapp/github-action@57daa114ba54fd8e1c8563e8027325c0bf2f5e80
+      uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel-finished: true
@@ -52,14 +52,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install .[test]
-        pip install https://github.com/bboe/coveralls-python/archive/github_actions.zip
+        pip install .[ci]
     - name: Test with pytest
       run: coverage run --source prawcore --module pytest
     - env:
         COVERALLS_PARALLEL: true
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       name: Submit to coveralls
-      run: coveralls
+      run: coveralls --service=github
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
