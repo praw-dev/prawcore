@@ -63,7 +63,7 @@ Depending on prawcore
 ---------------------
 
 prawcore follows `semantic versioning <http://semver.org/>`_ with the exception that
-deprecations will not be preceded by a minor release. In essense, expect only major
+deprecations will not be preceded by a minor release. In essence, expect only major
 versions to introduce breaking changes to prawcore's public interface. As a result, if
 you depend on prawcore then it is a good idea to specify not only the minimum version of
 prawcore your package requires, but to also limit the major version.
