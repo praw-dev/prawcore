@@ -6,6 +6,7 @@ from .auth import (  # noqa
     Authorizer,
     DeviceIDAuthorizer,
     ImplicitAuthorizer,
+    LocalWSGIServerAuthorizer,
     ReadOnlyAuthorizer,
     ScriptAuthorizer,
     TrustedAuthenticator,

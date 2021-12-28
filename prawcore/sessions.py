@@ -2,6 +2,7 @@
 import logging
 import random
 import time
+import webbrowser
 from copy import deepcopy
 from urllib.parse import urljoin
 
@@ -12,7 +13,7 @@ from requests.exceptions import (
 )
 from requests.status_codes import codes
 
-from .auth import BaseAuthorizer
+from .auth import BaseAuthorizer, LocalWSGIServerAuthorizer
 from .const import TIMEOUT
 from .exceptions import (
     BadJSON,
@@ -277,7 +278,15 @@ class Session(object):
             raise BadJSON(response)
 
     def _set_header_callback(self):
-        if not self._authorizer.is_valid() and hasattr(
+        if (
+            not self._authorizer.is_valid()
+            and isinstance(self._authorizer, LocalWSGIServerAuthorizer)
+            and self._authorizer.refresh_token is None
+        ):
+            webbrowser.open(self._authorizer.localserver_url)
+            self._authorizer.authorize_local_server()
+
+        elif not self._authorizer.is_valid() and hasattr(
             self._authorizer, "refresh"
         ):
             self._authorizer.refresh()
