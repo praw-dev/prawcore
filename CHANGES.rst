@@ -21,6 +21,10 @@ Unreleased
   new parameter, ``scopes``, which determines the scope of access requests.
 - Retry 408 "Request Timeout" HTTP responses.
 
+**Changed**
+
+- ``DeviceIDAuthorizer`` can be now used with ``TrustedAuthenticator``.
+
 2.2.0 (2021-06-10)
 ------------------
 

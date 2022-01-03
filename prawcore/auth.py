@@ -169,10 +169,12 @@ class BaseAuthorizer(object):
 
     def _validate_authenticator(self):
         if not isinstance(self._authenticator, self.AUTHENTICATOR_CLASS):
-            raise InvalidInvocation(
-                "Must use a authenticator of type"
-                f" {self.AUTHENTICATOR_CLASS.__name__}."
-            )
+            msg = "Must use an authenticator of type"
+            if isinstance(self.AUTHENTICATOR_CLASS, type):
+                msg += f" {self.AUTHENTICATOR_CLASS.__name__}."
+            else:
+                msg += f" {' or '.join([i.__name__ for i in self.AUTHENTICATOR_CLASS])}."
+            raise InvalidInvocation(msg)
 
     def is_valid(self):
         """Return whether or not the Authorizer is ready to authorize requests.
@@ -285,14 +287,15 @@ class DeviceIDAuthorizer(BaseAuthorizer):
 
     """
 
-    AUTHENTICATOR_CLASS = UntrustedAuthenticator
+    AUTHENTICATOR_CLASS = (UntrustedAuthenticator, TrustedAuthenticator)
 
     def __init__(
         self, authenticator, device_id="DO_NOT_TRACK_THIS_DEVICE", scopes=None
     ):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
-        :param authenticator: An instance of :class:`UntrustedAuthenticator`.
+        :param authenticator: An instance of :class:`UntrustedAuthenticator`
+            or :class:`TrustedAuthenticator`.
         :param device_id: (optional) A unique ID (20-30 character ASCII string) (default
             DO_NOT_TRACK_THIS_DEVICE). For more information about this parameter, see:
             https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
@@ -301,7 +304,7 @@ class DeviceIDAuthorizer(BaseAuthorizer):
             used.
 
         """
-        super(DeviceIDAuthorizer, self).__init__(authenticator)
+        super().__init__(authenticator)
         self._device_id = device_id
         self._scopes = scopes
 
