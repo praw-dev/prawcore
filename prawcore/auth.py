@@ -64,8 +64,7 @@ class BaseAuthenticator(object):
             )
         if implicit and duration != "temporary":
             raise InvalidInvocation(
-                "The implicit grant flow only supports "
-                "temporary access tokens."
+                "The implicit grant flow only supports temporary access tokens."
             )
 
         params = {
@@ -113,9 +112,7 @@ class TrustedAuthenticator(BaseAuthenticator):
             ``Authorizer`` class.
 
         """
-        super(TrustedAuthenticator, self).__init__(
-            requestor, client_id, redirect_uri
-        )
+        super(TrustedAuthenticator, self).__init__(requestor, client_id, redirect_uri)
         self.client_secret = client_secret
 
     def _auth(self):
@@ -148,9 +145,7 @@ class BaseAuthorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        url = (
-            self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
-        )
+        url = self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
         pre_request_time = time.time()
         response = self._authenticator._post(url, **data)
         payload = response.json()
@@ -159,9 +154,7 @@ class BaseAuthorizer(object):
                 response, payload["error"], payload.get("error_description")
             )
 
-        self._expiration_timestamp = (
-            pre_request_time - 10 + payload["expires_in"]
-        )
+        self._expiration_timestamp = pre_request_time - 10 + payload["expires_in"]
         self.access_token = payload["access_token"]
         if "refresh_token" in payload:
             self.refresh_token = payload["refresh_token"]
@@ -173,7 +166,9 @@ class BaseAuthorizer(object):
             if isinstance(self.AUTHENTICATOR_CLASS, type):
                 msg += f" {self.AUTHENTICATOR_CLASS.__name__}."
             else:
-                msg += f" {' or '.join([i.__name__ for i in self.AUTHENTICATOR_CLASS])}."
+                msg += (
+                    f" {' or '.join([i.__name__ for i in self.AUTHENTICATOR_CLASS])}."
+                )
             raise InvalidInvocation(msg)
 
     def is_valid(self):
@@ -184,8 +179,7 @@ class BaseAuthorizer(object):
 
         """
         return (
-            self.access_token is not None
-            and time.time() < self._expiration_timestamp
+            self.access_token is not None and time.time() < self._expiration_timestamp
         )
 
     def revoke(self):
@@ -213,16 +207,16 @@ class Authorizer(BaseAuthorizer):
         """Represent a single authorization to Reddit's API.
 
         :param authenticator: An instance of a subclass of :class:`BaseAuthenticator`.
-        :param post_refresh_callback: (Optional) When a single-argument
-            function is passed, the function will be called prior to refreshing
-            the access and refresh tokens. The argument to the callback is the
-            :class:`Authorizer` instance. This callback can be used to inspect
-            and modify the attributes of the :class:`Authorizer`.
-        :param pre_refresh_callback: (Optional) When a single-argument function
-            is passed, the function will be called after refreshing the access
-            and refresh tokens. The argument to the callback is the
-            :class:`Authorizer` instance. This callback can be used to inspect
-            and modify the attributes of the :class:`Authorizer`.
+        :param post_refresh_callback: (Optional) When a single-argument function is
+            passed, the function will be called prior to refreshing the access and
+            refresh tokens. The argument to the callback is the :class:`Authorizer`
+            instance. This callback can be used to inspect and modify the attributes of
+            the :class:`Authorizer`.
+        :param pre_refresh_callback: (Optional) When a single-argument function is
+            passed, the function will be called after refreshing the access and refresh
+            tokens. The argument to the callback is the :class:`Authorizer` instance.
+            This callback can be used to inspect and modify the attributes of the
+            :class:`Authorizer`.
         :param refresh_token: (Optional) Enables the ability to refresh the
             authorization.
 
@@ -272,9 +266,7 @@ class Authorizer(BaseAuthorizer):
         if only_access or self.refresh_token is None:
             super(Authorizer, self).revoke()
         else:
-            self._authenticator.revoke_token(
-                self.refresh_token, "refresh_token"
-            )
+            self._authenticator.revoke_token(self.refresh_token, "refresh_token")
             self._clear_access_token()
             self.refresh_token = None
 
@@ -294,8 +286,8 @@ class DeviceIDAuthorizer(BaseAuthorizer):
     ):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
-        :param authenticator: An instance of :class:`UntrustedAuthenticator`
-            or :class:`TrustedAuthenticator`.
+        :param authenticator: An instance of :class:`UntrustedAuthenticator` or
+            :class:`TrustedAuthenticator`.
         :param device_id: (optional) A unique ID (20-30 character ASCII string) (default
             DO_NOT_TRACK_THIS_DEVICE). For more information about this parameter, see:
             https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
@@ -373,9 +365,7 @@ class ReadOnlyAuthorizer(Authorizer):
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        self._request_token(
-            grant_type="client_credentials", **additional_kwargs
-        )
+        self._request_token(grant_type="client_credentials", **additional_kwargs)
 
 
 class ScriptAuthorizer(Authorizer):
@@ -401,9 +391,9 @@ class ScriptAuthorizer(Authorizer):
         :param authenticator: An instance of :class:`TrustedAuthenticator`.
         :param username: The Reddit username of one of the application's developers.
         :param password: The password associated with ``username``.
-        :param two_factor_callback: A function that returns OTPs (One-Time
-            Passcodes), also known as 2FA auth codes. If this function is
-            provided, prawcore will call it when authenticating.
+        :param two_factor_callback: A function that returns OTPs (One-Time Passcodes),
+            also known as 2FA auth codes. If this function is provided, prawcore will
+            call it when authenticating.
         :param scopes: (Optional) A list of OAuth scopes to request authorization for
             (default: None). The scope ``*`` is requested when the default argument is
             used.
@@ -420,9 +410,7 @@ class ScriptAuthorizer(Authorizer):
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        two_factor_code = (
-            self._two_factor_callback and self._two_factor_callback()
-        )
+        two_factor_code = self._two_factor_callback and self._two_factor_callback()
         if two_factor_code:
             additional_kwargs["otp"] = two_factor_code
         self._request_token(

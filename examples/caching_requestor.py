@@ -2,8 +2,8 @@
 
 """This example shows how simple in-memory caching can be used.
 
-Demonstrates the use of custom sessions with ``Requestor``. It's an adaptation
-of ``read_only_auth_trophies.py``.
+Demonstrates the use of custom sessions with ``Requestor``. It's an adaptation of
+``read_only_auth_trophies.py``.
 
 """
 
@@ -20,6 +20,7 @@ class CachingSession(requests.Session):
 
     Toy example of custom session to showcase the ``session`` parameter of
     ``Requestor``.
+
     """
 
     get_cache = {}
@@ -66,16 +67,14 @@ def main():
         description = trophy["data"]["description"]
         print(
             "Original:",
-            trophy["data"]["name"]
-            + (f" ({description})" if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
 
     for trophy in data2["data"]["trophies"]:
         description = trophy["data"]["description"]
         print(
             "Cached:",
-            trophy["data"]["name"]
-            + (f" ({description})" if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
     print(
         "----\nCached == Original:",

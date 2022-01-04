@@ -2,11 +2,11 @@
 
 """This example demonstrates the flow for retrieving a refresh token.
 
-In order for this example to work your application's redirect URI must be set
-to http://localhost:8080.
+In order for this example to work your application's redirect URI must be set to
+http://localhost:8080.
 
-This tool can be used to conveniently create refresh tokens for later use with
-your web application OAuth2 credentials.
+This tool can be used to conveniently create refresh tokens for later use with your web
+application OAuth2 credentials.
 
 """
 import os
@@ -60,8 +60,7 @@ def main():
     data = client.recv(1024).decode("utf-8")
     param_tokens = data.split(" ", 2)[1].split("?", 1)[1].split("&")
     params = {
-        key: value
-        for (key, value) in [token.split("=") for token in param_tokens]
+        key: value for (key, value) in [token.split("=") for token in param_tokens]
     }
 
     if state != params["state"]:

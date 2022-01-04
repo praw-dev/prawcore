@@ -2,9 +2,9 @@
 
 """script_auth_friend_list.py outputs the authenticated user's list of friends.
 
-This program demonstrates the use of ``prawcore.ScriptAuthorizer``, which
-enables those listed as a developer of the application to authenticate using
-their username and password.
+This program demonstrates the use of ``prawcore.ScriptAuthorizer``, which enables those
+listed as a developer of the application to authenticate using their username and
+password.
 
 """
 import os
