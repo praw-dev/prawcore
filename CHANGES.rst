@@ -17,8 +17,8 @@ Unreleased
 
 - 301 redirects result in a ``Redirect`` exception.
 - ``Requestor`` is now initialized with a ``timeout`` parameter.
-- ``ScriptAuthorizer``, ``ReadOnlyAuthorizer``, and ``DeviceIDAuthorizer`` have a
-  new parameter, ``scopes``, which determines the scope of access requests.
+- ``ScriptAuthorizer``, ``ReadOnlyAuthorizer``, and ``DeviceIDAuthorizer`` have a new
+  parameter, ``scopes``, which determines the scope of access requests.
 - Retry 408 "Request Timeout" HTTP responses.
 
 **Changed**
@@ -52,17 +52,17 @@ Unreleased
 
 **Added**
 
-- ``Authorizer`` optionally takes a ``pre_refresh_callback`` keyword
-  argument. If provided, the function will called with the instance of
-  ``Authorizer`` prior to refreshing the access and refresh tokens.
-- ``Authorizer`` optionally takes a ``post_refresh_callback`` keyword
-  argument. If provided, the function will called with the instance of
-  ``Authorizer`` after refreshing the access and refresh tokens.
+- ``Authorizer`` optionally takes a ``pre_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of ``Authorizer`` prior to
+  refreshing the access and refresh tokens.
+- ``Authorizer`` optionally takes a ``post_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of ``Authorizer`` after
+  refreshing the access and refresh tokens.
 
 **Changed**
 
-- The ``refresh_token`` argument to ``Authorizer`` must now be passed by
-  keyword, and cannot be passed as a positional argument.
+- The ``refresh_token`` argument to ``Authorizer`` must now be passed by keyword, and
+  cannot be passed as a positional argument.
 
 1.5.0 (2020-08-04)
 ------------------
@@ -184,16 +184,16 @@ changes will need to be introduced in the near future.
 
 **Changed**
 
-- Calling ``RateLimiter`` now requires a second positional argument,
-  ``set_header_callback``.
+- Calling ``RateLimiter`` now requires a second positional
+  argument,``set_header_callback``.
 - In the event a 401 unauthorized occurs, the access token is cleared and the request is
   retried.
 
 **Fixed**
 
-- Check if the access token is expired immediately before every authorized request,
-  rather than just before the request flow. This new approach accounts for failure
-  retries, and rate limiter delay.
+- Check if the access token is expired immediately before every authorized
+  request,rather than just before the request flow. This new approach accounts for
+  failure retries, and rate limiter delay.
 
 0.9.0 (2017-03-11)
 ------------------

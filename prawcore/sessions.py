@@ -5,11 +5,7 @@ import time
 from copy import deepcopy
 from urllib.parse import urljoin
 
-from requests.exceptions import (
-    ChunkedEncodingError,
-    ConnectionError,
-    ReadTimeout,
-)
+from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
@@ -108,8 +104,9 @@ class Session(object):
         codes["service_unavailable"]: ServerError,
         codes["too_many_requests"]: TooManyRequests,
         codes["unauthorized"]: authorization_error_class,
-        codes["unavailable_for_legal_reasons"]: UnavailableForLegalReasons,
-        # Cloudflare status (not named in requests)
+        codes[
+            "unavailable_for_legal_reasons"
+        ]: UnavailableForLegalReasons,  # Cloudflare status (not named in requests)
         520: ServerError,
         522: ServerError,
     }
@@ -237,18 +234,13 @@ class Session(object):
         )
 
         do_retry = False
-        if (
-            response is not None
-            and response.status_code == codes["unauthorized"]
-        ):
+        if response is not None and response.status_code == codes["unauthorized"]:
             self._authorizer._clear_access_token()
             if hasattr(self._authorizer, "refresh"):
                 do_retry = True
 
         if retry_strategy_state.should_retry_on_failure() and (
-            do_retry
-            or response is None
-            or response.status_code in self.RETRY_STATUSES
+            do_retry or response is None or response.status_code in self.RETRY_STATUSES
         ):
             return self._do_retry(
                 data,
@@ -277,9 +269,7 @@ class Session(object):
             raise BadJSON(response)
 
     def _set_header_callback(self):
-        if not self._authorizer.is_valid() and hasattr(
-            self._authorizer, "refresh"
-        ):
+        if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
             self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 

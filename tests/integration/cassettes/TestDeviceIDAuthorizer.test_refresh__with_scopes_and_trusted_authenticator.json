@@ -1,0 +1,109 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2021-06-25T11:21:08",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "device_id=DO_NOT_TRACK_THIS_DEVICE&grant_type=https%3A%2F%2Foauth.reddit.com%2Fgrants%2Finstalled_client&scope=adsedit+adsread+creddits+history"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "143"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=xabc3mKo7opLvCrF2B"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.2.0"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/access_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"access_token\": \"-000000000000000000000000000000\", \"token_type\": \"bearer\", \"device_id\": \"DO_NOT_TRACK_THIS_DEVICE\", \"expires_in\": 3600, \"scope\": \"adsedit adsread creddits history\"}"
+        },
+        "headers": {
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "181"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Fri, 25 Jun 2021 11:21:09 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "299"
+          ],
+          "x-ratelimit-reset": [
+            "531"
+          ],
+          "x-ratelimit-used": [
+            "1"
+          ],
+          "x-reddit-loid": [
+            "0000000000cxgu11le.2.1624620069713.Z0FBQUFBQmcxYndseVQ0QzNwTHE4aWtDQmNpTEktZmFFQ19qVjBnc0JDcDVYbDdTaUc0eDU2dGxjWil5MHRnWE5YeUFlNDRWS3BDaDZjV3h3ckRJWWgwVWFjWnNqMzJWbUxEdEZDMVVzRlBUQ2lMcFwMTk1FTU94aXNGeUFuUfQ0UFllR3ZfaUZTZWw"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/access_token"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}

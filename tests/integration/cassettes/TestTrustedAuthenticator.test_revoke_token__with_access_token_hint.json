@@ -1,0 +1,106 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2021-06-07T09:30:24",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "token=dummy+token&token_type_hint=access_token"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "46"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=S3wlJDCxzOhDOBJEN2"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.0.0"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/revoke_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Mon, 07 Jun 2021 09:30:25 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "298"
+          ],
+          "x-ratelimit-reset": [
+            "575"
+          ],
+          "x-ratelimit-used": [
+            "2"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/revoke_token"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}

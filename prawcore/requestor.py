@@ -40,9 +40,7 @@ class Requestor(object):
             raise InvalidInvocation("user_agent is not descriptive")
 
         self._http = session or requests.Session()
-        self._http.headers[
-            "User-Agent"
-        ] = f"{user_agent} prawcore/{__version__}"
+        self._http.headers["User-Agent"] = f"{user_agent} prawcore/{__version__}"
 
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url
@@ -55,8 +53,6 @@ class Requestor(object):
     def request(self, *args, timeout=None, **kwargs):
         """Issue the HTTP request capturing any errors that may occur."""
         try:
-            return self._http.request(
-                *args, timeout=timeout or self.timeout, **kwargs
-            )
+            return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)
         except Exception as exc:
             raise RequestException(exc, args, kwargs)

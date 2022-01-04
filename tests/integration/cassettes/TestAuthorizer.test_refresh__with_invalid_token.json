@@ -1,0 +1,52 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2016-02-07T01:02:52",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "grant_type=refresh_token&refresh_token=INVALID_TOKEN"
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "Basic <BASIC_AUTH>",
+          "Connection": "keep-alive",
+          "Content-Length": "52",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "prawcore/0.0.1a1"
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/access_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"error\": 400}"
+        },
+        "headers": {
+          "CF-RAY": "270b2bfaced23982-PHX",
+          "Connection": "keep-alive",
+          "Content-Length": "14",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Sun, 07 Feb 2016 01:02:52 GMT",
+          "Server": "cloudflare-nginx",
+          "Set-Cookie": "__cfduid=dd555eb868b1bcfd517d08fcb174c3afc1454806972; expires=Mon, 06-Feb-17 01:02:52 GMT; path=/; domain=.reddit.com; HttpOnly",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "X-Moose": "majestic",
+          "cache-control": "max-age=0, must-revalidate",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-ua-compatible": "IE=edge",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 400,
+          "message": "Bad Request"
+        },
+        "url": "https://www.reddit.com/api/v1/access_token"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.5.1"
+}

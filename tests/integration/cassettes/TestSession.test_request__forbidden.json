@@ -1,0 +1,105 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2016-03-22T02:18:37",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "grant_type=password&password=<PASSWORD>&username=<USERNAME>"
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "Basic <BASIC_AUTH>",
+          "Connection": "keep-alive",
+          "Content-Length": "57",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.0.8"
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/access_token"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAA6tWSkxOTi0uji/Jz07NU7JSUDI3NjCyMDPXjYzyjo8sCc30zE41D/IxNshLzHJLdHH1qUhNV9JRUAKrjy+pLEgFaUpKTSxKLQKJp1YUZBalFsdnggwzNjMw0FFQKk7OhyjTUqoFAKNHbOtxAAAA",
+          "encoding": "UTF-8",
+          "string": ""
+        },
+        "headers": {
+          "CF-RAY": "2876276d91e139ee-PHX",
+          "Connection": "keep-alive",
+          "Content-Encoding": "gzip",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Tue, 22 Mar 2016 02:18:37 GMT",
+          "Server": "cloudflare-nginx",
+          "Set-Cookie": "__cfduid=dd96ea2981f3ad6ab5250a89b33e0ace81458613117; expires=Wed, 22-Mar-17 02:18:37 GMT; path=/; domain=.reddit.com; HttpOnly",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "Transfer-Encoding": "chunked",
+          "X-Moose": "majestic",
+          "cache-control": "max-age=0, must-revalidate",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/access_token"
+      }
+    },
+    {
+      "recorded_at": "2016-03-22T02:18:38",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Authorization": "bearer 7302867-YZK_YtUiIke7RL30najFaDELxeg",
+          "Connection": "keep-alive",
+          "Cookie": "loid=5ja5onM1PufSns9XKR; loidcreated=2016-03-22T02%3A18%3A37.126Z; __cfduid=dd96ea2981f3ad6ab5250a89b33e0ace81458613117",
+          "User-Agent": "prawcore:test (by /u/bboe) prawcore/0.0.8"
+        },
+        "method": "GET",
+        "uri": "https://oauth.reddit.com/user/spez/gilded/given?raw_json=1"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"error\": 403}"
+        },
+        "headers": {
+          "CF-RAY": "28762776009a3988-PHX",
+          "Connection": "keep-alive",
+          "Content-Length": "14",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Date": "Tue, 22 Mar 2016 02:18:38 GMT",
+          "Server": "cloudflare-nginx",
+          "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload",
+          "X-Moose": "majestic",
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "X-Reddit-Tracking, X-Moose",
+          "cache-control": "private, s-maxage=0, max-age=0, must-revalidate",
+          "expires": "-1",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-ratelimit-remaining": "599.0",
+          "x-ratelimit-reset": "82",
+          "x-ratelimit-used": "1",
+          "x-reddit-tracking": "https://pixel.redditmedia.com/pixel/of_destiny.png?v=LeF3GiZkLAxxG193GpzG2BpDSvZi%2FfC58vhP4bmdK2uNq6qLGv3kOjAklpSOQCDdmJY7CMNNZCbPA51aRHn0eqlwBgPbSN8u",
+          "x-ua-compatible": "IE=edge",
+          "x-xss-protection": "1; mode=block"
+        },
+        "status": {
+          "code": 403,
+          "message": "Forbidden"
+        },
+        "url": "https://oauth.reddit.com/user/spez/gilded/given?raw_json=1"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.5.1"
+}
