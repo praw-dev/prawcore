@@ -21,7 +21,7 @@ class TestAuthorizer(AuthorizerBase):
     def test_authorize__with_permanent_grant(self):
         self.authentication.redirect_uri = pytest.placeholders.redirect_uri
         authorizer = prawcore.Authorizer(self.authentication)
-        with self.use_cassette("Authorizer_authorize__with_permanent_grant"):
+        with self.use_cassette():
             authorizer.authorize(pytest.placeholders.permanent_grant_code)
 
         assert authorizer.access_token is not None
@@ -33,7 +33,7 @@ class TestAuthorizer(AuthorizerBase):
     def test_authorize__with_temporary_grant(self):
         self.authentication.redirect_uri = pytest.placeholders.redirect_uri
         authorizer = prawcore.Authorizer(self.authentication)
-        with self.use_cassette("Authorizer_authorize__with_temporary_grant"):
+        with self.use_cassette():
             authorizer.authorize(pytest.placeholders.temporary_grant_code)
 
         assert authorizer.access_token is not None
@@ -45,7 +45,7 @@ class TestAuthorizer(AuthorizerBase):
     def test_authorize__with_invalid_code(self):
         self.authentication.redirect_uri = pytest.placeholders.redirect_uri
         authorizer = prawcore.Authorizer(self.authentication)
-        with self.use_cassette("Authorizer_authorize__with_invalid_code"):
+        with self.use_cassette():
             with pytest.raises(prawcore.OAuthException):
                 authorizer.authorize("invalid code")
         assert not authorizer.is_valid()
@@ -54,7 +54,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token=pytest.placeholders.refresh_token
         )
-        with self.use_cassette("Authorizer_refresh"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -72,7 +72,7 @@ class TestAuthorizer(AuthorizerBase):
             post_refresh_callback=callback,
             refresh_token=pytest.placeholders.refresh_token,
         )
-        with self.use_cassette("Authorizer_refresh"):
+        with self.use_cassette("TestAuthorizer.test_refresh"):
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -89,7 +89,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, pre_refresh_callback=callback
         )
-        with self.use_cassette("Authorizer_refresh"):
+        with self.use_cassette("TestAuthorizer.test_refresh"):
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -101,7 +101,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token="INVALID_TOKEN"
         )
-        with self.use_cassette("Authorizer_refresh__with_invalid_token"):
+        with self.use_cassette():
             with pytest.raises(prawcore.ResponseException):
                 authorizer.refresh()
             assert not authorizer.is_valid()
@@ -110,7 +110,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token=pytest.placeholders.refresh_token
         )
-        with self.use_cassette("Authorizer_revoke__access_token_with_refresh_set"):
+        with self.use_cassette():
             authorizer.refresh()
             authorizer.revoke(only_access=True)
 
@@ -126,7 +126,7 @@ class TestAuthorizer(AuthorizerBase):
     def test_revoke__access_token_without_refresh_set(self):
         self.authentication.redirect_uri = pytest.placeholders.redirect_uri
         authorizer = prawcore.Authorizer(self.authentication)
-        with self.use_cassette("Authorizer_revoke__access_token_without_refresh_set"):
+        with self.use_cassette():
             authorizer.authorize(pytest.placeholders.temporary_grant_code)
             authorizer.revoke()
 
@@ -139,7 +139,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token=pytest.placeholders.refresh_token
         )
-        with self.use_cassette("Authorizer_revoke__refresh_token_with_access_set"):
+        with self.use_cassette():
             authorizer.refresh()
             authorizer.revoke()
 
@@ -152,7 +152,7 @@ class TestAuthorizer(AuthorizerBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token=pytest.placeholders.refresh_token
         )
-        with self.use_cassette("Authorizer_revoke__refresh_token_without_access_set"):
+        with self.use_cassette():
             authorizer.revoke()
 
         assert authorizer.access_token is None
@@ -187,9 +187,7 @@ class TestDeviceIDAuthorizer(AuthorizerBase):
             ),
             scopes=scope_list,
         )
-        with self.use_cassette(
-            "DeviceIDAuthorizer_refresh__with_scopes_and_trusted_authenticator"
-        ):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -198,7 +196,7 @@ class TestDeviceIDAuthorizer(AuthorizerBase):
 
     def test_refresh__with_short_device_id(self):
         authorizer = prawcore.DeviceIDAuthorizer(self.authentication, "a" * 19)
-        with self.use_cassette("DeviceIDAuthorizer_refresh__with_short_device_id"):
+        with self.use_cassette():
             with pytest.raises(prawcore.OAuthException):
                 authorizer.refresh()
 
@@ -210,7 +208,7 @@ class TestReadOnlyAuthorizer(AuthorizerBase):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-        with self.use_cassette("ReadOnlyAuthorizer_refresh"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -224,7 +222,7 @@ class TestReadOnlyAuthorizer(AuthorizerBase):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-        with self.use_cassette("ReadOnlyAuthorizer_refresh__with_scopes"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -243,7 +241,7 @@ class TestScriptAuthorizer(AuthorizerBase):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-        with self.use_cassette("ScriptAuthorizer_refresh"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -258,7 +256,7 @@ class TestScriptAuthorizer(AuthorizerBase):
             lambda: "fake",
         )
 
-        with self.use_cassette("ScriptAuthorizer_refresh__with_invalid_otp"):
+        with self.use_cassette():
             with pytest.raises(prawcore.OAuthException):
                 authorizer.refresh()
         assert not authorizer.is_valid()
@@ -267,9 +265,7 @@ class TestScriptAuthorizer(AuthorizerBase):
         authorizer = prawcore.ScriptAuthorizer(
             self.authentication, pytest.placeholders.username, "invalidpassword"
         )
-        with self.use_cassette(
-            "ScriptAuthorizer_refresh__with_invalid_username_or_password"
-        ):
+        with self.use_cassette():
             with pytest.raises(prawcore.OAuthException):
                 authorizer.refresh()
         assert not authorizer.is_valid()
@@ -282,7 +278,7 @@ class TestScriptAuthorizer(AuthorizerBase):
             pytest.placeholders.password,
             scopes=scope_list,
         )
-        with self.use_cassette("ScriptAuthorizer_refresh__with_scopes"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None
@@ -300,7 +296,7 @@ class TestScriptAuthorizer(AuthorizerBase):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-        with self.use_cassette("ScriptAuthorizer_refresh__with_valid_otp"):
+        with self.use_cassette():
             authorizer.refresh()
 
         assert authorizer.access_token is not None

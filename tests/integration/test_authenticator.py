@@ -14,7 +14,7 @@ class TestTrustedAuthenticator(IntegrationTest):
             pytest.placeholders.client_id,
             pytest.placeholders.client_secret,
         )
-        with self.use_cassette("TrustedAuthenticator_revoke_token"):
+        with self.use_cassette():
             authenticator.revoke_token("dummy token")
 
     def test_revoke_token__with_access_token_hint(self):
@@ -23,9 +23,7 @@ class TestTrustedAuthenticator(IntegrationTest):
             pytest.placeholders.client_id,
             pytest.placeholders.client_secret,
         )
-        with self.use_cassette(
-            "TrustedAuthenticator_revoke_token__with_access_token_hint"
-        ):
+        with self.use_cassette():
             authenticator.revoke_token("dummy token", "access_token")
 
     def test_revoke_token__with_refresh_token_hint(self):
@@ -34,9 +32,7 @@ class TestTrustedAuthenticator(IntegrationTest):
             pytest.placeholders.client_id,
             pytest.placeholders.client_secret,
         )
-        with self.use_cassette(
-            "TrustedAuthenticator_revoke_token__with_refresh_token_hint"
-        ):
+        with self.use_cassette():
             authenticator.revoke_token("dummy token", "refresh_token")
 
 
@@ -45,5 +41,5 @@ class TestUntrustedAuthenticator(IntegrationTest):
         authenticator = prawcore.UntrustedAuthenticator(
             self.requestor, pytest.placeholders.client_id
         )
-        with self.use_cassette("UntrustedAuthenticator_revoke_token"):
+        with self.use_cassette():
             authenticator.revoke_token("dummy token")
