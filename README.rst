@@ -7,11 +7,29 @@ prawcore
     :alt: Latest prawcore Version
     :target: https://pypi.python.org/pypi/prawcore
 
-.. image:: https://travis-ci.org/praw-dev/prawcore.svg?branch=main
-    :target: https://travis-ci.org/praw-dev/prawcore
+.. image:: https://img.shields.io/pypi/pyversions/prawcore
+    :alt: Supported Python Versions
+    :target: https://pypi.python.org/pypi/prawcore
+
+.. image:: https://img.shields.io/pypi/dm/prawcore
+    :alt: PyPI - Downloads - Monthly
+    :target: https://pypi.python.org/pypi/prawcore
 
 .. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=main
+    :alt: Coveralls Coverage
     :target: https://coveralls.io/github/praw-dev/prawcore?branch=main
+
+.. image:: https://github.com/praw-dev/prawcore/workflows/CI/badge.svg
+    :alt: GitHub Actions Status
+    :target: https://github.com/praw-dev/prawcore/actions?query=branch%3Amain
+
+.. image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
+    :alt: Contributor Covenant
+    :target: https://github.com/praw-dev/.github/blob/main/CODE_OF_CONDUCT.md
+
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+    :target: https://github.com/pre-commit/pre-commit
+    :alt: pre-commit
 
 prawcore is a low-level communication layer used by PRAW 4+.
 

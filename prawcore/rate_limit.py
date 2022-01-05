@@ -10,9 +10,9 @@ log = logging.getLogger(__package__)
 
 
 class RateLimiter(object):
-    """Facilitates the rate limiting of requests to reddit.
+    """Facilitates the rate limiting of requests to Reddit.
 
-    Rate limits are controlled based on feedback from requests to reddit.
+    Rate limits are controlled based on feedback from requests to Reddit.
 
     """
 
@@ -26,7 +26,7 @@ class RateLimiter(object):
     def call(
         self, request_function: Callable, set_header_callback: Callable, *args, **kwargs
     ) -> Response:
-        """Rate limit the call to request_function.
+        """Rate limit the call to ``request_function``.
 
         :param request_function: A function call that returns an HTTP response object.
         :param set_header_callback: A callback function used to set the request headers.
@@ -57,9 +57,9 @@ class RateLimiter(object):
     ) -> None:
         """Update the state of the rate limiter based on the response headers.
 
-        This method should only be called following a HTTP request to reddit.
+        This method should only be called following an HTTP request to Reddit.
 
-        Response headers that do not contain x-ratelimit fields will be treated as a
+        Response headers that do not contain ``x-ratelimit`` fields will be treated as a
         single request. This behavior is to error on the safe-side as such responses
         should trigger exceptions that indicate invalid behavior.
 

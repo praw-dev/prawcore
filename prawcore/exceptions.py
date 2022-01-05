@@ -46,7 +46,7 @@ class ResponseException(PrawcoreException):
     def __init__(self, response: "Response") -> None:
         """Initialize a ResponseException instance.
 
-        :param response: A requests.response instance.
+        :param response: A ``requests.response`` instance.
 
         """
         self.response = response
@@ -63,8 +63,8 @@ class OAuthException(PrawcoreException):
     ) -> None:
         """Initialize a OAuthException instance.
 
-        :param response: A requests.response instance.
-        :param error: The error type returned by reddit.
+        :param response: A ``requests.response`` instance.
+        :param error: The error type returned by Reddit.
         :param description: A description of the error when provided.
 
         """
@@ -116,7 +116,7 @@ class Redirect(ResponseException):
     def __init__(self, response: "Response") -> None:
         """Initialize a Redirect exception instance.
 
-        :param response: A requests.response instance containing a location header.
+        :param response: A ``requests.response`` instance containing a location header.
 
         """
         path = urlparse(response.headers["location"]).path
@@ -142,8 +142,8 @@ class SpecialError(ResponseException):
     def __init__(self, response: "Response") -> None:
         """Initialize a SpecialError exception instance.
 
-        :param response: A requests.response instance containing a message and a list of
-            special errors.
+        :param response: A ``requests.response`` instance containing a message and a
+            list of special errors.
 
         """
         self.response = response
@@ -165,7 +165,7 @@ class TooManyRequests(ResponseException):
     def __init__(self, response: "Response") -> None:
         """Initialize a TooManyRequests exception instance.
 
-        :param response: A requests.response instance that may contain a retry-after
+        :param response: A ``requests.response`` instance that may contain a retry-after
             header and a message.
 
         """
@@ -176,8 +176,8 @@ class TooManyRequests(ResponseException):
         msg = f"received {response.status_code} HTTP response"
         if self.retry_after:
             msg += (
-                f". Please wait at least {float(self.retry_after)} seconds "
-                "before re-trying this request."
+                f". Please wait at least {float(self.retry_after)} seconds before"
+                f" re-trying this request."
             )
         PrawcoreException.__init__(self, msg)
 

@@ -31,16 +31,16 @@ class Requestor(object):
     ) -> None:
         """Create an instance of the Requestor class.
 
-        :param user_agent: The user-agent for your application. Please follow reddit's
+        :param user_agent: The user-agent for your application. Please follow Reddit's
             user-agent guidelines: https://github.com/reddit/reddit/wiki/API#rules
-        :param oauth_url: (Optional) The URL used to make OAuth requests to the reddit
-            site. (Default: https://oauth.reddit.com)
-        :param reddit_url: (Optional) The URL used when obtaining access tokens.
-            (Default: https://www.reddit.com)
-        :param session: (Optional) A session to handle requests, compatible with
-            requests.Session(). (Default: None)
-        :param timeout: (Optional) How many seconds to wait for the server to send data
-            before giving up. (Default: const.TIMEOUT)
+        :param oauth_url: The URL used to make OAuth requests to the Reddit site
+            (default: ``"https://oauth.reddit.com"``).
+        :param reddit_url: The URL used when obtaining access tokens (default:
+            ``"https://www.reddit.com"``).
+        :param session: A session to handle requests, compatible with
+            ``requests.Session()`` (default: ``None``).
+        :param timeout: How many seconds to wait for the server to send data before
+            giving up (default: ``prawcore.const.TIMEOUT``).
 
         """
         if user_agent is None or len(user_agent) < 7:
