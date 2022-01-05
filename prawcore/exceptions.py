@@ -1,5 +1,9 @@
 """Provide exception classes for the prawcore package."""
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:  # pragma: no cover
+    from requests.models import Response
 
 
 class PrawcoreException(Exception):
@@ -13,7 +17,14 @@ class InvalidInvocation(PrawcoreException):
 class RequestException(PrawcoreException):
     """Indicate that there was an error with the incomplete HTTP request."""
 
-    def __init__(self, original_exception, request_args, request_kwargs):
+    def __init__(
+        self,
+        original_exception: Exception,
+        request_args: Tuple[Any, ...],
+        request_kwargs: Dict[
+            str, Optional[Union[bool, Dict[str, int], Dict[str, str], str]]
+        ],
+    ) -> None:
         """Initialize a RequestException instance.
 
         :param original_exception: The original exception that occurred.
@@ -32,7 +43,7 @@ class RequestException(PrawcoreException):
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a ResponseException instance.
 
         :param response: A requests.response instance.
@@ -47,7 +58,9 @@ class ResponseException(PrawcoreException):
 class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
-    def __init__(self, response, error, description):
+    def __init__(
+        self, response: "Response", error: str, description: Optional[str] = None
+    ) -> None:
         """Initialize a OAuthException instance.
 
         :param response: A requests.response instance.
@@ -100,7 +113,7 @@ class Redirect(ResponseException):
 
     """
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a Redirect exception instance.
 
         :param response: A requests.response instance containing a location header.
@@ -126,7 +139,7 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a SpecialError exception instance.
 
         :param response: A requests.response instance containing a message and a list of
@@ -149,7 +162,7 @@ class TooLarge(ResponseException):
 class TooManyRequests(ResponseException):
     """Indicate that the user has sent too many requests in a given amount of time."""
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a TooManyRequests exception instance.
 
         :param response: A requests.response instance that may contain a retry-after
