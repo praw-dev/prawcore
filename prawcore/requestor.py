@@ -1,14 +1,21 @@
 """Provides the HTTP request handling interface."""
+from typing import TYPE_CHECKING, Any, Optional
+
 import requests
 
 from .const import TIMEOUT, __version__
 from .exceptions import InvalidInvocation, RequestException
 
+if TYPE_CHECKING:  # pragma: no cover
+    from requests.models import Response
+
+    from .sessions import Session
+
 
 class Requestor(object):
     """Requestor provides an interface to HTTP requests."""
 
-    def __getattr__(self, attribute):
+    def __getattr__(self, attribute: str) -> Any:
         """Pass all undefined attributes to the _http attribute."""
         if attribute.startswith("__"):
             raise AttributeError
@@ -16,24 +23,24 @@ class Requestor(object):
 
     def __init__(
         self,
-        user_agent,
-        oauth_url="https://oauth.reddit.com",
-        reddit_url="https://www.reddit.com",
-        session=None,
-        timeout=TIMEOUT,
-    ):
+        user_agent: str,
+        oauth_url: str = "https://oauth.reddit.com",
+        reddit_url: str = "https://www.reddit.com",
+        session: Optional["Session"] = None,
+        timeout: float = TIMEOUT,
+    ) -> None:
         """Create an instance of the Requestor class.
 
-        :param user_agent: The user-agent for your application. Please follow reddit's
+        :param user_agent: The user-agent for your application. Please follow Reddit's
             user-agent guidelines: https://github.com/reddit/reddit/wiki/API#rules
-        :param oauth_url: (Optional) The URL used to make OAuth requests to the reddit
-            site. (Default: https://oauth.reddit.com)
-        :param reddit_url: (Optional) The URL used when obtaining access tokens.
-            (Default: https://www.reddit.com)
-        :param session: (Optional) A session to handle requests, compatible with
-            requests.Session(). (Default: None)
-        :param timeout: (Optional) How many seconds to wait for the server to send data
-            before giving up. (Default: const.TIMEOUT)
+        :param oauth_url: The URL used to make OAuth requests to the Reddit site
+            (default: ``"https://oauth.reddit.com"``).
+        :param reddit_url: The URL used when obtaining access tokens (default:
+            ``"https://www.reddit.com"``).
+        :param session: A session to handle requests, compatible with
+            ``requests.Session()`` (default: ``None``).
+        :param timeout: How many seconds to wait for the server to send data before
+            giving up (default: ``prawcore.const.TIMEOUT``).
 
         """
         if user_agent is None or len(user_agent) < 7:
@@ -46,11 +53,11 @@ class Requestor(object):
         self.reddit_url = reddit_url
         self.timeout = timeout
 
-    def close(self):
+    def close(self) -> None:
         """Call close on the underlying session."""
         return self._http.close()
 
-    def request(self, *args, timeout=None, **kwargs):
+    def request(self, *args, timeout: Optional[float] = None, **kwargs) -> "Response":
         """Issue the HTTP request capturing any errors that may occur."""
         try:
             return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)

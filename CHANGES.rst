@@ -16,14 +16,15 @@ Unreleased
 **Added**
 
 - 301 redirects result in a ``Redirect`` exception.
-- ``Requestor`` is now initialized with a ``timeout`` parameter.
-- ``ScriptAuthorizer``, ``ReadOnlyAuthorizer``, and ``DeviceIDAuthorizer`` have a new
-  parameter, ``scopes``, which determines the scope of access requests.
+- :class:`Requestor` is now initialized with a ``timeout`` parameter.
+- :class:`ScriptAuthorizer`, :class:`ReadOnlyAuthorizer`, and
+  :class:`DeviceIDAuthorizer` have a new parameter, ``scopes``, which determines the
+  scope of access requests.
 - Retry 408 "Request Timeout" HTTP responses.
 
 **Changed**
 
-- ``DeviceIDAuthorizer`` can be now used with ``TrustedAuthenticator``.
+- :class:`DeviceIDAuthorizer` can be now used with :class:`TrustedAuthenticator`.
 
 2.2.0 (2021-06-10)
 ------------------
@@ -42,27 +43,27 @@ Unreleased
 
 **Added**
 
-- Add a ``URITooLarge`` exception.
-- :class:`.ScriptAuthorizer` has a new parameter ``two_factor_callback`` that supplies
+- Add a :class:`URITooLarge` exception.
+- :class:`ScriptAuthorizer` has a new parameter ``two_factor_callback`` that supplies
   OTPs (One-Time Passcodes) when :meth:`.ScriptAuthorizer.refresh` is called.
-- Add a ``TooManyRequests`` exception.
+- Add a :class:`TooManyRequests` exception.
 
 2.0.0 (2021-02-23)
 ------------------
 
 **Added**
 
-- ``Authorizer`` optionally takes a ``pre_refresh_callback`` keyword argument. If
-  provided, the function will called with the instance of ``Authorizer`` prior to
+- :class:`Authorizer` optionally takes a ``pre_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of :class:`Authorizer` prior to
   refreshing the access and refresh tokens.
-- ``Authorizer`` optionally takes a ``post_refresh_callback`` keyword argument. If
-  provided, the function will called with the instance of ``Authorizer`` after
+- :class:`Authorizer` optionally takes a ``post_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of :class:`Authorizer` after
   refreshing the access and refresh tokens.
 
 **Changed**
 
-- The ``refresh_token`` argument to ``Authorizer`` must now be passed by keyword, and
-  cannot be passed as a positional argument.
+- The ``refresh_token`` argument to :class:`Authorizer` must now be passed by keyword,
+  and cannot be passed as a positional argument.
 
 1.5.0 (2020-08-04)
 ------------------
@@ -97,7 +98,7 @@ Unreleased
 
 **Added**
 
-- Method ``Requestor.request`` can be given a timeout parameter to control the amount of
+- :meth:`.Requestor.request` can be given a timeout parameter to control the amount of
   time to wait for a request to succeed.
 
 **Changed**
@@ -114,7 +115,7 @@ Unreleased
 
 **Fixed**
 
-- ``RateLimiter`` will not sleep longer than ``next_request_timestamp``.
+- :class:`RateLimiter` will not sleep longer than ``next_request_timestamp``.
 
 1.0.0 (2018-04-26)
 ------------------
@@ -257,32 +258,33 @@ All network requests now have a 16 second timeout by default. The environment va
 
 **Fixed**
 
-- ``Authorizer`` class can be used with ``UntrustedAuthenticator``.
+- :class:`Authorizer` class can be used with :class:`UntrustedAuthenticator`.
 
 0.2.1 (2016-08-07)
 ------------------
 
 **Fixed**
 
-- ``session`` works with ``DeviceIDAuthorizer`` and ``ImplicitAuthorizer``.
+- ``session`` works with :class:`DeviceIDAuthorizer` and :class:`ImplicitAuthorizer`.
 
 0.2.0 (2016-08-07)
 ------------------
 
 **Added**
 
-- Add ``ImplicitAuthorizer``.
+- Add :class:`ImplicitAuthorizer`.
 
 **Changed**
 
-- Split ``Authenticator`` into ``TrustedAuthenticator`` and ``UntrustedAuthenticator``.
+- Split ``Authenticator`` into :class:`TrustedAuthenticator` and
+  :class:`UntrustedAuthenticator`.
 
 0.1.1 (2016-08-06)
 ------------------
 
 **Added**
 
-- Add ``DeviceIDAuthorizer`` that permits installed application access to the API.
+- Add :class:`DeviceIDAuthorizer` that permits installed application access to the API.
 
 0.1.0 (2016-08-05)
 ------------------
