@@ -128,7 +128,7 @@ class BaseAuthenticator(ABC):
 class TrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for web, or script type apps."""
 
-    RESPONSE_TYPE = "code"
+    RESPONSE_TYPE: str = "code"
 
     def __init__(
         self,

@@ -172,7 +172,7 @@ class Session(object):
         saved_exception: Optional[Exception],
         timeout: float,
         url: str,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         if saved_exception:
             status = repr(saved_exception)
         else:
@@ -239,7 +239,7 @@ class Session(object):
         timeout: float,
         url: str,
         retry_strategy_state: Optional["FiniteRetryStrategy"] = None,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
@@ -313,7 +313,7 @@ class Session(object):
         json: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
         timeout: float = TIMEOUT,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
