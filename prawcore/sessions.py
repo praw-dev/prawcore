@@ -120,7 +120,7 @@ class Session(object):
         codes["unauthorized"]: authorization_error_class,
         codes[
             "unavailable_for_legal_reasons"
-        ]: UnavailableForLegalReasons,  # Cloudflare status (not named in requests)
+        ]: UnavailableForLegalReasons,  # Cloudflare's status (not named in requests)
         520: ServerError,
         522: ServerError,
     }
@@ -324,6 +324,7 @@ class Session(object):
         :param files: Dictionary, mapping ``filename`` to file-like object.
         :param json: Object to be serialized to JSON in the body of the request.
         :param params: The query parameters to send with the request.
+        :param timeout: Specifies a particular timeout, in seconds.
 
         Automatically refreshes the access token if it becomes invalid and a refresh
         token is available.
