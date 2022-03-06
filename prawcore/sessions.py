@@ -2,6 +2,7 @@
 import logging
 import random
 import time
+from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urljoin
@@ -40,7 +41,7 @@ if TYPE_CHECKING:  # pragma: no cover
 log = logging.getLogger(__package__)
 
 
-class RetryStrategy(object):
+class RetryStrategy(ABC):
     """An abstract class for scheduling request retries.
 
     The strategy controls both the number and frequency of retry attempts.
@@ -48,6 +49,10 @@ class RetryStrategy(object):
     Instances of this class are immutable.
 
     """
+
+    @abstractmethod
+    def _sleep_seconds(self) -> Optional[float]:
+        pass
 
     def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
