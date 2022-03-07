@@ -3,7 +3,7 @@ import logging
 import time
 from typing import TYPE_CHECKING, Any, Callable, Dict, Mapping, Optional
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
 log = logging.getLogger(__package__)

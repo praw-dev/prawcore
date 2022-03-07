@@ -6,7 +6,7 @@ import requests
 from .const import TIMEOUT, __version__
 from .exceptions import InvalidInvocation, RequestException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
     from .sessions import Session

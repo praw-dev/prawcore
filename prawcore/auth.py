@@ -9,7 +9,7 @@ from requests.status_codes import codes
 from . import const
 from .exceptions import InvalidInvocation, OAuthException, ResponseException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
     from prawcore.requestor import Requestor

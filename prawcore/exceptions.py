@@ -2,7 +2,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 from urllib.parse import urlparse
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
 

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 from .exceptions import Forbidden, InsufficientScope, InvalidToken
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
 _auth_error_mapping = {

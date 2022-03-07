@@ -30,7 +30,7 @@ from .exceptions import (
 from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from io import BufferedReader
 
     from requests.models import Response
