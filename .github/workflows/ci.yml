@@ -25,7 +25,8 @@ jobs:
           v0-${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
+        # Pin pip to 21.x for now to avoid error in pre-commit action on Win
+        python -m pip install --upgrade pip==21.* setuptools wheel
         pip install .[lint]
     - name: Run pre-commit hooks
       uses: pre-commit/action@v2.0.3
