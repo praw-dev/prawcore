@@ -1,0 +1,10 @@
+jobs:
+  pre-commit_autoupdate:
+    name: Update pre-commit hooks
+    secrets: inherit
+    uses: praw-dev/.github/.github/workflows/pre-commit_autoupdate.yml@main
+name: Update pre-commit hooks
+on:
+  schedule:
+    - cron: 0 15 * * 1
+  workflow_dispatch:
