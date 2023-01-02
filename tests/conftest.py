@@ -1,28 +1,56 @@
 """Prepare py.test."""
-import json
 import os
 import socket
 import time
 from base64 import b64encode
 from sys import platform
-from urllib.parse import quote_plus
 
-import betamax
 import pytest
-from betamax.serializers import JSONSerializer
+
+import prawcore
+from prawcore import Requestor
 
 
-# Prevent calls to sleep
-def _sleep(*args):
-    raise Exception("Call to sleep")
+@pytest.fixture(autouse=True)
+def patch_sleep(monkeypatch):
+    """Auto patch sleep to speed up tests."""
+
+    def _sleep(*_, **__):
+        """Dud sleep function."""
+        return
+
+    monkeypatch.setattr(time, "sleep", value=_sleep)
 
 
-time.sleep = _sleep
+@pytest.fixture
+def image_path():
+    """Return path to image."""
+
+    def _get_path(name):
+        """Return path to image."""
+        return os.path.join(os.path.dirname(__file__), "integration", "files", name)
+
+    return _get_path
 
 
-def b64_string(input_string):
-    """Return a base64 encoded string (not bytes) from input_string."""
-    return b64encode(input_string.encode("utf-8")).decode("utf-8")
+@pytest.fixture
+def requestor():
+    """Return path to image."""
+    return Requestor("prawcore:test (by /u/bboe)")
+
+
+@pytest.fixture
+def trusted_authenticator(requestor):
+    return prawcore.TrustedAuthenticator(
+        requestor,
+        pytest.placeholders.client_id,
+        pytest.placeholders.client_secret,
+    )
+
+
+@pytest.fixture
+def untrusted_authenticator(requestor):
+    return prawcore.UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
 
 
 def env_default(key):
@@ -33,21 +61,16 @@ def env_default(key):
     )
 
 
-def filter_access_token(interaction, current_cassette):
-    """Add Betamax placeholder to filter access token."""
-    request_uri = interaction.data["request"]["uri"]
-    response = interaction.data["response"]
-    if "api/v1/access_token" not in request_uri or response["status"]["code"] != 200:
-        return
-    body = response["body"]["string"]
-    try:
-        token = json.loads(body)["access_token"]
-    except (KeyError, TypeError, ValueError):
-        return
-    current_cassette.placeholders.append(
-        betamax.cassette.cassette.Placeholder(
-            placeholder="<ACCESS_TOKEN>", replace=token
-        )
+def pytest_configure(config):
+    pytest.placeholders = Placeholders(placeholders)
+    config.addinivalue_line(
+        "markers", "add_placeholder: Define an additional placeholder for the cassette."
+    )
+    config.addinivalue_line(
+        "markers", "cassette_name: Name of cassette to use for test."
+    )
+    config.addinivalue_line(
+        "markers", "recorder_kwargs: Arguments to pass to the recorder."
     )
 
 
@@ -65,36 +88,14 @@ placeholders = {
 }
 
 
-placeholders["basic_auth"] = b64_string(
-    f"{placeholders['client_id']}:{placeholders['client_secret']}"
-)
-
-
-class PrettyJSONSerializer(JSONSerializer):
-    name = "prettyjson"
-
-    def serialize(self, cassette_data):
-        return f"{json.dumps(cassette_data, sort_keys=True, indent=2, separators=(',', ': '))}\n"
-
-
-betamax.Betamax.register_serializer(PrettyJSONSerializer)
-with betamax.Betamax.configure() as config:
-    config.cassette_library_dir = "tests/integration/cassettes"
-    config.default_cassette_options["serialize_with"] = "prettyjson"
-    config.before_record(callback=filter_access_token)
-    for key, value in placeholders.items():
-        if key == "password":
-            value = quote_plus(value)
-        config.define_cassette_placeholder(f"<{key.upper()}>", value)
+placeholders["basic_auth"] = b64encode(
+    f"{placeholders['client_id']}:{placeholders['client_secret']}".encode("utf-8")
+).decode("utf-8")
 
 
 class Placeholders:
     def __init__(self, _dict):
         self.__dict__ = _dict
-
-
-def pytest_configure():
-    pytest.placeholders = Placeholders(placeholders)
 
 
 if platform == "darwin":  # Work around issue with betamax on OS X
