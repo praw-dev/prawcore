@@ -1,25 +1,25 @@
 repos:
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     hooks:
       - id: end-of-file-fixer
         exclude: .*\.txt
-    rev: v4.1.0
+    rev: v4.4.0
 
   - repo: https://github.com/psf/black
     hooks:
       - id: black
-    rev: 21.12b0
+    rev: 22.12.0
 
   - repo: https://github.com/LilSpazJoekp/docstrfmt
     hooks:
       - id: docstrfmt
-        require_serial: true
-    rev: v1.4.3
+    rev: v1.5.1
 
   - repo: https://github.com/pycqa/flake8
     hooks:
       - id: flake8
-    rev: 4.0.1
+    rev: 6.0.0
 
   - repo: https://github.com/ikamensh/flynt/
     hooks:
@@ -27,15 +27,15 @@ repos:
         args:
           - '-ll'
           - '1000'
-    rev: '0.69'
+    rev: '0.77'
 
   - repo: https://github.com/pycqa/isort
     hooks:
       - id: isort
-    rev: 5.10.1
+    rev: 5.11.4
 
   - repo: https://github.com/pycqa/pydocstyle
     hooks:
       - id: pydocstyle
         files: prawcore/.*
-    rev: 6.1.1
+    rev: 6.2.3
