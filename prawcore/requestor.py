@@ -6,7 +6,7 @@ import requests
 from .const import TIMEOUT, __version__
 from .exceptions import InvalidInvocation, RequestException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from requests.models import Response
 
     from .sessions import Session
@@ -16,7 +16,7 @@ class Requestor(object):
     """Requestor provides an interface to HTTP requests."""
 
     def __getattr__(self, attribute: str) -> Any:
-        """Pass all undefined attributes to the _http attribute."""
+        """Pass all undefined attributes to the ``_http`` attribute."""
         if attribute.startswith("__"):
             raise AttributeError
         return getattr(self._http, attribute)

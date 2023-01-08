@@ -1,10 +1,10 @@
 """Provide the RateLimiter class."""
 import logging
 import time
-from typing import Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Mapping, Optional
 
-from requests.models import Response
-from requests.structures import CaseInsensitiveDict
+if TYPE_CHECKING:
+    from requests.models import Response
 
 log = logging.getLogger(__package__)
 
@@ -24,8 +24,12 @@ class RateLimiter(object):
         self.used: Optional[int] = None
 
     def call(
-        self, request_function: Callable, set_header_callback: Callable, *args, **kwargs
-    ) -> Response:
+        self,
+        request_function: Callable[[Any], "Response"],
+        set_header_callback: Callable[[], Dict[str, str]],
+        *args,
+        **kwargs,
+    ) -> "Response":
         """Rate limit the call to ``request_function``.
 
         :param request_function: A function call that returns an HTTP response object.
@@ -52,9 +56,7 @@ class RateLimiter(object):
         log.debug(message)
         time.sleep(sleep_seconds)
 
-    def update(
-        self, response_headers: Union[Dict[str, str], CaseInsensitiveDict]
-    ) -> None:
+    def update(self, response_headers: Mapping[str, str]) -> None:
         """Update the state of the rate limiter based on the response headers.
 
         This method should only be called following an HTTP request to Reddit.

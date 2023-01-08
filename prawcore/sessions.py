@@ -2,6 +2,7 @@
 import logging
 import random
 import time
+from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urljoin
@@ -29,7 +30,7 @@ from .exceptions import (
 from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from io import BufferedReader
 
     from requests.models import Response
@@ -40,7 +41,7 @@ if TYPE_CHECKING:  # pragma: no cover
 log = logging.getLogger(__package__)
 
 
-class RetryStrategy(object):
+class RetryStrategy(ABC):
     """An abstract class for scheduling request retries.
 
     The strategy controls both the number and frequency of retry attempts.
@@ -48,6 +49,10 @@ class RetryStrategy(object):
     Instances of this class are immutable.
 
     """
+
+    @abstractmethod
+    def _sleep_seconds(self) -> Optional[float]:
+        pass
 
     def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
@@ -115,7 +120,7 @@ class Session(object):
         codes["unauthorized"]: authorization_error_class,
         codes[
             "unavailable_for_legal_reasons"
-        ]: UnavailableForLegalReasons,  # Cloudflare status (not named in requests)
+        ]: UnavailableForLegalReasons,  # Cloudflare's status (not named in requests)
         520: ServerError,
         522: ServerError,
     }
@@ -167,7 +172,7 @@ class Session(object):
         saved_exception: Optional[Exception],
         timeout: float,
         url: str,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         if saved_exception:
             status = repr(saved_exception)
         else:
@@ -234,7 +239,7 @@ class Session(object):
         timeout: float,
         url: str,
         retry_strategy_state: Optional["FiniteRetryStrategy"] = None,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
@@ -308,7 +313,7 @@ class Session(object):
         json: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
         timeout: float = TIMEOUT,
-    ) -> Optional[Union[Dict[Any, Any], str]]:
+    ) -> Optional[Union[Dict[str, Any], str]]:
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
@@ -319,6 +324,7 @@ class Session(object):
         :param files: Dictionary, mapping ``filename`` to file-like object.
         :param json: Object to be serialized to JSON in the body of the request.
         :param params: The query parameters to send with the request.
+        :param timeout: Specifies a particular timeout, in seconds.
 
         Automatically refreshes the access token if it becomes invalid and a refresh
         token is available.

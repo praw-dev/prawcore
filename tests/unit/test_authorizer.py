@@ -16,6 +16,11 @@ class AuthorizerBase(UnitTest):
         )
 
 
+class InvalidAuthenticator(prawcore.auth.BaseAuthenticator):
+    def _auth(self):
+        pass
+
+
 class TestAuthorizer(AuthorizerBase):
     def test_authorize__fail_without_redirect_uri(self):
         authorizer = prawcore.Authorizer(self.authentication)
@@ -79,10 +84,8 @@ class TestDeviceIDAuthorizer(AuthorizerBase):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-    def test_initialize__with_base_authenticator(self):
-        authenticator = prawcore.Authorizer(
-            prawcore.auth.BaseAuthenticator(None, None, None)
-        )
+    def test_initialize__with_invalid_authenticator(self):
+        authenticator = prawcore.Authorizer(InvalidAuthenticator(None, None, None))
         with pytest.raises(prawcore.InvalidInvocation):
             prawcore.DeviceIDAuthorizer(
                 authenticator,
