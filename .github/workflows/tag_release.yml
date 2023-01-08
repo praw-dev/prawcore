@@ -7,3 +7,5 @@ name: Tag Release
 on:
   push:
     branches: [ main, release_test ]
+permissions:
+  contents: write
