@@ -38,4 +38,4 @@ repos:
     hooks:
       - id: pydocstyle
         files: prawcore/.*
-    rev: 6.2.3
+    rev: 6.3.0
