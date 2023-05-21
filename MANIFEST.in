@@ -1,2 +1,2 @@
-include *.md *.rst *.txt
+include *.rst *.txt
 graft tests
