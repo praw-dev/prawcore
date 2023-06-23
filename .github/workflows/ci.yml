@@ -1,65 +1,10 @@
 jobs:
-  complete_coverals:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.x
-    - uses: actions/cache@v1
-      with:
-        key: v0-${{ runner.os }}-pip-lint-${{ hashFiles('setup.py') }}
-        path: ~/.cache/pip
-        restore-keys: |
-          v0-${{ runner.os }}-pip-lint-
-          v0-${{ runner.os }}-pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .[lint]
-    - name: Run black
-      run: black --check --verbose .
-    - name: Run flake8
-      run: flake8 . --statistics
-    - name: Run pydocstyle
-      run: pydocstyle
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v1
-      with:
-        key: v0-${{ runner.os }}-pip-test-${{ hashFiles('setup.py') }}
-        path: ~/.cache/pip
-        restore-keys: |
-          v0-${{ runner.os }}-pip-test-
-          v0-${{ runner.os }}-pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .[test]
-        pip install https://github.com/bboe/coveralls-python/archive/github_actions.zip
-    - name: Test with pytest
-      run: coverage run --source prawcore --module pytest
-    - env:
-        COVERALLS_PARALLEL: true
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      name: Submit to coveralls
-      run: coveralls
-    strategy:
-      matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+  ci:
+    name: CI
+    secrets: inherit
+    uses: praw-dev/.github/.github/workflows/ci.yml@main
+    with:
+      package: prawcore
 name: CI
-on: [pull_request, push]
+on: [ pull_request, push ]
+permissions: read-all

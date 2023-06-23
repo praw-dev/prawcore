@@ -1,0 +1,17 @@
+jobs:
+  prepare_release:
+    name: Prepare Release
+    secrets: inherit
+    uses: praw-dev/.github/.github/workflows/prepare_release.yml@main
+    with:
+      version: ${{ inputs.version }}
+name: Prepare Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version to prepare for release
+        required: true
+permissions:
+  contents: read
+  pull-requests: write

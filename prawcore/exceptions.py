@@ -1,5 +1,9 @@
 """Provide exception classes for the prawcore package."""
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:
+    from requests.models import Response
 
 
 class PrawcoreException(Exception):
@@ -13,7 +17,14 @@ class InvalidInvocation(PrawcoreException):
 class RequestException(PrawcoreException):
     """Indicate that there was an error with the incomplete HTTP request."""
 
-    def __init__(self, original_exception, request_args, request_kwargs):
+    def __init__(
+        self,
+        original_exception: Exception,
+        request_args: Tuple[Any, ...],
+        request_kwargs: Dict[
+            str, Optional[Union[bool, Dict[str, int], Dict[str, str], str]]
+        ],
+    ) -> None:
         """Initialize a RequestException instance.
 
         :param original_exception: The original exception that occurred.
@@ -25,42 +36,44 @@ class RequestException(PrawcoreException):
         self.request_args = request_args
         self.request_kwargs = request_kwargs
         super(RequestException, self).__init__(
-            "error with request {}".format(original_exception)
+            f"error with request {original_exception}"
         )
 
 
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a ResponseException instance.
 
-        :param response: A requests.response instance.
+        :param response: A ``requests.response`` instance.
 
         """
         self.response = response
         super(ResponseException, self).__init__(
-            "received {} HTTP response".format(response.status_code)
+            f"received {response.status_code} HTTP response"
         )
 
 
 class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
-    def __init__(self, response, error, description):
-        """Intialize a OAuthException instance.
+    def __init__(
+        self, response: "Response", error: str, description: Optional[str] = None
+    ) -> None:
+        """Initialize a OAuthException instance.
 
-        :param response: A requests.response instance.
-        :param error: The error type returned by reddit.
+        :param response: A ``requests.response`` instance.
+        :param error: The error type returned by Reddit.
         :param description: A description of the error when provided.
 
         """
         self.error = error
         self.description = description
         self.response = response
-        message = "{} error processing request".format(error)
+        message = f"{error} error processing request"
         if description:
-            message += " ({})".format(description)
+            message += f" ({description})"
         PrawcoreException.__init__(self, message)
 
 
@@ -95,22 +108,21 @@ class NotFound(ResponseException):
 class Redirect(ResponseException):
     """Indicate the request resulted in a redirect.
 
-    This class adds the attribute ``path``, which is the path to which the
-    response redirects.
+    This class adds the attribute ``path``, which is the path to which the response
+    redirects.
 
     """
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a Redirect exception instance.
 
-        :param response: A requests.response instance containing a location
-        header.
+        :param response: A ``requests.response`` instance containing a location header.
 
         """
         path = urlparse(response.headers["location"]).path
         self.path = path[:-5] if path.endswith(".json") else path
         self.response = response
-        msg = "Redirect to {}".format(self.path)
+        msg = f"Redirect to {self.path}"
         msg += (
             " (You may be trying to perform a non-read-only action via a "
             "read-only instance.)"
@@ -127,11 +139,11 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response):
+    def __init__(self, response: "Response") -> None:
         """Initialize a SpecialError exception instance.
 
-        :param response: A requests.response instance containing a message
-        and a list of special errors.
+        :param response: A ``requests.response`` instance containing a message and a
+            list of special errors.
 
         """
         self.response = response
@@ -140,14 +152,39 @@ class SpecialError(ResponseException):
         self.message = resp_dict.get("message", "")
         self.reason = resp_dict.get("reason", "")
         self.special_errors = resp_dict.get("special_errors", [])
-        PrawcoreException.__init__(
-            self, "Special error {!r}".format(self.message)
-        )
+        PrawcoreException.__init__(self, f"Special error {self.message!r}")
 
 
 class TooLarge(ResponseException):
     """Indicate that the request data exceeds the allowed limit."""
 
 
+class TooManyRequests(ResponseException):
+    """Indicate that the user has sent too many requests in a given amount of time."""
+
+    def __init__(self, response: "Response") -> None:
+        """Initialize a TooManyRequests exception instance.
+
+        :param response: A ``requests.response`` instance that may contain a retry-after
+            header and a message.
+
+        """
+        self.response = response
+        self.retry_after = response.headers.get("retry-after")
+        self.message = response.text  # Not all response bodies are valid JSON
+
+        msg = f"received {response.status_code} HTTP response"
+        if self.retry_after:
+            msg += (
+                f". Please wait at least {float(self.retry_after)} seconds before"
+                f" re-trying this request."
+            )
+        PrawcoreException.__init__(self, msg)
+
+
 class UnavailableForLegalReasons(ResponseException):
-    """Indicate that the requested URL is unavilable due to legal reasons."""
+    """Indicate that the requested URL is unavailable due to legal reasons."""
+
+
+class URITooLong(ResponseException):
+    """Indicate that the length of the request URI exceeds the allowed limit."""

@@ -2,22 +2,25 @@
 
 """This example shows how simple in-memory caching can be used.
 
-Demonstrates the use of custom sessions with ``Requestor``. It's an adaptation
-of ``read_only_auth_trophies.py``.
+Demonstrates the use of custom sessions with :class:`.Requestor`. It's an adaptation of
+``read_only_auth_trophies.py``.
 
 """
 
-import requests
-import prawcore
 import os
 import sys
+
+import requests
+
+import prawcore
 
 
 class CachingSession(requests.Session):
     """Cache GETs in memory.
 
     Toy example of custom session to showcase the ``session`` parameter of
-    ``Requestor``.
+    :class:`.Requestor`.
+
     """
 
     get_cache = {}
@@ -39,7 +42,7 @@ class CachingSession(requests.Session):
 def main():
     """Provide the program's entry point when directly executed."""
     if len(sys.argv) != 2:
-        print("Usage: {} USERNAME".format(sys.argv[0]))
+        print(f"Usage: {sys.argv[0]} USERNAME")
         return 1
 
     caching_requestor = prawcore.Requestor(
@@ -55,25 +58,23 @@ def main():
 
     user = sys.argv[1]
     with prawcore.session(authorizer) as session:
-        data1 = session.request("GET", "/api/v1/user/{}/trophies".format(user))
+        data1 = session.request("GET", f"/api/v1/user/{user}/trophies")
 
     with prawcore.session(authorizer) as session:
-        data2 = session.request("GET", "/api/v1/user/{}/trophies".format(user))
+        data2 = session.request("GET", f"/api/v1/user/{user}/trophies")
 
     for trophy in data1["data"]["trophies"]:
         description = trophy["data"]["description"]
         print(
             "Original:",
-            trophy["data"]["name"]
-            + (" ({})".format(description) if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
 
     for trophy in data2["data"]["trophies"]:
         description = trophy["data"]["description"]
         print(
             "Cached:",
-            trophy["data"]["name"]
-            + (" ({})".format(description) if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
     print(
         "----\nCached == Original:",

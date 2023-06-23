@@ -3,8 +3,8 @@
 import re
 from codecs import open
 from os import path
-from setuptools import setup
 
+from setuptools import setup
 
 PACKAGE_NAME = "prawcore"
 HERE = path.abspath(path.dirname(__file__))
@@ -15,7 +15,7 @@ with open(path.join(HERE, PACKAGE_NAME, "const.py"), encoding="utf-8") as fp:
 
 extras = {
     "ci": ["coveralls"],
-    "lint": ["black", "flake8", "pre-commit", "pydocstyle"],
+    "lint": ["black", "flake8", "isort", "pre-commit", "pydocstyle", "flynt"],
     "test": [
         "betamax >=0.8, <0.9",
         "betamax_matchers >=0.4.0, <0.5",
@@ -39,14 +39,15 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description="Low-level communication layer for PRAW 4+.",
     extras_require=extras,
     install_requires=["requests >=2.6.0, <3.0"],
+    python_requires="~=3.7",
     keywords="praw reddit api",
     license="Simplified BSD License",
     long_description=README,

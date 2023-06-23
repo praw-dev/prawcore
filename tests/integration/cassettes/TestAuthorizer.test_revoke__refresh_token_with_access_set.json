@@ -1,0 +1,207 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2021-06-07T10:05:14",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "78"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=whsHxMuMAvrj45AdCl; loid=0000000000cksuire2.2.1623058268671.Z0FBQUFBQmd2ZWRjZ3VXVUluMld4VXBuVFNpVUtmdUo5Qmlac0xqQmw4RnNaNzZkN3RGcW9SMzVDTWJTUW81OFVtME9rcW5yak5iX3djdXVDNDk5Znl1clZkdERSM1EyR2NFQUlKbUFldVlWSVhDRTRHVUpwT3cxTW1tSXhfbWUxRTFiWldBc29LaFo; session_tracker=oqrOtPMaeBQGm531fr.0.1623058268671.Z0FBQUFBQmd2ZWRjSWVNelA3U1Z6elpFUGJSc3l5X3ktZHlUdFRmbkhidGpFYmhOYnZ4UHlxRzdOM0p6a0dsOEFiY3NBcjBZN0JoMWc5TTBiU3Jmb1NHcFpTLTJtSEhiZjRELVdYb0tRMFNvNUFlU053SHZ2eUkwdGFZWjkzZ2s4WDJrZmxvcE96R20"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.0.0"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/access_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"access_token\": \"1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"refresh_token\": \"1234678-111111111111111111111111111111\", \"scope\": \"identity\"}"
+        },
+        "headers": {
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "184"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Mon, 07 Jun 2021 10:05:14 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "298"
+          ],
+          "x-ratelimit-reset": [
+            "286"
+          ],
+          "x-ratelimit-used": [
+            "2"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/access_token"
+      }
+    },
+    {
+      "recorded_at": "2021-06-07T10:05:14",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "token=1234678-111111111111111111111111111111&token_type_hint=refresh_token"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic <BASIC_AUTH>"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "75"
+          ],
+          "Content-Type": [
+            "application/x-www-form-urlencoded"
+          ],
+          "Cookie": [
+            "edgebucket=f5KZ6I9GmO6zC9InB3; loid=0000000000cksuire2.2.1623058268671.Z0FBQUFBQmd2ZWRjZ3VXVUluMld4VXBuVFNpVUtmdUo5Qmlac0xqQmw4RnNaNzZkN3RGcW9SMzVDTWJTUW81OFVtME9rcW5yak5iX3djdXVDNDk5Znl1clZkdERSM1EyR2NFQUlKbUFldVlWSVhDRTRHVUpwT3cxTW1tSXhfbWUxRTFiWldBc29LaFo; session_tracker=oqrOtPMaeBQGm531fr.0.1623058268671.Z0FBQUFBQmd2ZWRjSWVNelA3U1Z6elpFUGJSc3l5X3ktZHlUdFRmbkhidGpFYmhOYnZ4UHlxRzdOM0p6a0dsOEFiY3NBcjBZN0JoMWc5TTBiU3Jmb1NHcFpTLTJtSEhiZjRELVdYb0tRMFNvNUFlU053SHZ2eUkwdGFZWjkzZ2s4WDJrZmxvcE96R20"
+          ],
+          "User-Agent": [
+            "prawcore:test (by /u/bboe) prawcore/2.0.0"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://www.reddit.com/api/v1/revoke_token"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept-Ranges": [
+            "bytes"
+          ],
+          "Connection": [
+            "close"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Mon, 07 Jun 2021 10:05:15 GMT"
+          ],
+          "Server": [
+            "snooserv"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=15552000; includeSubDomains; preload"
+          ],
+          "Via": [
+            "1.1 varnish"
+          ],
+          "X-Clacks-Overhead": [
+            "GNU Terry Pratchett"
+          ],
+          "X-Moose": [
+            "majestic"
+          ],
+          "cache-control": [
+            "max-age=0, must-revalidate"
+          ],
+          "x-content-type-options": [
+            "nosniff"
+          ],
+          "x-frame-options": [
+            "SAMEORIGIN"
+          ],
+          "x-ratelimit-remaining": [
+            "297"
+          ],
+          "x-ratelimit-reset": [
+            "285"
+          ],
+          "x-ratelimit-used": [
+            "3"
+          ],
+          "x-xss-protection": [
+            "1; mode=block"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://www.reddit.com/api/v1/revoke_token"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}

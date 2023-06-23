@@ -1,8 +1,41 @@
-default_language_version:
-  python: python3.7
-fail_fast: true
 repos:
-  - hooks:
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    hooks:
+      - id: end-of-file-fixer
+        exclude: .*\.txt
+    rev: v4.4.0
+
+  - repo: https://github.com/psf/black
+    hooks:
       - id: black
-    repo: https://github.com/ambv/black
-    rev: stable
+    rev: 23.3.0
+
+  - repo: https://github.com/LilSpazJoekp/docstrfmt
+    hooks:
+      - id: docstrfmt
+    rev: v1.5.1
+
+  - repo: https://github.com/pycqa/flake8
+    hooks:
+      - id: flake8
+    rev: 6.0.0
+
+  - repo: https://github.com/ikamensh/flynt/
+    hooks:
+      - id: flynt
+        args:
+          - '-ll'
+          - '1000'
+    rev: '0.78'
+
+  - repo: https://github.com/pycqa/isort
+    hooks:
+      - id: isort
+    rev: 5.12.0
+
+  - repo: https://github.com/pycqa/pydocstyle
+    hooks:
+      - id: pydocstyle
+        files: prawcore/.*
+    rev: 6.3.0
