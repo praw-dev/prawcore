@@ -82,7 +82,7 @@ class TestRateLimiter(UnitTest):
         self.rate_limiter.update(self._headers(50, 100, 60))
         assert self.rate_limiter.remaining == 50
         assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 105
+        assert self.rate_limiter.next_request_timestamp == 106.66666666666667
 
     @patch("time.time")
     def test_update__compute_delay_with_six_clients(self, mock_time):
@@ -91,7 +91,16 @@ class TestRateLimiter(UnitTest):
         self.rate_limiter.update(self._headers(60, 100, 72))
         assert self.rate_limiter.remaining == 60
         assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 106
+        assert self.rate_limiter.next_request_timestamp == 107.5
+
+    @patch("time.time")
+    def test_update__compute_delay_with_window_set(self, mock_time):
+        self.rate_limiter.window_size = 600
+        mock_time.return_value = 100
+        self.rate_limiter.update(self._headers(599, 1, 600))
+        assert self.rate_limiter.remaining == 599
+        assert self.rate_limiter.used == 1
+        assert self.rate_limiter.next_request_timestamp == 101
 
     def test_update__no_change_without_headers(self):
         prev = copy(self.rate_limiter)

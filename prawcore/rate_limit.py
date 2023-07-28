@@ -22,6 +22,7 @@ class RateLimiter(object):
         self.next_request_timestamp: Optional[float] = None
         self.reset_timestamp: Optional[float] = None
         self.used: Optional[int] = None
+        self.window_size: Optional[float] = None
 
     def call(
         self,
@@ -79,11 +80,16 @@ class RateLimiter(object):
         self.used = int(response_headers["x-ratelimit-used"])
         self.reset_timestamp = now + seconds_to_reset
 
+        if self.window_size is None:
+            self.window_size = seconds_to_reset + self.used
+        elif self.window_size < seconds_to_reset:
+            self.window_size = seconds_to_reset
+
         if self.remaining <= 0:
             self.next_request_timestamp = self.reset_timestamp
             return
 
         self.next_request_timestamp = min(
             self.reset_timestamp,
-            now + max(min((seconds_to_reset - self.remaining) / 2, 10), 0),
+            now + min(max(seconds_to_reset - (self.window_size - (self.window_size/(self.remaining + self.used) * self.used)), 0), 10),
         )
