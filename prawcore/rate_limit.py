@@ -91,5 +91,16 @@ class RateLimiter(object):
 
         self.next_request_timestamp = min(
             self.reset_timestamp,
-            now + min(max(seconds_to_reset - (self.window_size - (self.window_size/(self.remaining + self.used) * self.used)), 0), 10),
+            now
+            + min(
+                max(
+                    seconds_to_reset
+                    - (
+                        self.window_size
+                        - (self.window_size / (self.remaining + self.used) * self.used)
+                    ),
+                    0,
+                ),
+                10,
+            ),
         )
