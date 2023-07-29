@@ -23,6 +23,7 @@ extras = {
         "mock >=0.8",
         "pytest",
         "testfixtures >4.13.2, <7",
+        "urllib3 ==1.26.*, <2",
     ],
 }
 extras["dev"] = extras["lint"] + extras["test"]
