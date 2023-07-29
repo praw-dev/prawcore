@@ -95,7 +95,7 @@ class TestRateLimiter(UnitTest):
 
     @patch("time.time")
     def test_update__compute_delay_with_window_set(self, mock_time):
-        self.rate_limiter.window_size = 600
+        self.rate_limiter.window_size = 550
         mock_time.return_value = 100
         self.rate_limiter.update(self._headers(599, 1, 600))
         assert self.rate_limiter.remaining == 599
