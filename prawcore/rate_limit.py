@@ -16,13 +16,13 @@ class RateLimiter(object):
 
     """
 
-    def __init__(self) -> None:
+    def __init__(self, window_size: int) -> None:
         """Create an instance of the RateLimit class."""
         self.remaining: Optional[float] = None
         self.next_request_timestamp: Optional[float] = None
         self.reset_timestamp: Optional[float] = None
         self.used: Optional[int] = None
-        self.window_size: Optional[float] = None
+        self.window_size: int = window_size
 
     def call(
         self,
@@ -79,11 +79,6 @@ class RateLimiter(object):
         self.remaining = float(response_headers["x-ratelimit-remaining"])
         self.used = int(response_headers["x-ratelimit-used"])
         self.reset_timestamp = now + seconds_to_reset
-
-        if self.window_size is None:
-            self.window_size = seconds_to_reset + self.used
-        elif self.window_size < seconds_to_reset:
-            self.window_size = seconds_to_reset
 
         if self.remaining <= 0:
             self.next_request_timestamp = self.reset_timestamp

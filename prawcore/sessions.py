@@ -140,16 +140,18 @@ class Session(object):
     def __init__(
         self,
         authorizer: Optional[BaseAuthorizer],
+        window_size: int = 600,
     ) -> None:
         """Prepare the connection to Reddit's API.
 
         :param authorizer: An instance of :class:`.Authorizer`.
+        :param window_size: An integer.
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
             raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
         self._authorizer = authorizer
-        self._rate_limiter = RateLimiter()
+        self._rate_limiter = RateLimiter(window_size)
         self._retry_strategy_class = FiniteRetryStrategy
 
     def __enter__(self) -> "Session":
@@ -354,10 +356,14 @@ class Session(object):
         )
 
 
-def session(authorizer: "Authorizer" = None) -> Session:
+def session(
+        authorizer: "Authorizer" = None,
+        window_size: int = 600,
+    ) -> Session:
     """Return a :class:`.Session` instance.
 
     :param authorizer: An instance of :class:`.Authorizer`.
+    :param window_size: An integer.
 
     """
-    return Session(authorizer=authorizer)
+    return Session(authorizer=authorizer, window_size=window_size)
