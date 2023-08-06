@@ -17,7 +17,7 @@ class TestRateLimiter(UnitTest):
         }
 
     def setup(self):
-        self.rate_limiter = RateLimiter()
+        self.rate_limiter = RateLimiter(window_size=600)
         self.rate_limiter.next_request_timestamp = 100
 
     @patch("time.sleep")
@@ -78,29 +78,22 @@ class TestRateLimiter(UnitTest):
     @patch("time.time")
     def test_update__compute_delay_with_single_client(self, mock_time):
         self.rate_limiter.remaining = 61
+        self.rate_limiter.window_size = 150
         mock_time.return_value = 100
         self.rate_limiter.update(self._headers(50, 100, 60))
         assert self.rate_limiter.remaining == 50
         assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 106.66666666666667
+        assert self.rate_limiter.next_request_timestamp == 110
 
     @patch("time.time")
     def test_update__compute_delay_with_six_clients(self, mock_time):
         self.rate_limiter.remaining = 66
+        self.rate_limiter.window_size = 180
         mock_time.return_value = 100
         self.rate_limiter.update(self._headers(60, 100, 72))
         assert self.rate_limiter.remaining == 60
         assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 107.5
-
-    @patch("time.time")
-    def test_update__compute_delay_with_window_set(self, mock_time):
-        self.rate_limiter.window_size = 550
-        mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(599, 1, 600))
-        assert self.rate_limiter.remaining == 599
-        assert self.rate_limiter.used == 1
-        assert self.rate_limiter.next_request_timestamp == 101
+        assert self.rate_limiter.next_request_timestamp == 104.5
 
     def test_update__no_change_without_headers(self):
         prev = copy(self.rate_limiter)
