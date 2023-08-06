@@ -5,3 +5,7 @@ line-length = 88
 [tool.isort]
 profile = 'black'
 skip_glob = '.venv*'
+
+[tool.pytest.ini_options]
+filterwarnings = "ignore::DeprecationWarning"
+testpaths = "tests"

@@ -7,8 +7,7 @@ from sys import platform
 
 import pytest
 
-import prawcore
-from prawcore import Requestor
+from prawcore import Requestor, TrustedAuthenticator, UntrustedAuthenticator
 
 
 @pytest.fixture(autouse=True)
@@ -41,7 +40,8 @@ def requestor():
 
 @pytest.fixture
 def trusted_authenticator(requestor):
-    return prawcore.TrustedAuthenticator(
+    """Return a TrustedAuthenticator instance."""
+    return TrustedAuthenticator(
         requestor,
         pytest.placeholders.client_id,
         pytest.placeholders.client_secret,
@@ -50,7 +50,8 @@ def trusted_authenticator(requestor):
 
 @pytest.fixture
 def untrusted_authenticator(requestor):
-    return prawcore.UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
+    """Return an UntrustedAuthenticator instance."""
+    return UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
 
 
 def env_default(key):
@@ -86,7 +87,6 @@ placeholders = {
         " redirect_uri refresh_token user_agent username"
     ).split()
 }
-
 
 placeholders["basic_auth"] = b64encode(
     f"{placeholders['client_id']}:{placeholders['client_secret']}".encode("utf-8")

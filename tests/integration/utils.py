@@ -13,27 +13,24 @@ def ensure_environment_variables():
         "client_id",
         "client_secret",
     ):
-        if getattr(pytest.placeholders, key) == f"placeholder_{key}":
+        if getattr(pytest.placeholders, key) == f"fake_{key}":
             raise ValueError(
-                f"Environment variable 'prawtest_{key}' must be set for recording new"
-                " cassettes."
+                f"Environment variable 'PRAWCORE_{key.upper()}' must be set for recording new cassettes."
             )
     auth_set = False
     for auth_keys in [["refresh_token"], ["username", "password"]]:
-        if all(
-            getattr(pytest.placeholders, key) != f"placeholder_{key}"
-            for key in auth_keys
-        ):
+        if all(getattr(pytest.placeholders, key) != f"fake_{key}" for key in auth_keys):
             auth_set = True
             break
     if not auth_set:
         raise ValueError(
-            "Environment variables 'prawtest_refresh_token' or 'prawtest_username' and"
-            " 'prawtest_password' must be set for new cassette recording."
+            "Environment variables 'PRAWCORE_REFRESH_TOKEN' or 'PRAWCORE_USERNAME' and 'PRAWCORE_PASSWORD' must be set"
+            " for new cassette recording."
         )
 
 
 def ensure_integration_test(cassette):
+    """Ensure test is being run is actually an integration test and error if not."""
     if cassette.is_recording():
         is_integration_test = not cassette.is_empty()
         action = "record"

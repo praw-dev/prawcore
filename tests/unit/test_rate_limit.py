@@ -67,23 +67,30 @@ class TestRateLimiter(UnitTest):
 
     @patch("time.time")
     def test_update__compute_delay_with_single_client(self, mock_time, rate_limiter):
-        self.rate_limiter.remaining = 61
+        rate_limiter.remaining = 61
         mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(50, 100, 60))
-        assert self.rate_limiter.remaining == 50
-        assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 106.66666666666667
-
+        rate_limiter.update(self._headers(50, 100, 60))
+        assert rate_limiter.remaining == 50
+        assert rate_limiter.used == 100
+        assert rate_limiter.next_request_timestamp == 106.66666666666667
 
     @patch("time.time")
     def test_update__compute_delay_with_six_clients(self, mock_time, rate_limiter):
-        self.rate_limiter.remaining = 66
+        rate_limiter.remaining = 66
         mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(60, 100, 72))
-        assert self.rate_limiter.remaining == 60
-        assert self.rate_limiter.used == 100
-        assert self.rate_limiter.next_request_timestamp == 107.5
+        rate_limiter.update(self._headers(60, 100, 72))
+        assert rate_limiter.remaining == 60
+        assert rate_limiter.used == 100
+        assert rate_limiter.next_request_timestamp == 107.5
 
+    @patch("time.time")
+    def test_update__compute_delay_with_window_set(self, mock_time, rate_limiter):
+        rate_limiter.window_size = 550
+        mock_time.return_value = 100
+        rate_limiter.update(self._headers(599, 1, 600))
+        assert rate_limiter.remaining == 599
+        assert rate_limiter.used == 1
+        assert rate_limiter.next_request_timestamp == 101
 
     @patch("time.time")
     def test_update__delay_full_time_with_negative_remaining(
@@ -95,15 +102,6 @@ class TestRateLimiter(UnitTest):
         assert rate_limiter.remaining == 0
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp == 50
-
-    @patch("time.time")
-    def test_update__compute_delay_with_window_set(self, mock_time):
-        self.rate_limiter.window_size = 550
-        mock_time.return_value = 100
-        self.rate_limiter.update(self._headers(599, 1, 600))
-        assert self.rate_limiter.remaining == 599
-        assert self.rate_limiter.used == 1
-        assert self.rate_limiter.next_request_timestamp == 101
 
     @patch("time.time")
     def test_update__delay_full_time_with_zero_remaining(self, mock_time, rate_limiter):
