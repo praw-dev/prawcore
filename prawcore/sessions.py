@@ -357,9 +357,9 @@ class Session(object):
 
 
 def session(
-        authorizer: "Authorizer" = None,
-        window_size: int = 600,
-    ) -> Session:
+    authorizer: "Authorizer" = None,
+    window_size: int = 600,
+) -> Session:
     """Return a :class:`.Session` instance.
 
     :param authorizer: An instance of :class:`.Authorizer`.
