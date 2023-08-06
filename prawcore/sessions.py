@@ -11,7 +11,7 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeo
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
-from .const import TIMEOUT
+from .const import TIMEOUT, WINDOW_SIZE
 from .exceptions import (
     BadJSON,
     BadRequest,
@@ -140,12 +140,12 @@ class Session(object):
     def __init__(
         self,
         authorizer: Optional[BaseAuthorizer],
-        window_size: int = 600,
+        window_size: int = WINDOW_SIZE,
     ) -> None:
         """Prepare the connection to Reddit's API.
 
         :param authorizer: An instance of :class:`.Authorizer`.
-        :param window_size: An integer.
+        :param window_size: The size of the rate limit reset window in seconds.
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
@@ -358,12 +358,12 @@ class Session(object):
 
 def session(
     authorizer: "Authorizer" = None,
-    window_size: int = 600,
+    window_size: int = WINDOW_SIZE,
 ) -> Session:
     """Return a :class:`.Session` instance.
 
     :param authorizer: An instance of :class:`.Authorizer`.
-    :param window_size: An integer.
+    :param window_size: The size of the rate limit reset window in seconds.
 
     """
     return Session(authorizer=authorizer, window_size=window_size)
