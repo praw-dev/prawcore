@@ -18,6 +18,10 @@ if TYPE_CHECKING:
 class BaseAuthenticator(ABC):
     """Provide the base authenticator object that stores OAuth2 credentials."""
 
+    @abstractmethod
+    def _auth(self):
+        pass
+
     def __init__(
         self,
         requestor: "Requestor",
@@ -38,10 +42,6 @@ class BaseAuthenticator(ABC):
         self._requestor = requestor
         self.client_id = client_id
         self.redirect_uri = redirect_uri
-
-    @abstractmethod
-    def _auth(self):
-        pass
 
     def _post(self, url: str, success_status: int = codes["ok"], **data) -> "Response":
         response = self._requestor.request(
@@ -125,44 +125,6 @@ class BaseAuthenticator(ABC):
         self._post(url, **data)
 
 
-class TrustedAuthenticator(BaseAuthenticator):
-    """Store OAuth2 authentication credentials for web, or script type apps."""
-
-    RESPONSE_TYPE: str = "code"
-
-    def __init__(
-        self,
-        requestor: "Requestor",
-        client_id: str,
-        client_secret: str,
-        redirect_uri: Optional[str] = None,
-    ) -> None:
-        """Represent a single authentication to Reddit's API.
-
-        :param requestor: An instance of :class:`.Requestor`.
-        :param client_id: The OAuth2 client ID to use with the session.
-        :param client_secret: The OAuth2 client secret to use with the session.
-        :param redirect_uri: The redirect URI exactly as specified in your OAuth
-            application settings on Reddit. This parameter is required if you want to
-            use the :meth:`~.Authorizer.authorize_url` method, or the
-            :meth:`~.Authorizer.authorize` method of the :class:`.Authorizer` class
-            (default: ``None``).
-
-        """
-        super(TrustedAuthenticator, self).__init__(requestor, client_id, redirect_uri)
-        self.client_secret = client_secret
-
-    def _auth(self) -> Tuple[str, str]:
-        return self.client_id, self.client_secret
-
-
-class UntrustedAuthenticator(BaseAuthenticator):
-    """Store OAuth2 authentication credentials for installed applications."""
-
-    def _auth(self) -> Tuple[str, str]:
-        return self.client_id, ""
-
-
 class BaseAuthorizer(ABC):
     """Superclass for OAuth2 authorization tokens and scopes."""
 
@@ -228,6 +190,44 @@ class BaseAuthorizer(ABC):
 
         self._authenticator.revoke_token(self.access_token, "access_token")
         self._clear_access_token()
+
+
+class TrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for web, or script type apps."""
+
+    RESPONSE_TYPE: str = "code"
+
+    def __init__(
+        self,
+        requestor: "Requestor",
+        client_id: str,
+        client_secret: str,
+        redirect_uri: Optional[str] = None,
+    ) -> None:
+        """Represent a single authentication to Reddit's API.
+
+        :param requestor: An instance of :class:`.Requestor`.
+        :param client_id: The OAuth2 client ID to use with the session.
+        :param client_secret: The OAuth2 client secret to use with the session.
+        :param redirect_uri: The redirect URI exactly as specified in your OAuth
+            application settings on Reddit. This parameter is required if you want to
+            use the :meth:`~.Authorizer.authorize_url` method, or the
+            :meth:`~.Authorizer.authorize` method of the :class:`.Authorizer` class
+            (default: ``None``).
+
+        """
+        super(TrustedAuthenticator, self).__init__(requestor, client_id, redirect_uri)
+        self.client_secret = client_secret
+
+    def _auth(self) -> Tuple[str, str]:
+        return self.client_id, self.client_secret
+
+
+class UntrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for installed applications."""
+
+    def _auth(self) -> Tuple[str, str]:
+        return self.client_id, ""
 
 
 class Authorizer(BaseAuthorizer):
@@ -305,53 +305,6 @@ class Authorizer(BaseAuthorizer):
             self._authenticator.revoke_token(self.refresh_token, "refresh_token")
             self._clear_access_token()
             self.refresh_token = None
-
-
-class DeviceIDAuthorizer(BaseAuthorizer):
-    """Manages app-only OAuth2 for 'installed' applications.
-
-    While the ``"*"`` scope will be available, some endpoints simply will not work due
-    to the lack of an associated Reddit account.
-
-    """
-
-    AUTHENTICATOR_CLASS = (TrustedAuthenticator, UntrustedAuthenticator)
-
-    def __init__(
-        self,
-        authenticator: BaseAuthenticator,
-        device_id: Optional[str] = None,
-        scopes: Optional[List[str]] = None,
-    ) -> None:
-        """Represent an app-only OAuth2 authorization for 'installed' apps.
-
-        :param authenticator: An instance of :class:`.UntrustedAuthenticator` or
-            :class:`.TrustedAuthenticator`.
-        :param device_id: A unique ID (20-30 character ASCII string) (default:
-            ``None``). ``device_id`` is set to ``"DO_NOT_TRACK_THIS_DEVICE"`` when the
-            default argument is used. For more information about this parameter, see:
-            https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
-        :param scopes: A list of OAuth scopes to request authorization for (default:
-            ``None``). The scope ``"*"`` is requested when the default argument is used.
-
-        """
-        if device_id is None:
-            device_id = "DO_NOT_TRACK_THIS_DEVICE"
-        super().__init__(authenticator)
-        self._device_id = device_id
-        self._scopes = scopes
-
-    def refresh(self) -> None:
-        """Obtain a new access token."""
-        additional_kwargs = {}
-        if self._scopes:
-            additional_kwargs["scope"] = " ".join(self._scopes)
-        grant_type = "https://oauth.reddit.com/grants/installed_client"
-        self._request_token(
-            grant_type=grant_type,
-            device_id=self._device_id,
-            **additional_kwargs,
-        )
 
 
 class ImplicitAuthorizer(BaseAuthorizer):
@@ -466,5 +419,52 @@ class ScriptAuthorizer(Authorizer):
             grant_type="password",
             username=self._username,
             password=self._password,
+            **additional_kwargs,
+        )
+
+
+class DeviceIDAuthorizer(BaseAuthorizer):
+    """Manages app-only OAuth2 for 'installed' applications.
+
+    While the ``"*"`` scope will be available, some endpoints simply will not work due
+    to the lack of an associated Reddit account.
+
+    """
+
+    AUTHENTICATOR_CLASS = (TrustedAuthenticator, UntrustedAuthenticator)
+
+    def __init__(
+        self,
+        authenticator: BaseAuthenticator,
+        device_id: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+    ) -> None:
+        """Represent an app-only OAuth2 authorization for 'installed' apps.
+
+        :param authenticator: An instance of :class:`.UntrustedAuthenticator` or
+            :class:`.TrustedAuthenticator`.
+        :param device_id: A unique ID (20-30 character ASCII string) (default:
+            ``None``). ``device_id`` is set to ``"DO_NOT_TRACK_THIS_DEVICE"`` when the
+            default argument is used. For more information about this parameter, see:
+            https://github.com/reddit/reddit/wiki/OAuth2#application-only-oauth
+        :param scopes: A list of OAuth scopes to request authorization for (default:
+            ``None``). The scope ``"*"`` is requested when the default argument is used.
+
+        """
+        if device_id is None:
+            device_id = "DO_NOT_TRACK_THIS_DEVICE"
+        super().__init__(authenticator)
+        self._device_id = device_id
+        self._scopes = scopes
+
+    def refresh(self) -> None:
+        """Obtain a new access token."""
+        additional_kwargs = {}
+        if self._scopes:
+            additional_kwargs["scope"] = " ".join(self._scopes)
+        grant_type = "https://oauth.reddit.com/grants/installed_client"
+        self._request_token(
+            grant_type=grant_type,
+            device_id=self._device_id,
             **additional_kwargs,
         )
