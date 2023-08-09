@@ -14,6 +14,28 @@ class InvalidInvocation(PrawcoreException):
     """Indicate that the code to execute cannot be completed."""
 
 
+class OAuthException(PrawcoreException):
+    """Indicate that there was an OAuth2 related error with the request."""
+
+    def __init__(
+        self, response: "Response", error: str, description: Optional[str] = None
+    ) -> None:
+        """Initialize a OAuthException instance.
+
+        :param response: A ``requests.response`` instance.
+        :param error: The error type returned by Reddit.
+        :param description: A description of the error when provided.
+
+        """
+        self.error = error
+        self.description = description
+        self.response = response
+        message = f"{error} error processing request"
+        if description:
+            message += f" ({description})"
+        PrawcoreException.__init__(self, message)
+
+
 class RequestException(PrawcoreException):
     """Indicate that there was an error with the incomplete HTTP request."""
 
@@ -53,28 +75,6 @@ class ResponseException(PrawcoreException):
         super(ResponseException, self).__init__(
             f"received {response.status_code} HTTP response"
         )
-
-
-class OAuthException(PrawcoreException):
-    """Indicate that there was an OAuth2 related error with the request."""
-
-    def __init__(
-        self, response: "Response", error: str, description: Optional[str] = None
-    ) -> None:
-        """Initialize a OAuthException instance.
-
-        :param response: A ``requests.response`` instance.
-        :param error: The error type returned by Reddit.
-        :param description: A description of the error when provided.
-
-        """
-        self.error = error
-        self.description = description
-        self.response = response
-        message = f"{error} error processing request"
-        if description:
-            message += f" ({description})"
-        PrawcoreException.__init__(self, message)
 
 
 class BadJSON(ResponseException):
@@ -182,9 +182,9 @@ class TooManyRequests(ResponseException):
         PrawcoreException.__init__(self, msg)
 
 
-class UnavailableForLegalReasons(ResponseException):
-    """Indicate that the requested URL is unavailable due to legal reasons."""
-
-
 class URITooLong(ResponseException):
     """Indicate that the length of the request URI exceeds the allowed limit."""
+
+
+class UnavailableForLegalReasons(ResponseException):
+    """Indicate that the requested URL is unavailable due to legal reasons."""

@@ -16,15 +16,7 @@ with open(path.join(HERE, PACKAGE_NAME, "const.py"), encoding="utf-8") as fp:
 extras = {
     "ci": ["coveralls"],
     "lint": ["black", "flake8", "isort", "pre-commit", "pydocstyle", "flynt"],
-    "test": [
-        "betamax >=0.8, <0.9",
-        "betamax_matchers >=0.4.0, <0.5",
-        "betamax-serializers >=0.2.0, <0.3",
-        "mock >=0.8",
-        "pytest",
-        "testfixtures >4.13.2, <7",
-        "urllib3 ==1.26.*, <2",
-    ],
+    "test": ["betamax >=0.8, <0.9", "pytest", "urllib3 ==1.26.*, <2"],
 }
 extras["dev"] = extras["lint"] + extras["test"]
 

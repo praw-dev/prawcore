@@ -31,6 +31,10 @@ prawcore
     :target: https://github.com/pre-commit/pre-commit
     :alt: pre-commit
 
+.. image:: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore/badge
+    :alt: OpenSSF Scorecard
+    :target: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore
+
 prawcore is a low-level communication layer used by PRAW 4+.
 
 Installation
