@@ -137,7 +137,7 @@ class Session(object):
         if not isinstance(authorizer, BaseAuthorizer):
             raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
         self._authorizer = authorizer
-        self._rate_limiter = RateLimiter(window_size)
+        self._rate_limiter = RateLimiter(window_size=window_size)
         self._retry_strategy_class = FiniteRetryStrategy
 
     def _do_retry(
