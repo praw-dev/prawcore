@@ -133,7 +133,7 @@ class Session(object):
         params: Dict[str, int],
         url: str,
     ) -> None:
-        log.debug(f"Fetching: {method} {url}")
+        log.debug(f"Fetching: {method} {url} at {time.time()}")
         log.debug(f"Data: {data}")
         log.debug(f"Params: {params}")
 
@@ -219,6 +219,9 @@ class Session(object):
             log.debug(
                 f"Response: {response.status_code}"
                 f" ({response.headers.get('content-length')} bytes)"
+                f" ({response.headers.get('x-ratelimit-reset')}:"
+                f"{response.headers.get('x-ratelimit-remaining')}:"
+                f"{response.headers.get('x-ratelimit-used')} ratelimit) at {time.time()}"
             )
             return response, None
         except RequestException as exception:
