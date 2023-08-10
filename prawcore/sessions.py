@@ -63,32 +63,6 @@ class RetryStrategy(ABC):
             time.sleep(sleep_seconds)
 
 
-class FiniteRetryStrategy(RetryStrategy):
-    """A ``RetryStrategy`` that retries requests a finite number of times."""
-
-    def _sleep_seconds(self) -> Optional[float]:
-        if self._retries < 3:
-            base = 0 if self._retries == 2 else 2
-            return base + 2 * random.random()
-        return None
-
-    def __init__(self, retries: int = 3) -> None:
-        """Initialize the strategy.
-
-        :param retries: Number of times to attempt a request (default: ``3``).
-
-        """
-        self._retries = retries
-
-    def consume_available_retry(self) -> "FiniteRetryStrategy":
-        """Allow one fewer retry."""
-        return type(self)(self._retries - 1)
-
-    def should_retry_on_failure(self) -> bool:
-        """Return ``True`` if and only if the strategy will allow another retry."""
-        return self._retries > 1
-
-
 class Session(object):
     """The low-level connection interface to Reddit's API."""
 
@@ -137,6 +111,18 @@ class Session(object):
         log.debug(f"Data: {data}")
         log.debug(f"Params: {params}")
 
+    @property
+    def _requestor(self) -> "Requestor":
+        return self._authorizer._authenticator._requestor
+
+    def __enter__(self) -> "Session":
+        """Allow this object to be used as a context manager."""
+        return self
+
+    def __exit__(self, *_args) -> None:
+        """Allow this object to be used as a context manager."""
+        self.close()
+
     def __init__(
         self,
         authorizer: Optional[BaseAuthorizer],
@@ -153,14 +139,6 @@ class Session(object):
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter(window_size)
         self._retry_strategy_class = FiniteRetryStrategy
-
-    def __enter__(self) -> "Session":
-        """Allow this object to be used as a context manager."""
-        return self
-
-    def __exit__(self, *_args) -> None:
-        """Allow this object to be used as a context manager."""
-        self.close()
 
     def _do_retry(
         self,
@@ -301,10 +279,6 @@ class Session(object):
             self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
-    @property
-    def _requestor(self) -> "Requestor":
-        return self._authorizer._authenticator._requestor
-
     def close(self) -> None:
         """Close the session and perform any clean up."""
         self._requestor.close()
@@ -370,3 +344,29 @@ def session(
 
     """
     return Session(authorizer=authorizer, window_size=window_size)
+
+
+class FiniteRetryStrategy(RetryStrategy):
+    """A ``RetryStrategy`` that retries requests a finite number of times."""
+
+    def __init__(self, retries: int = 3) -> None:
+        """Initialize the strategy.
+
+        :param retries: Number of times to attempt a request (default: ``3``).
+
+        """
+        self._retries = retries
+
+    def _sleep_seconds(self) -> Optional[float]:
+        if self._retries < 3:
+            base = 0 if self._retries == 2 else 2
+            return base + 2 * random.random()
+        return None
+
+    def consume_available_retry(self) -> "FiniteRetryStrategy":
+        """Allow one fewer retry."""
+        return type(self)(self._retries - 1)
+
+    def should_retry_on_failure(self) -> bool:
+        """Return ``True`` if and only if the strategy will allow another retry."""
+        return self._retries > 1
