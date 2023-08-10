@@ -16,7 +16,11 @@ class RateLimiter(object):
 
     """
 
-    def __init__(self, window_size: int) -> None:
+    def __init__(
+        self,
+        *args,
+        window_size: int
+    ) -> None:
         """Create an instance of the RateLimit class."""
         self.remaining: Optional[float] = None
         self.next_request_timestamp: Optional[float] = None
