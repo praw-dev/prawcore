@@ -48,12 +48,13 @@ class TestSession(IntegrationTest):
         session.request("POST", "api/read_all_messages")
         found_message = False
         for package, level, message in caplog.record_tuples:
-            if package == "prawcore" and level == logging.DEBUG and \
-                    "Response: 202 (2 bytes)" in message:
+            if (
+                package == "prawcore"
+                and level == logging.DEBUG
+                and "Response: 202 (2 bytes)" in message
+            ):
                 found_message = True
-        assert \
-            found_message, \
-            f"'Response: 202 (2 bytes)' in {caplog.record_tuples}"
+        assert found_message, f"'Response: 202 (2 bytes)' in {caplog.record_tuples}"
 
     def test_request__bad_gateway(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
