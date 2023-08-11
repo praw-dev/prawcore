@@ -197,9 +197,9 @@ class Session(object):
             log.debug(
                 f"Response: {response.status_code}"
                 f" ({response.headers.get('content-length')} bytes)"
-                f" ({response.headers.get('x-ratelimit-reset')}:"
-                f"{response.headers.get('x-ratelimit-remaining')}:"
-                f"{response.headers.get('x-ratelimit-used')} ratelimit) at {time.time()}"
+                f" (rst-{int(response.headers.get('x-ratelimit-reset'))}:"
+                f"rem-{float(response.headers.get('x-ratelimit-remaining'))}:"
+                f"used-{int(response.headers.get('x-ratelimit-used'))} ratelimit) at {time.time()}"
             )
             return response, None
         except RequestException as exception:
