@@ -24,10 +24,6 @@ class TestRateLimiter(UnitTest):
             "x-ratelimit-reset": str(reset),
         }
 
-    def setup(self):
-        self.rate_limiter = RateLimiter(window_size=600)
-        self.rate_limiter.next_request_timestamp = 100
-
     @patch("time.time")
     @patch("time.sleep")
     def test_delay(self, mock_sleep, mock_time, rate_limiter):
