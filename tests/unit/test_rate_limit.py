@@ -12,7 +12,7 @@ from . import UnitTest
 class TestRateLimiter(UnitTest):
     @pytest.fixture
     def rate_limiter(self):
-        rate_limiter = RateLimiter()
+        rate_limiter = RateLimiter(window_size=600)
         rate_limiter.next_request_timestamp = 100
         return rate_limiter
 
@@ -68,29 +68,22 @@ class TestRateLimiter(UnitTest):
     @patch("time.time")
     def test_update__compute_delay_with_single_client(self, mock_time, rate_limiter):
         rate_limiter.remaining = 61
+        rate_limiter.window_size = 150
         mock_time.return_value = 100
         rate_limiter.update(self._headers(50, 100, 60))
         assert rate_limiter.remaining == 50
         assert rate_limiter.used == 100
-        assert rate_limiter.next_request_timestamp == 106.66666666666667
+        assert rate_limiter.next_request_timestamp == 110
 
     @patch("time.time")
     def test_update__compute_delay_with_six_clients(self, mock_time, rate_limiter):
         rate_limiter.remaining = 66
+        rate_limiter.window_size = 180
         mock_time.return_value = 100
         rate_limiter.update(self._headers(60, 100, 72))
         assert rate_limiter.remaining == 60
         assert rate_limiter.used == 100
-        assert rate_limiter.next_request_timestamp == 107.5
-
-    @patch("time.time")
-    def test_update__compute_delay_with_window_set(self, mock_time, rate_limiter):
-        rate_limiter.window_size = 550
-        mock_time.return_value = 100
-        rate_limiter.update(self._headers(599, 1, 600))
-        assert rate_limiter.remaining == 599
-        assert rate_limiter.used == 1
-        assert rate_limiter.next_request_timestamp == 101
+        assert rate_limiter.next_request_timestamp == 104.5
 
     @patch("time.time")
     def test_update__delay_full_time_with_negative_remaining(

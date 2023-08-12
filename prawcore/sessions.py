@@ -11,7 +11,7 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeo
 from requests.status_codes import codes
 
 from .auth import BaseAuthorizer
-from .const import TIMEOUT
+from .const import TIMEOUT, WINDOW_SIZE
 from .exceptions import (
     BadJSON,
     BadRequest,
@@ -107,7 +107,7 @@ class Session(object):
         params: Dict[str, int],
         url: str,
     ) -> None:
-        log.debug(f"Fetching: {method} {url}")
+        log.debug(f"Fetching: {method} {url} at {time.time()}")
         log.debug(f"Data: {data}")
         log.debug(f"Params: {params}")
 
@@ -126,16 +126,18 @@ class Session(object):
     def __init__(
         self,
         authorizer: Optional[BaseAuthorizer],
+        window_size: int = WINDOW_SIZE,
     ) -> None:
         """Prepare the connection to Reddit's API.
 
         :param authorizer: An instance of :class:`.Authorizer`.
+        :param window_size: The size of the rate limit reset window in seconds.
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
             raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
         self._authorizer = authorizer
-        self._rate_limiter = RateLimiter()
+        self._rate_limiter = RateLimiter(window_size=window_size)
         self._retry_strategy_class = FiniteRetryStrategy
 
     def _do_retry(
@@ -195,6 +197,9 @@ class Session(object):
             log.debug(
                 f"Response: {response.status_code}"
                 f" ({response.headers.get('content-length')} bytes)"
+                f" (rst-{response.headers.get('x-ratelimit-reset')}:"
+                f"rem-{response.headers.get('x-ratelimit-remaining')}:"
+                f"used-{response.headers.get('x-ratelimit-used')} ratelimit) at {time.time()}"
             )
             return response, None
         except RequestException as exception:
@@ -328,13 +333,17 @@ class Session(object):
         )
 
 
-def session(authorizer: "Authorizer" = None) -> Session:
+def session(
+    authorizer: "Authorizer" = None,
+    window_size: int = WINDOW_SIZE,
+) -> Session:
     """Return a :class:`.Session` instance.
 
     :param authorizer: An instance of :class:`.Authorizer`.
+    :param window_size: The size of the rate limit reset window in seconds.
 
     """
-    return Session(authorizer=authorizer)
+    return Session(authorizer=authorizer, window_size=window_size)
 
 
 class FiniteRetryStrategy(RetryStrategy):
