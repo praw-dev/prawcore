@@ -1,7 +1,9 @@
 """Provides Authentication and Authorization classes."""
+from __future__ import annotations
+
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, List, Optional, Set, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from requests import Request
 from requests.status_codes import codes
@@ -24,9 +26,9 @@ class BaseAuthenticator(ABC):
 
     def __init__(
         self,
-        requestor: "Requestor",
+        requestor: Requestor,
         client_id: str,
-        redirect_uri: Optional[str] = None,
+        redirect_uri: str | None = None,
     ) -> None:
         """Represent a single authentication to Reddit's API.
 
@@ -43,7 +45,9 @@ class BaseAuthenticator(ABC):
         self.client_id = client_id
         self.redirect_uri = redirect_uri
 
-    def _post(self, url: str, success_status: int = codes["ok"], **data) -> "Response":
+    def _post(
+        self, url: str, success_status: int = codes["ok"], **data: Any
+    ) -> Response:
         response = self._requestor.request(
             "post",
             url,
@@ -58,7 +62,7 @@ class BaseAuthenticator(ABC):
     def authorize_url(
         self,
         duration: str,
-        scopes: List[str],
+        scopes: list[str],
         state: str,
         implicit: bool = False,
     ) -> str:
@@ -86,16 +90,16 @@ class BaseAuthenticator(ABC):
 
         """
         if self.redirect_uri is None:
-            raise InvalidInvocation("redirect URI not provided")
+            msg = "redirect URI not provided"
+            raise InvalidInvocation(msg)
         if implicit and not isinstance(self, UntrustedAuthenticator):
-            raise InvalidInvocation(
-                "Only UntrustedAuthenticator instances can "
-                "use the implicit grant flow."
+            msg = (
+                "Only UntrustedAuthenticator instances can use the implicit grant flow."
             )
+            raise InvalidInvocation(msg)
         if implicit and duration != "temporary":
-            raise InvalidInvocation(
-                "The implicit grant flow only supports temporary access tokens."
-            )
+            msg = "The implicit grant flow only supports temporary access tokens."
+            raise InvalidInvocation(msg)
 
         params = {
             "client_id": self.client_id,
@@ -107,9 +111,9 @@ class BaseAuthenticator(ABC):
         }
         url = self._requestor.reddit_url + const.AUTHORIZATION_PATH
         request = Request("GET", url, params=params)
-        return request.prepare().url  # type: ignore
+        return request.prepare().url
 
-    def revoke_token(self, token: str, token_type: Optional[str] = None) -> None:
+    def revoke_token(self, token: str, token_type: str | None = None) -> None:
         """Ask Reddit to revoke the provided token.
 
         :param token: The access or refresh token to revoke.
@@ -128,7 +132,7 @@ class BaseAuthenticator(ABC):
 class BaseAuthorizer(ABC):
     """Superclass for OAuth2 authorization tokens and scopes."""
 
-    AUTHENTICATOR_CLASS: Union[Tuple, Type] = BaseAuthenticator
+    AUTHENTICATOR_CLASS: tuple | type = BaseAuthenticator
 
     def __init__(self, authenticator: BaseAuthenticator) -> None:
         """Represent a single authorization to Reddit's API.
@@ -142,10 +146,10 @@ class BaseAuthorizer(ABC):
 
     def _clear_access_token(self) -> None:
         self._expiration_timestamp: float
-        self.access_token: Optional[str] = None
-        self.scopes: Optional[Set[str]] = None
+        self.access_token: str | None = None
+        self.scopes: set[str] | None = None
 
-    def _request_token(self, **data) -> None:
+    def _request_token(self, **data: Any) -> None:
         url = self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
         pre_request_time = time.time()
         response = self._authenticator._post(url=url, **data)
@@ -186,7 +190,8 @@ class BaseAuthorizer(ABC):
     def revoke(self) -> None:
         """Revoke the current Authorization."""
         if self.access_token is None:
-            raise InvalidInvocation("no token available to revoke")
+            msg = "no token available to revoke"
+            raise InvalidInvocation(msg)
 
         self._authenticator.revoke_token(self.access_token, "access_token")
         self._clear_access_token()
@@ -199,10 +204,10 @@ class TrustedAuthenticator(BaseAuthenticator):
 
     def __init__(
         self,
-        requestor: "Requestor",
+        requestor: Requestor,
         client_id: str,
         client_secret: str,
-        redirect_uri: Optional[str] = None,
+        redirect_uri: str | None = None,
     ) -> None:
         """Represent a single authentication to Reddit's API.
 
@@ -216,17 +221,17 @@ class TrustedAuthenticator(BaseAuthenticator):
             (default: ``None``).
 
         """
-        super(TrustedAuthenticator, self).__init__(requestor, client_id, redirect_uri)
+        super().__init__(requestor, client_id, redirect_uri)
         self.client_secret = client_secret
 
-    def _auth(self) -> Tuple[str, str]:
+    def _auth(self) -> tuple[str, str]:
         return self.client_id, self.client_secret
 
 
 class UntrustedAuthenticator(BaseAuthenticator):
     """Store OAuth2 authentication credentials for installed applications."""
 
-    def _auth(self) -> Tuple[str, str]:
+    def _auth(self) -> tuple[str, str]:
         return self.client_id, ""
 
 
@@ -237,9 +242,9 @@ class Authorizer(BaseAuthorizer):
         self,
         authenticator: BaseAuthenticator,
         *,
-        post_refresh_callback: Optional[Callable[["Authorizer"], None]] = None,
-        pre_refresh_callback: Optional[Callable[["Authorizer"], None]] = None,
-        refresh_token: Optional[str] = None,
+        post_refresh_callback: Callable[[Authorizer], None] | None = None,
+        pre_refresh_callback: Callable[[Authorizer], None] | None = None,
+        refresh_token: str | None = None,
     ) -> None:
         """Represent a single authorization to Reddit's API.
 
@@ -257,7 +262,7 @@ class Authorizer(BaseAuthorizer):
         :param refresh_token: Enables the ability to refresh the authorization.
 
         """
-        super(Authorizer, self).__init__(authenticator)
+        super().__init__(authenticator)
         self._post_refresh_callback = post_refresh_callback
         self._pre_refresh_callback = pre_refresh_callback
         self.refresh_token = refresh_token
@@ -270,7 +275,8 @@ class Authorizer(BaseAuthorizer):
 
         """
         if self._authenticator.redirect_uri is None:
-            raise InvalidInvocation("redirect URI not provided")
+            msg = "redirect URI not provided"
+            raise InvalidInvocation(msg)
         self._request_token(
             code=code,
             grant_type="authorization_code",
@@ -282,7 +288,8 @@ class Authorizer(BaseAuthorizer):
         if self._pre_refresh_callback:
             self._pre_refresh_callback(self)
         if self.refresh_token is None:
-            raise InvalidInvocation("refresh token not provided")
+            msg = "refresh token not provided"
+            raise InvalidInvocation(msg)
         self._request_token(
             grant_type="refresh_token", refresh_token=self.refresh_token
         )
@@ -300,7 +307,7 @@ class Authorizer(BaseAuthorizer):
 
         """
         if only_access or self.refresh_token is None:
-            super(Authorizer, self).revoke()
+            super().revoke()
         else:
             self._authenticator.revoke_token(self.refresh_token, "refresh_token")
             self._clear_access_token()
@@ -333,7 +340,7 @@ class ImplicitAuthorizer(BaseAuthorizer):
             from Reddit in the callback to the authenticator's redirect uri.
 
         """
-        super(ImplicitAuthorizer, self).__init__(authenticator)
+        super().__init__(authenticator)
         self._expiration_timestamp = time.time() + expires_in
         self.access_token = access_token
         self.scopes = set(scope.split(" "))
@@ -352,7 +359,7 @@ class ReadOnlyAuthorizer(Authorizer):
     def __init__(
         self,
         authenticator: BaseAuthenticator,
-        scopes: Optional[List[str]] = None,
+        scopes: list[str] | None = None,
     ) -> None:
         """Represent a ReadOnly authorization to Reddit's API.
 
@@ -384,10 +391,10 @@ class ScriptAuthorizer(Authorizer):
     def __init__(
         self,
         authenticator: BaseAuthenticator,
-        username: Optional[str],
-        password: Optional[str],
-        two_factor_callback: Optional[Callable] = None,
-        scopes: Optional[List[str]] = None,
+        username: str | None,
+        password: str | None,
+        two_factor_callback: Callable | None = None,
+        scopes: list[str] | None = None,
     ) -> None:
         """Represent a single personal-use authorization to Reddit's API.
 
@@ -401,7 +408,7 @@ class ScriptAuthorizer(Authorizer):
             ``None``). The scope ``"*"`` is requested when the default argument is used.
 
         """
-        super(ScriptAuthorizer, self).__init__(authenticator)
+        super().__init__(authenticator)
         self._password = password
         self._scopes = scopes
         self._two_factor_callback = two_factor_callback
@@ -436,8 +443,8 @@ class DeviceIDAuthorizer(BaseAuthorizer):
     def __init__(
         self,
         authenticator: BaseAuthenticator,
-        device_id: Optional[str] = None,
-        scopes: Optional[List[str]] = None,
+        device_id: str | None = None,
+        scopes: list[str] | None = None,
     ) -> None:
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 

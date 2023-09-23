@@ -1,5 +1,7 @@
 """Provide utility for the prawcore package."""
-from typing import TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from .exceptions import Forbidden, InsufficientScope, InvalidToken
 
@@ -14,15 +16,15 @@ _auth_error_mapping = {
 
 
 def authorization_error_class(
-    response: "Response",
-) -> Union[InvalidToken, Forbidden, InsufficientScope]:
+    response: Response,
+) -> InvalidToken | (Forbidden | InsufficientScope):
     """Return an exception instance that maps to the OAuth Error.
 
     :param response: The HTTP response containing a www-authenticate error.
 
     """
     message = response.headers.get("www-authenticate")
-    error: Union[int, str]
+    error: int | str
     if message:
         error = message.replace('"', "").rsplit("=", 1)[1]
     else:
