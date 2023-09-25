@@ -1,7 +1,9 @@
 """Provide the RateLimiter class."""
+from __future__ import annotations
+
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Dict, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 if TYPE_CHECKING:
     from requests.models import Response
@@ -9,7 +11,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__package__)
 
 
-class RateLimiter(object):
+class RateLimiter:
     """Facilitates the rate limiting of requests to Reddit.
 
     Rate limits are controlled based on feedback from requests to Reddit.
@@ -18,19 +20,19 @@ class RateLimiter(object):
 
     def __init__(self, *, window_size: int) -> None:
         """Create an instance of the RateLimit class."""
-        self.remaining: Optional[float] = None
-        self.next_request_timestamp: Optional[float] = None
-        self.reset_timestamp: Optional[float] = None
-        self.used: Optional[int] = None
+        self.remaining: float | None = None
+        self.next_request_timestamp: float | None = None
+        self.reset_timestamp: float | None = None
+        self.used: int | None = None
         self.window_size: int = window_size
 
     def call(
         self,
-        request_function: Callable[[Any], "Response"],
-        set_header_callback: Callable[[], Dict[str, str]],
-        *args,
-        **kwargs,
-    ) -> "Response":
+        request_function: Callable[[Any], Response],
+        set_header_callback: Callable[[], dict[str, str]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> Response:
         """Rate limit the call to ``request_function``.
 
         :param request_function: A function call that returns an HTTP response object.

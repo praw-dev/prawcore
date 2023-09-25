@@ -6,7 +6,7 @@ import betamax
 import pytest
 from betamax.cassette import Cassette
 
-from .utils import (
+from ..utils import (
     PrettyJSONSerializer,
     ensure_environment_variables,
     ensure_integration_test,

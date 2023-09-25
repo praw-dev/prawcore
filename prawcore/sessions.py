@@ -1,10 +1,13 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
+from __future__ import annotations
+
 import logging
 import random
 import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from pprint import pformat
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urljoin
 
 from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
@@ -51,7 +54,7 @@ class RetryStrategy(ABC):
     """
 
     @abstractmethod
-    def _sleep_seconds(self) -> Optional[float]:
+    def _sleep_seconds(self) -> float | None:
         pass
 
     def sleep(self) -> None:
@@ -63,7 +66,7 @@ class RetryStrategy(ABC):
             time.sleep(sleep_seconds)
 
 
-class Session(object):
+class Session:
     """The low-level connection interface to Reddit's API."""
 
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
@@ -102,20 +105,20 @@ class Session(object):
 
     @staticmethod
     def _log_request(
-        data: Optional[List[Tuple[str, str]]],
+        data: list[tuple[str, str]] | None,
         method: str,
-        params: Dict[str, int],
+        params: dict[str, int],
         url: str,
     ) -> None:
-        log.debug(f"Fetching: {method} {url} at {time.time()}")
-        log.debug(f"Data: {data}")
-        log.debug(f"Params: {params}")
+        log.debug("Fetching: %s %s at %s", method, url, time.time())
+        log.debug("Data: %s", pformat(data))
+        log.debug("Params: %s", pformat(params))
 
     @property
-    def _requestor(self) -> "Requestor":
+    def _requestor(self) -> Requestor:
         return self._authorizer._authenticator._requestor
 
-    def __enter__(self) -> "Session":
+    def __enter__(self) -> Session:  # noqa: PYI034
         """Allow this object to be used as a context manager."""
         return self
 
@@ -125,7 +128,7 @@ class Session(object):
 
     def __init__(
         self,
-        authorizer: Optional[BaseAuthorizer],
+        authorizer: BaseAuthorizer | None,
         window_size: int = WINDOW_SIZE,
     ) -> None:
         """Prepare the connection to Reddit's API.
@@ -135,29 +138,27 @@ class Session(object):
 
         """
         if not isinstance(authorizer, BaseAuthorizer):
-            raise InvalidInvocation(f"invalid Authorizer: {authorizer}")
+            msg = f"invalid Authorizer: {authorizer}"
+            raise InvalidInvocation(msg)
         self._authorizer = authorizer
         self._rate_limiter = RateLimiter(window_size=window_size)
         self._retry_strategy_class = FiniteRetryStrategy
 
     def _do_retry(
         self,
-        data: List[Tuple[str, Any]],
-        files: Dict[str, "BufferedReader"],
-        json: Dict[str, Any],
+        data: list[tuple[str, Any]],
+        files: dict[str, BufferedReader],
+        json: dict[str, Any],
         method: str,
-        params: Dict[str, int],
-        response: Optional["Response"],
-        retry_strategy_state: "FiniteRetryStrategy",
-        saved_exception: Optional[Exception],
+        params: dict[str, int],
+        response: Response | None,
+        retry_strategy_state: FiniteRetryStrategy,
+        saved_exception: Exception | None,
         timeout: float,
         url: str,
-    ) -> Optional[Union[Dict[str, Any], str]]:
-        if saved_exception:
-            status = repr(saved_exception)
-        else:
-            status = response.status_code
-        log.warning(f"Retrying due to {status} status: {method} {url}")
+    ) -> dict[str, Any] | str | None:
+        status = repr(saved_exception) if saved_exception else response.status_code
+        log.warning("Retrying due to %s status: %s %s", status, method, url)
         return self._request_with_retries(
             data=data,
             files=files,
@@ -172,15 +173,15 @@ class Session(object):
 
     def _make_request(
         self,
-        data: List[Tuple[str, Any]],
-        files: Dict[str, "BufferedReader"],
-        json: Dict[str, Any],
+        data: list[tuple[str, Any]],
+        files: dict[str, BufferedReader],
+        json: dict[str, Any],
         method: str,
-        params: Dict[str, Any],
-        retry_strategy_state: "FiniteRetryStrategy",
+        params: dict[str, Any],
+        retry_strategy_state: FiniteRetryStrategy,
         timeout: float,
         url: str,
-    ) -> Union[Tuple["Response", None], Tuple[None, Exception]]:
+    ) -> tuple[Response, None] | tuple[None, Exception]:
         try:
             response = self._rate_limiter.call(
                 self._requestor.request,
@@ -195,11 +196,13 @@ class Session(object):
                 timeout=timeout,
             )
             log.debug(
-                f"Response: {response.status_code}"
-                f" ({response.headers.get('content-length')} bytes)"
-                f" (rst-{response.headers.get('x-ratelimit-reset')}:"
-                f"rem-{response.headers.get('x-ratelimit-remaining')}:"
-                f"used-{response.headers.get('x-ratelimit-used')} ratelimit) at {time.time()}"
+                "Response: %s (%s bytes) (rst-%s:rem-%s:used-%s ratelimit) at %s",
+                response.status_code,
+                response.headers.get("content-length"),
+                response.headers.get("x-ratelimit-reset"),
+                response.headers.get("x-ratelimit-remaining"),
+                response.headers.get("x-ratelimit-used"),
+                time.time(),
             )
             return response, None
         except RequestException as exception:
@@ -214,15 +217,15 @@ class Session(object):
 
     def _request_with_retries(
         self,
-        data: List[Tuple[str, Any]],
-        files: Dict[str, "BufferedReader"],
-        json: Dict[str, Any],
+        data: list[tuple[str, Any]],
+        files: dict[str, BufferedReader],
+        json: dict[str, Any],
         method: str,
-        params: Dict[str, int],
+        params: dict[str, int],
         timeout: float,
         url: str,
-        retry_strategy_state: Optional["FiniteRetryStrategy"] = None,
-    ) -> Optional[Union[Dict[str, Any], str]]:
+        retry_strategy_state: FiniteRetryStrategy | None = None,
+    ) -> dict[str, Any] | str | None:
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
@@ -260,10 +263,10 @@ class Session(object):
                 timeout,
                 url,
             )
-        elif response.status_code in self.STATUS_EXCEPTIONS:
+        if response.status_code in self.STATUS_EXCEPTIONS:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
-        elif response.status_code == codes["no_content"]:
-            return
+        if response.status_code == codes["no_content"]:
+            return None
         assert (
             response.status_code in self.SUCCESS_STATUSES
         ), f"Unexpected status code: {response.status_code}"
@@ -272,9 +275,9 @@ class Session(object):
         try:
             return response.json()
         except ValueError:
-            raise BadJSON(response)
+            raise BadJSON(response) from None
 
-    def _set_header_callback(self) -> Dict[str, str]:
+    def _set_header_callback(self) -> dict[str, str]:
         if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
             self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
@@ -287,12 +290,12 @@ class Session(object):
         self,
         method: str,
         path: str,
-        data: Optional[Dict[str, Any]] = None,
-        files: Optional[Dict[str, "BufferedReader"]] = None,
-        json: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
+        files: dict[str, BufferedReader] | None = None,
+        json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
         timeout: float = TIMEOUT,
-    ) -> Optional[Union[Dict[str, Any], str]]:
+    ) -> dict[str, Any] | str | None:
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
@@ -334,7 +337,7 @@ class Session(object):
 
 
 def session(
-    authorizer: "Authorizer" = None,
+    authorizer: Authorizer = None,
     window_size: int = WINDOW_SIZE,
 ) -> Session:
     """Return a :class:`.Session` instance.
@@ -357,13 +360,13 @@ class FiniteRetryStrategy(RetryStrategy):
         """
         self._retries = retries
 
-    def _sleep_seconds(self) -> Optional[float]:
+    def _sleep_seconds(self) -> float | None:
         if self._retries < 3:
             base = 0 if self._retries == 2 else 2
-            return base + 2 * random.random()
+            return base + 2 * random.random()  # noqa: S311
         return None
 
-    def consume_available_retry(self) -> "FiniteRetryStrategy":
+    def consume_available_retry(self) -> FiniteRetryStrategy:
         """Allow one fewer retry."""
         return type(self)(self._retries - 1)
 

@@ -1,10 +1,36 @@
+default_language_version:
+  python: python3.11
 repos:
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    hooks:
-      - id: end-of-file-fixer
-        exclude: .*\.txt
     rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [ --fix=no ]
+      - id: name-tests-test
+        args: [ --pytest-test-first ]
+        files: ^tests/integration/.*\.py|tests/unit/.*\.py$
+      - id: sort-simple-yaml
+        files: ^(\.github/workflows/.*\.ya?ml|\.readthedocs.ya?ml)$
+      - id: trailing-whitespace
+
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
+        files: ^(.*\.toml)$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.290
+    hooks:
+      - id: ruff
+        args: [ --exit-non-zero-on-fix, --fix ]
+        files: ^(prawcore/.*.py)$
 
   - repo: https://github.com/psf/black
     hooks:
@@ -14,28 +40,5 @@ repos:
   - repo: https://github.com/LilSpazJoekp/docstrfmt
     hooks:
       - id: docstrfmt
+        require_serial: true
     rev: v1.5.1
-
-  - repo: https://github.com/pycqa/flake8
-    hooks:
-      - id: flake8
-    rev: 6.1.0
-
-  - repo: https://github.com/ikamensh/flynt/
-    hooks:
-      - id: flynt
-        args:
-          - '-ll'
-          - '1000'
-    rev: '1.0.1'
-
-  - repo: https://github.com/pycqa/isort
-    hooks:
-      - id: isort
-    rev: 5.12.0
-
-  - repo: https://github.com/pycqa/pydocstyle
-    hooks:
-      - id: pydocstyle
-        files: prawcore/.*
-    rev: 6.3.0

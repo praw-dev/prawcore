@@ -1,3 +1,56 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.4,<4"]
+
+[project]
+authors = [{name = "Bryce Boe", email = "bbzbryce@gmail.com"}]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Natural Language :: English",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11"
+]
+dependencies = [
+  "requests >=2.6.0, <3.0"
+]
+dynamic = ["version", "description"]
+keywords = ["praw", "reddit", "api"]
+license = {file = "LICENSE.txt"}
+maintainers = [
+  {name = "Bryce Boe", email = "bbzbryce@gmail.com"}
+]
+name = "prawcore"
+requires-python = "~=3.7"
+
+[project.optional-dependencies]
+ci = ["coveralls"]
+dev = [
+  "packaging",
+  "prawcore[lint]",
+  "prawcore[test]"
+]
+lint = [
+  "pre-commit",
+  "ruff >=0.0.*"
+]
+test = [
+  "betamax >=0.8, <0.9",
+  "pytest >=2.7.3",
+  "urllib3 ==1.26.*, <2"
+]
+
+[project.urls]
+"Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
+"Source Code" = "https://github.com/praw-dev/prawcore"
+
 [tool.black]
 extend_exclude = '/(\.venv.*)/'
 line-length = 88
@@ -6,6 +59,71 @@ line-length = 88
 profile = 'black'
 skip_glob = '.venv*'
 
-[tool.pytest.ini_options]
-filterwarnings = "ignore::DeprecationWarning"
-testpaths = "tests"
+[tool.ruff]
+target-version = "py37"
+include = [
+  "prawcore/*.py"
+]
+ignore = [
+  "A002", # shadowing built-in
+  "ANN101", # missing type annotation for self in method
+  "ANN102", # missing type annotation for cls in classmethod
+  "ANN202", # missing return type for private method
+  "ANN401", # typing.Any usage
+  "D203", # 1 blank line required before class docstring
+  "D213", # Multi-line docstring summary should start at the second line
+  "E501", # line-length
+  "PLR0913", # too many arguments
+  "PLR2004", # Magic value used in comparison,
+  "S101" # use of assert
+]
+select = [
+  "A", # flake8-builtins
+  "ANN", # flake8-annotations
+  "ARG", # flake8-unused-arguments
+  "B", # flake8-bugbear
+  "BLE", # flake8-blind-except
+  "C4", # flake8-comprehensions
+  "D", # pydocstyle
+  "DTZ", # flake8-datetimez
+  "E", # pycodestyle errors
+  "EM", # flake8-errmsg
+  "ERA", # eradicate
+  "EXE", # flake8-executable
+  "F", # pyflakes
+  "FA", # flake8-future-annotations
+  "FIX", # flake8-fix me
+  "FLY", # flynt
+  "G", # flake8-logging-format
+  "I", # isort
+  "INP", # flake8-no-pep420
+  "ISC", # flake8-implicit-str-concat
+  "N", # pep8-naming
+  "PIE", # flake8-pie
+  "PGH", # pygrep-hooks
+  "PL", # Pylint
+  "PT", # flake8-pytest-style
+  "PTH", # flake8-use-pathlib
+  "PYI", # flake8-pyi
+  "Q", # flake8-quotes
+  "RET", # flake8-return
+  "RSE", # flake8-raise
+  "S", # bandit
+  "SIM", # flake8-simplify
+  "T10", # flake8-debugger
+  "T20", # flake8-print
+  "TCH", # flake8-type-checking
+  "TD", # flake8-todos
+  "W", # pycodestyle warnings
+  "UP" # pyupgrade
+]
+ignore-init-module-imports = true
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+mypy-init-return = true
+suppress-dummy-args = true
+suppress-none-returning = true
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]

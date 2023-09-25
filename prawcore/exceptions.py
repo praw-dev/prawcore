@@ -1,12 +1,14 @@
 """Provide exception classes for the prawcore package."""
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
     from requests.models import Response
 
 
-class PrawcoreException(Exception):
+class PrawcoreException(Exception):  # noqa: N818
     """Base exception class for exceptions that occur within this package."""
 
 
@@ -18,7 +20,7 @@ class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
     def __init__(
-        self, response: "Response", error: str, description: Optional[str] = None
+        self, response: Response, error: str, description: str | None = None
     ) -> None:
         """Initialize a OAuthException instance.
 
@@ -42,9 +44,9 @@ class RequestException(PrawcoreException):
     def __init__(
         self,
         original_exception: Exception,
-        request_args: Tuple[Any, ...],
-        request_kwargs: Dict[
-            str, Optional[Union[bool, Dict[str, int], Dict[str, str], str]]
+        request_args: tuple[Any, ...],
+        request_kwargs: dict[
+            str, bool | (dict[str, int] | (dict[str, str] | str)) | None
         ],
     ) -> None:
         """Initialize a RequestException instance.
@@ -57,24 +59,20 @@ class RequestException(PrawcoreException):
         self.original_exception = original_exception
         self.request_args = request_args
         self.request_kwargs = request_kwargs
-        super(RequestException, self).__init__(
-            f"error with request {original_exception}"
-        )
+        super().__init__(f"error with request {original_exception}")
 
 
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response: "Response") -> None:
+    def __init__(self, response: Response) -> None:
         """Initialize a ResponseException instance.
 
         :param response: A ``requests.response`` instance.
 
         """
         self.response = response
-        super(ResponseException, self).__init__(
-            f"received {response.status_code} HTTP response"
-        )
+        super().__init__(f"received {response.status_code} HTTP response")
 
 
 class BadJSON(ResponseException):
@@ -113,7 +111,7 @@ class Redirect(ResponseException):
 
     """
 
-    def __init__(self, response: "Response") -> None:
+    def __init__(self, response: Response) -> None:
         """Initialize a Redirect exception instance.
 
         :param response: A ``requests.response`` instance containing a location header.
@@ -139,7 +137,7 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response: "Response") -> None:
+    def __init__(self, response: Response) -> None:
         """Initialize a SpecialError exception instance.
 
         :param response: A ``requests.response`` instance containing a message and a
@@ -162,7 +160,7 @@ class TooLarge(ResponseException):
 class TooManyRequests(ResponseException):
     """Indicate that the user has sent too many requests in a given amount of time."""
 
-    def __init__(self, response: "Response") -> None:
+    def __init__(self, response: Response) -> None:
         """Initialize a TooManyRequests exception instance.
 
         :param response: A ``requests.response`` instance that may contain a retry-after
