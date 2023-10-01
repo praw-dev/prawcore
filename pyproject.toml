@@ -12,7 +12,6 @@ classifiers = [
   "Natural Language :: English",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -28,7 +27,7 @@ maintainers = [
   {name = "Bryce Boe", email = "bbzbryce@gmail.com"}
 ]
 name = "prawcore"
-requires-python = "~=3.7"
+requires-python = "~=3.8"
 
 [project.optional-dependencies]
 ci = ["coveralls"]
@@ -60,7 +59,7 @@ profile = 'black'
 skip_glob = '.venv*'
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py38"
 include = [
   "prawcore/*.py"
 ]
