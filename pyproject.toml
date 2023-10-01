@@ -39,7 +39,7 @@ dev = [
 ]
 lint = [
   "pre-commit",
-  "ruff >=0.0.*"
+  "ruff >=0.0.291"
 ]
 test = [
   "betamax >=0.8, <0.9",
