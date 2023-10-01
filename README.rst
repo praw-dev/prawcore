@@ -15,25 +15,29 @@ prawcore
     :alt: PyPI - Downloads - Monthly
     :target: https://pypi.python.org/pypi/prawcore
 
-.. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg?branch=main
-    :alt: Coveralls Coverage
-    :target: https://coveralls.io/github/praw-dev/prawcore?branch=main
-
-.. image:: https://github.com/praw-dev/prawcore/workflows/CI/badge.svg
+.. image:: https://github.com/praw-dev/prawcore/actions/workflows/ci.yml/badge.svg?event=push
     :alt: GitHub Actions Status
-    :target: https://github.com/praw-dev/prawcore/actions?query=branch%3Amain
+    :target: https://github.com/praw-dev/prawcore/actions/workflows/ci.yml
+
+.. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg
+    :alt: Coveralls Coverage
+    :target: https://coveralls.io/github/praw-dev/prawcore
+
+.. image:: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore/badge
+    :alt: OpenSSF Scorecard
+    :target: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore
 
 .. image:: https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg
     :alt: Contributor Covenant
     :target: https://github.com/praw-dev/.github/blob/main/CODE_OF_CONDUCT.md
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
-    :target: https://github.com/pre-commit/pre-commit
     :alt: pre-commit
+    :target: https://github.com/pre-commit/pre-commit
 
-.. image:: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore/badge
-    :alt: OpenSSF Scorecard
-    :target: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :alt: Black code style
+    :target: https://github.com/psf/black
 
 prawcore is a low-level communication layer used by PRAW 4+.
 
