@@ -27,6 +27,7 @@ maintainers = [
   {name = "Bryce Boe", email = "bbzbryce@gmail.com"}
 ]
 name = "prawcore"
+readme = "README.rst"
 requires-python = "~=3.8"
 
 [project.optional-dependencies]
