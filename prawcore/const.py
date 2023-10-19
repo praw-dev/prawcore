@@ -1,8 +1,6 @@
 """Constants for the prawcore package."""
 import os
 
-__version__ = "2.4.1.dev0"
-
 ACCESS_TOKEN_PATH = "/api/v1/access_token"  # noqa: S105
 AUTHORIZATION_PATH = "/api/v1/authorize"  # noqa: S105
 REVOKE_TOKEN_PATH = "/api/v1/revoke_token"  # noqa: S105

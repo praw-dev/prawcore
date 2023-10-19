@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 
-from .const import TIMEOUT, __version__
+import prawcore
+
+from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
 
 if TYPE_CHECKING:
@@ -50,7 +52,9 @@ class Requestor:
             raise InvalidInvocation(msg)
 
         self._http = session or requests.Session()
-        self._http.headers["User-Agent"] = f"{user_agent} prawcore/{__version__}"
+        self._http.headers[
+            "User-Agent"
+        ] = f"{user_agent} prawcore/{prawcore.__version__}"
 
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url
