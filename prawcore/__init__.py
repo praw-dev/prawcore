@@ -11,9 +11,10 @@ from .auth import (
     TrustedAuthenticator,
     UntrustedAuthenticator,
 )
-from .const import __version__
 from .exceptions import *  # noqa: F403
 from .requestor import Requestor
 from .sessions import Session, session
 
 logging.getLogger(__package__).addHandler(logging.NullHandler())
+
+__version__ = "2.4.1.dev0"
