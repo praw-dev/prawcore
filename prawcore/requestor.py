@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 
-import prawcore
-
 from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
 
@@ -47,14 +45,15 @@ class Requestor:
             giving up (default: ``prawcore.const.TIMEOUT``).
 
         """
+        # Imported locally to avoid an import cycle, with __init__
+        from . import __version__
+
         if user_agent is None or len(user_agent) < 7:
             msg = "user_agent is not descriptive"
             raise InvalidInvocation(msg)
 
         self._http = session or requests.Session()
-        self._http.headers[
-            "User-Agent"
-        ] = f"{user_agent} prawcore/{prawcore.__version__}"
+        self._http.headers["User-Agent"] = f"{user_agent} prawcore/{__version__}"
 
         self.oauth_url = oauth_url
         self.reddit_url = reddit_url
