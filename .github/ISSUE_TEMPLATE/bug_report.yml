@@ -28,7 +28,7 @@ body:
   - id: credential-check
     attributes:
       description: |
-        The `Reddit()` initialization in my code example does not include the following parameters to prevent credential leakage:
+        The `Reddit()` initialization in my code example does not include the following parameters to prevent credential leakage: 
         `client_secret`, `password`, or `refresh_token`.
       label: My code does not include sensitive credentials
       options:
@@ -77,7 +77,7 @@ body:
   - id: prawcore-version
     attributes:
       description: What version of `prawcore` are you encountering this issue with? Obtain this by running `pip show prawcore`.
-      label: prawcore Version
+      label: "`prawcore` Version"
     type: input
     validations:
       required: true
