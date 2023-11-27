@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-prawcore follows `semantic versioning <http://semver.org/>`_.
+prawcore follows `semantic versioning <https://semver.org/>`_.
 
 Unreleased
 ----------
