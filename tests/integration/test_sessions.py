@@ -6,22 +6,7 @@ import pytest
 
 import prawcore
 
-from ..conftest import two_factor_callback
 from . import IntegrationTest
-
-
-class InvalidAuthorizer(prawcore.Authorizer):
-    def __init__(self, requestor):
-        super(InvalidAuthorizer, self).__init__(
-            prawcore.TrustedAuthenticator(
-                requestor,
-                pytest.placeholders.client_id,
-                pytest.placeholders.client_secret,
-            )
-        )
-
-    def is_valid(self):
-        return False
 
 
 class TestSession(IntegrationTest):
@@ -37,7 +22,6 @@ class TestSession(IntegrationTest):
             trusted_authenticator,
             pytest.placeholders.username,
             pytest.placeholders.password,
-            two_factor_callback,
         )
         authorizer.refresh()
         return authorizer

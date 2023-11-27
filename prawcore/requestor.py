@@ -9,9 +9,7 @@ from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
 
 if TYPE_CHECKING:
-    from requests.models import Response
-
-    from .sessions import Session
+    from requests.models import Response, Session
 
 
 class Requestor:
@@ -30,7 +28,7 @@ class Requestor:
         reddit_url: str = "https://www.reddit.com",
         session: Session | None = None,
         timeout: float = TIMEOUT,
-    ) -> None:
+    ):
         """Create an instance of the Requestor class.
 
         :param user_agent: The user-agent for your application. Please follow Reddit's
@@ -39,7 +37,7 @@ class Requestor:
             (default: ``"https://oauth.reddit.com"``).
         :param reddit_url: The URL used when obtaining access tokens (default:
             ``"https://www.reddit.com"``).
-        :param session: A session to handle requests, compatible with
+        :param session: A session instance to handle requests, compatible with
             ``requests.Session()`` (default: ``None``).
         :param timeout: How many seconds to wait for the server to send data before
             giving up (default: ``prawcore.const.TIMEOUT``).
@@ -59,9 +57,9 @@ class Requestor:
         self.reddit_url = reddit_url
         self.timeout = timeout
 
-    def close(self) -> None:
+    def close(self):
         """Call close on the underlying session."""
-        return self._http.close()
+        self._http.close()
 
     def request(
         self, *args: Any, timeout: float | None = None, **kwargs: Any

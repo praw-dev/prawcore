@@ -8,7 +8,6 @@ from betamax.cassette import Cassette
 
 from ..utils import (
     PrettyJSONSerializer,
-    ensure_environment_variables,
     ensure_integration_test,
     filter_access_token,
 )
@@ -51,8 +50,6 @@ class IntegrationTest:
                 kwargs.setdefault(key, value)
         with recorder.use_cassette(cassette_name, **kwargs) as recorder:
             cassette = recorder.current_cassette
-            if cassette.is_recording():
-                ensure_environment_variables()
             yield recorder
             ensure_integration_test(cassette)
             used_cassettes.add(cassette_name)

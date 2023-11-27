@@ -7,7 +7,7 @@ import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pprint import pformat
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, BinaryIO, TextIO
 from urllib.parse import urljoin
 
 from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
@@ -34,8 +34,6 @@ from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
 if TYPE_CHECKING:
-    from io import BufferedReader
-
     from requests.models import Response
 
     from .auth import Authorizer
@@ -57,7 +55,7 @@ class RetryStrategy(ABC):
     def _sleep_seconds(self) -> float | None:
         pass
 
-    def sleep(self) -> None:
+    def sleep(self):
         """Sleep until we are ready to attempt the request."""
         sleep_seconds = self._sleep_seconds()
         if sleep_seconds is not None:
@@ -109,7 +107,7 @@ class Session:
         method: str,
         params: dict[str, int],
         url: str,
-    ) -> None:
+    ):
         log.debug("Fetching: %s %s at %s", method, url, time.time())
         log.debug("Data: %s", pformat(data))
         log.debug("Params: %s", pformat(params))
@@ -122,7 +120,7 @@ class Session:
         """Allow this object to be used as a context manager."""
         return self
 
-    def __exit__(self, *_args) -> None:
+    def __exit__(self, *_args):
         """Allow this object to be used as a context manager."""
         self.close()
 
@@ -130,7 +128,7 @@ class Session:
         self,
         authorizer: BaseAuthorizer | None,
         window_size: int = WINDOW_SIZE,
-    ) -> None:
+    ):
         """Prepare the connection to Reddit's API.
 
         :param authorizer: An instance of :class:`.Authorizer`.
@@ -147,7 +145,7 @@ class Session:
     def _do_retry(
         self,
         data: list[tuple[str, Any]],
-        files: dict[str, BufferedReader],
+        files: dict[str, BinaryIO | TextIO],
         json: dict[str, Any],
         method: str,
         params: dict[str, int],
@@ -174,7 +172,7 @@ class Session:
     def _make_request(
         self,
         data: list[tuple[str, Any]],
-        files: dict[str, BufferedReader],
+        files: dict[str, BinaryIO | TextIO],
         json: dict[str, Any],
         method: str,
         params: dict[str, Any],
@@ -218,10 +216,10 @@ class Session:
     def _request_with_retries(
         self,
         data: list[tuple[str, Any]],
-        files: dict[str, BufferedReader],
+        files: dict[str, BinaryIO | TextIO],
         json: dict[str, Any],
         method: str,
-        params: dict[str, int],
+        params: dict[str, Any],
         timeout: float,
         url: str,
         retry_strategy_state: FiniteRetryStrategy | None = None,
@@ -282,7 +280,7 @@ class Session:
             self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
-    def close(self) -> None:
+    def close(self):
         """Close the session and perform any clean up."""
         self._requestor.close()
 
@@ -291,7 +289,7 @@ class Session:
         method: str,
         path: str,
         data: dict[str, Any] | None = None,
-        files: dict[str, BufferedReader] | None = None,
+        files: dict[str, BinaryIO | TextIO] | None = None,
         json: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         timeout: float = TIMEOUT,
@@ -352,7 +350,7 @@ def session(
 class FiniteRetryStrategy(RetryStrategy):
     """A ``RetryStrategy`` that retries requests a finite number of times."""
 
-    def __init__(self, retries: int = 3) -> None:
+    def __init__(self, retries: int = 3):
         """Initialize the strategy.
 
         :param retries: Number of times to attempt a request (default: ``3``).

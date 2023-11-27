@@ -1,1 +1,1 @@
-"""Test prawcore."""
+"""prawcore Test Suite."""
