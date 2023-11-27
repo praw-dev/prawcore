@@ -3,7 +3,6 @@ import pytest
 
 import prawcore
 
-from ..conftest import two_factor_callback  # noqa F401
 from . import IntegrationTest
 
 

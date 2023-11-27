@@ -18,7 +18,7 @@ class RateLimiter:
 
     """
 
-    def __init__(self, *, window_size: int) -> None:
+    def __init__(self, *, window_size: int):
         """Create an instance of the RateLimit class."""
         self.remaining: float | None = None
         self.next_request_timestamp: float | None = None
@@ -48,7 +48,7 @@ class RateLimiter:
         self.update(response.headers)
         return response
 
-    def delay(self) -> None:
+    def delay(self):
         """Sleep for an amount of time to remain under the rate limit."""
         if self.next_request_timestamp is None:
             return
@@ -59,7 +59,7 @@ class RateLimiter:
         log.debug(message)
         time.sleep(sleep_seconds)
 
-    def update(self, response_headers: Mapping[str, str]) -> None:
+    def update(self, response_headers: Mapping[str, str]):
         """Update the state of the rate limiter based on the response headers.
 
         This method should only be called following an HTTP request to Reddit.

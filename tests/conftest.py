@@ -1,4 +1,4 @@
-"""Prepare py.test."""
+"""Prepare pytest."""
 import os
 import socket
 import time
@@ -16,7 +16,7 @@ def patch_sleep(monkeypatch):
 
     def _sleep(*_, **__):
         """Dud sleep function."""
-        return
+        pass
 
     monkeypatch.setattr(time, "sleep", value=_sleep)
 
@@ -80,6 +80,11 @@ def two_factor_callback():
     return None
 
 
+class Placeholders:
+    def __init__(self, _dict):
+        self.__dict__ = _dict
+
+
 placeholders = {
     x: env_default(x)
     for x in (
@@ -88,14 +93,17 @@ placeholders = {
     ).split()
 }
 
-placeholders["basic_auth"] = b64encode(
-    f"{placeholders['client_id']}:{placeholders['client_secret']}".encode("utf-8")
-).decode("utf-8")
-
-
-class Placeholders:
-    def __init__(self, _dict):
-        self.__dict__ = _dict
+if (
+    placeholders["client_id"] != "fake_client_id"
+    and placeholders["client_secret"] == "fake_client_secret"
+):
+    placeholders["basic_auth"] = b64encode(
+        f"{placeholders['client_id']}:".encode("utf-8")
+    ).decode("utf-8")
+else:
+    placeholders["basic_auth"] = b64encode(
+        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode("utf-8")
+    ).decode("utf-8")
 
 
 if platform == "darwin":  # Work around issue with betamax on OS X

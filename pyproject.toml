@@ -39,12 +39,12 @@ dev = [
 ]
 lint = [
   "pre-commit",
-  "ruff >=0.0.291"
+  "ruff ==0.1.*"
 ]
 test = [
   "betamax >=0.8, <0.9",
-  "pytest >=2.7.3",
-  "urllib3 ==1.26.*, <2"
+  "pytest ==7.*",
+  "urllib3 ==1.*"
 ]
 
 [project.urls]

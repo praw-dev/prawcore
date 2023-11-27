@@ -1,5 +1,3 @@
-prawcore is written and maintained by Bryce Boe and various contributors:
-
 Maintainers
 ===========
 

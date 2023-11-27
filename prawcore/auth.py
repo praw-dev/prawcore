@@ -21,7 +21,7 @@ class BaseAuthenticator(ABC):
     """Provide the base authenticator object that stores OAuth2 credentials."""
 
     @abstractmethod
-    def _auth(self):
+    def _auth(self) -> tuple[str, str]:
         pass
 
     def __init__(
@@ -29,7 +29,7 @@ class BaseAuthenticator(ABC):
         requestor: Requestor,
         client_id: str,
         redirect_uri: str | None = None,
-    ) -> None:
+    ):
         """Represent a single authentication to Reddit's API.
 
         :param requestor: An instance of :class:`.Requestor`.
@@ -60,11 +60,7 @@ class BaseAuthenticator(ABC):
         return response
 
     def authorize_url(
-        self,
-        duration: str,
-        scopes: list[str],
-        state: str,
-        implicit: bool = False,
+        self, duration: str, scopes: list[str], state: str, implicit: bool = False
     ) -> str:
         """Return the URL used out-of-band to grant access to your application.
 
@@ -113,7 +109,7 @@ class BaseAuthenticator(ABC):
         request = Request("GET", url, params=params)
         return request.prepare().url
 
-    def revoke_token(self, token: str, token_type: str | None = None) -> None:
+    def revoke_token(self, token: str, token_type: str | None = None):
         """Ask Reddit to revoke the provided token.
 
         :param token: The access or refresh token to revoke.
@@ -134,7 +130,7 @@ class BaseAuthorizer(ABC):
 
     AUTHENTICATOR_CLASS: tuple | type = BaseAuthenticator
 
-    def __init__(self, authenticator: BaseAuthenticator) -> None:
+    def __init__(self, authenticator: BaseAuthenticator):
         """Represent a single authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`.BaseAuthenticator`.
@@ -144,12 +140,12 @@ class BaseAuthorizer(ABC):
         self._clear_access_token()
         self._validate_authenticator()
 
-    def _clear_access_token(self) -> None:
+    def _clear_access_token(self):
         self._expiration_timestamp: float
         self.access_token: str | None = None
         self.scopes: set[str] | None = None
 
-    def _request_token(self, **data: Any) -> None:
+    def _request_token(self, **data: Any):
         url = self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
         pre_request_time = time.time()
         response = self._authenticator._post(url=url, **data)
@@ -165,7 +161,7 @@ class BaseAuthorizer(ABC):
             self.refresh_token = payload["refresh_token"]
         self.scopes = set(payload["scope"].split(" "))
 
-    def _validate_authenticator(self) -> None:
+    def _validate_authenticator(self):
         if not isinstance(self._authenticator, self.AUTHENTICATOR_CLASS):
             msg = "Must use an authenticator of type"
             if isinstance(self.AUTHENTICATOR_CLASS, type):
@@ -187,7 +183,7 @@ class BaseAuthorizer(ABC):
             self.access_token is not None and time.time() < self._expiration_timestamp
         )
 
-    def revoke(self) -> None:
+    def revoke(self):
         """Revoke the current Authorization."""
         if self.access_token is None:
             msg = "no token available to revoke"
@@ -208,7 +204,7 @@ class TrustedAuthenticator(BaseAuthenticator):
         client_id: str,
         client_secret: str,
         redirect_uri: str | None = None,
-    ) -> None:
+    ):
         """Represent a single authentication to Reddit's API.
 
         :param requestor: An instance of :class:`.Requestor`.
@@ -245,7 +241,7 @@ class Authorizer(BaseAuthorizer):
         post_refresh_callback: Callable[[Authorizer], None] | None = None,
         pre_refresh_callback: Callable[[Authorizer], None] | None = None,
         refresh_token: str | None = None,
-    ) -> None:
+    ):
         """Represent a single authorization to Reddit's API.
 
         :param authenticator: An instance of a subclass of :class:`.BaseAuthenticator`.
@@ -267,7 +263,7 @@ class Authorizer(BaseAuthorizer):
         self._pre_refresh_callback = pre_refresh_callback
         self.refresh_token = refresh_token
 
-    def authorize(self, code: str) -> None:
+    def authorize(self, code: str):
         """Obtain and set authorization tokens based on ``code``.
 
         :param code: The code obtained by an out-of-band authorization request to
@@ -283,7 +279,7 @@ class Authorizer(BaseAuthorizer):
             redirect_uri=self._authenticator.redirect_uri,
         )
 
-    def refresh(self) -> None:
+    def refresh(self):
         """Obtain a new access token from the refresh_token."""
         if self._pre_refresh_callback:
             self._pre_refresh_callback(self)
@@ -296,7 +292,7 @@ class Authorizer(BaseAuthorizer):
         if self._post_refresh_callback:
             self._post_refresh_callback(self)
 
-    def revoke(self, only_access: bool = False) -> None:
+    def revoke(self, only_access: bool = False):
         """Revoke the current Authorization.
 
         :param only_access: When explicitly set to ``True``, do not evict the refresh
@@ -325,7 +321,7 @@ class ImplicitAuthorizer(BaseAuthorizer):
         access_token: str,
         expires_in: int,
         scope: str,
-    ) -> None:
+    ):
         """Represent a single implicit authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`.UntrustedAuthenticator`.
@@ -360,7 +356,7 @@ class ReadOnlyAuthorizer(Authorizer):
         self,
         authenticator: BaseAuthenticator,
         scopes: list[str] | None = None,
-    ) -> None:
+    ):
         """Represent a ReadOnly authorization to Reddit's API.
 
         :param scopes: A list of OAuth scopes to request authorization for (default:
@@ -370,7 +366,7 @@ class ReadOnlyAuthorizer(Authorizer):
         super().__init__(authenticator)
         self._scopes = scopes
 
-    def refresh(self) -> None:
+    def refresh(self):
         """Obtain a new ReadOnly access token."""
         additional_kwargs = {}
         if self._scopes:
@@ -395,7 +391,7 @@ class ScriptAuthorizer(Authorizer):
         password: str | None,
         two_factor_callback: Callable | None = None,
         scopes: list[str] | None = None,
-    ) -> None:
+    ):
         """Represent a single personal-use authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`.TrustedAuthenticator`.
@@ -414,7 +410,7 @@ class ScriptAuthorizer(Authorizer):
         self._two_factor_callback = two_factor_callback
         self._username = username
 
-    def refresh(self) -> None:
+    def refresh(self):
         """Obtain a new personal-use script type access token."""
         additional_kwargs = {}
         if self._scopes:
@@ -445,7 +441,7 @@ class DeviceIDAuthorizer(BaseAuthorizer):
         authenticator: BaseAuthenticator,
         device_id: str | None = None,
         scopes: list[str] | None = None,
-    ) -> None:
+    ):
         """Represent an app-only OAuth2 authorization for 'installed' apps.
 
         :param authenticator: An instance of :class:`.UntrustedAuthenticator` or
@@ -464,7 +460,7 @@ class DeviceIDAuthorizer(BaseAuthorizer):
         self._device_id = device_id
         self._scopes = scopes
 
-    def refresh(self) -> None:
+    def refresh(self):
         """Obtain a new access token."""
         additional_kwargs = {}
         if self._scopes:
