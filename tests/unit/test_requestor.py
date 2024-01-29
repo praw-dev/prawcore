@@ -1,4 +1,5 @@
 """Test for prawcore.self.requestor.Requestor class."""
+
 import pickle
 from inspect import signature
 from unittest.mock import Mock, patch

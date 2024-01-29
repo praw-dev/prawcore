@@ -1,4 +1,5 @@
 """prawcore.sessions: Provides prawcore.Session and prawcore.session."""
+
 from __future__ import annotations
 
 import logging
