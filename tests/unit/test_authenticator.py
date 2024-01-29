@@ -1,4 +1,5 @@
 """Test for subclasses of prawcore.auth.BaseAuthenticator class."""
+
 import pytest
 
 import prawcore

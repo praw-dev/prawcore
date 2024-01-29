@@ -1,4 +1,5 @@
 """Constants for the prawcore package."""
+
 import os
 
 ACCESS_TOKEN_PATH = "/api/v1/access_token"  # noqa: S105

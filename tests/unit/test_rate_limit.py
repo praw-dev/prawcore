@@ -1,4 +1,5 @@
 """Test for prawcore.Sessions module."""
+
 from copy import copy
 from unittest.mock import patch
 

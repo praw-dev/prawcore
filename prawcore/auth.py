@@ -1,4 +1,5 @@
 """Provides Authentication and Authorization classes."""
+
 from __future__ import annotations
 
 import time

@@ -1,4 +1,5 @@
 """Test for prawcore.Sessions module."""
+
 import logging
 from json import dumps
 

@@ -1,4 +1,5 @@
 """Provide the RateLimiter class."""
+
 from __future__ import annotations
 
 import logging
