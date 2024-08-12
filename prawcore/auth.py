@@ -126,7 +126,7 @@ class BaseAuthenticator(ABC):
         self._post(url, **data)
 
 
-class BaseAuthorizer(ABC):
+class BaseAuthorizer:
     """Superclass for OAuth2 authorization tokens and scopes."""
 
     AUTHENTICATOR_CLASS: tuple | type = BaseAuthenticator
