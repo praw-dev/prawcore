@@ -6,6 +6,16 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 Unreleased
 ----------
 
+**Added**
+
+- Asynchronous interfaces from our synchronous ones. Find :class:`AsyncRequestor` for
+  :class:`Requestor` and :class:`AsyncSession` for :class:`Session`.
+
+**Changed**
+
+- Switch HTTP Client Requests for the compatible Niquests. Support for HTTP/2+
+  introduced with mirrored sync / async interfaces.
+
 2.4.0 (2023/10/01)
 ------------------
 
