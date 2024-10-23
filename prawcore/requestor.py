@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-import requests
+import niquests
 
 from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
-
-if TYPE_CHECKING:
-    from requests.models import Response, Session
 
 
 class Requestor:
@@ -27,7 +24,7 @@ class Requestor:
         user_agent: str,
         oauth_url: str = "https://oauth.reddit.com",
         reddit_url: str = "https://www.reddit.com",
-        session: Session | None = None,
+        session: niquests.Session | None = None,
         timeout: float = TIMEOUT,
     ):
         """Create an instance of the Requestor class.
@@ -39,7 +36,7 @@ class Requestor:
         :param reddit_url: The URL used when obtaining access tokens (default:
             ``"https://www.reddit.com"``).
         :param session: A session instance to handle requests, compatible with
-            ``requests.Session()`` (default: ``None``).
+            ``niquests.Session()`` (default: ``None``).
         :param timeout: How many seconds to wait for the server to send data before
             giving up (default: ``prawcore.const.TIMEOUT``).
 
@@ -51,7 +48,7 @@ class Requestor:
             msg = "user_agent is not descriptive"
             raise InvalidInvocation(msg)
 
-        self._http = session or requests.Session()
+        self._http = session or niquests.Session()
         self._http.headers["User-Agent"] = f"{user_agent} prawcore/{__version__}"
 
         self.oauth_url = oauth_url
@@ -64,9 +61,9 @@ class Requestor:
 
     def request(
         self, *args: Any, timeout: float | None = None, **kwargs: Any
-    ) -> Response:
+    ) -> niquests.Response:
         """Issue the HTTP request capturing any errors that may occur."""
         try:
             return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)
         except Exception as exc:  # noqa: BLE001
-            raise RequestException(exc, args, kwargs) from None
+            raise RequestException(exc, args, kwargs) from exc

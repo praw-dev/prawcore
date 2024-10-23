@@ -11,8 +11,8 @@ from pprint import pformat
 from typing import TYPE_CHECKING, Any, BinaryIO, TextIO
 from urllib.parse import urljoin
 
-from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
-from requests.status_codes import codes
+from niquests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
+from niquests.status_codes import codes
 
 from .auth import BaseAuthorizer
 from .const import TIMEOUT, WINDOW_SIZE
@@ -35,7 +35,7 @@ from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
 if TYPE_CHECKING:
-    from requests.models import Response
+    from niquests.models import Response
 
     from .auth import Authorizer
     from .requestor import Requestor
@@ -96,7 +96,7 @@ class Session:
         codes["unauthorized"]: authorization_error_class,
         codes[
             "unavailable_for_legal_reasons"
-        ]: UnavailableForLegalReasons,  # Cloudflare's status (not named in requests)
+        ]: UnavailableForLegalReasons,  # Cloudflare's status (not named in niquests)
         520: ServerError,
         522: ServerError,
     }

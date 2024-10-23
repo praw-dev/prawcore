@@ -16,10 +16,11 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12"
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13"
 ]
 dependencies = [
-  "requests >=2.6.0, <3.0"
+  "niquests >=3.10, <4.0"
 ]
 dynamic = ["version", "description"]
 keywords = ["praw", "reddit", "api"]
@@ -44,8 +45,7 @@ lint = [
 ]
 test = [
   "betamax >=0.8, <0.9",
-  "pytest ==7.*",
-  "urllib3 ==1.*"
+  "pytest ==7.*"
 ]
 
 [project.urls]

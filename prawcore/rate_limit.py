@@ -7,7 +7,7 @@ import time
 from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 if TYPE_CHECKING:
-    from requests.models import Response
+    from niquests.models import Response
 
 log = logging.getLogger(__package__)
 

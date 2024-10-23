@@ -3,6 +3,10 @@ jobs:
     name: CI
     secrets: inherit
     uses: praw-dev/.github/.github/workflows/ci.yml@main
+    env:
+      # this avoids pytest loading betamax+Requests at boot.
+      # this allows us to patch betamax and makes it use Niquests instead.
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
     with:
       package: prawcore
 name: CI
