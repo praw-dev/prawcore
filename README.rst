@@ -85,6 +85,32 @@ Save the above as ``trophies.py`` and then execute via:
 Additional examples can be found at:
 https://github.com/praw-dev/prawcore/tree/main/examples
 
+Or! with async/await!
+
+.. code-block:: python
+
+    #!/usr/bin/env python
+    import os
+    import pprint
+    import asyncio
+    import prawcore
+
+
+    async def main():
+        authenticator = prawcore.AsyncTrustedAuthenticator(
+            prawcore.Requestor("YOUR_VALID_USER_AGENT"),
+            os.environ["PRAWCORE_CLIENT_ID"],
+            os.environ["PRAWCORE_CLIENT_SECRET"],
+        )
+        authorizer = prawcore.AsyncReadOnlyAuthorizer(authenticator)
+        await authorizer.refresh()
+
+        async with prawcore.async_session(authorizer) as session:
+            pprint.pprint(await session.request("GET", "/api/v1/user/bboe/trophies"))
+
+
+    asyncio.run(main())
+
 Depending on prawcore
 ---------------------
 
