@@ -15,7 +15,6 @@ from urllib.parse import urljoin
 from niquests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
 from niquests.status_codes import codes
 
-from .auth import AsyncBaseAuthorizer
 from ..const import TIMEOUT, WINDOW_SIZE
 from ..exceptions import (
     BadJSON,
@@ -32,8 +31,9 @@ from ..exceptions import (
     UnavailableForLegalReasons,
     URITooLong,
 )
-from .rate_limit import AsyncRateLimiter
 from ..util import authorization_error_class
+from .auth import AsyncBaseAuthorizer
+from .rate_limit import AsyncRateLimiter
 
 if TYPE_CHECKING:
     from niquests.models import Response

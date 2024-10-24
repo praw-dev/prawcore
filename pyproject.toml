@@ -60,6 +60,11 @@ line-length = 88
 profile = 'black'
 skip_glob = '.venv*'
 
+[tool.pytest.ini_options]
+# this avoids pytest loading betamax+Requests at boot.
+# this allows us to patch betamax and makes it use Niquests instead.
+addopts = "-p no:pytest-betamax"
+
 [tool.ruff]
 target-version = "py38"
 include = [
@@ -129,9 +134,3 @@ suppress-none-returning = true
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-
-
-[tool.pytest.ini_options]
-# this avoids pytest loading betamax+Requests at boot.
-# this allows us to patch betamax and makes it use Niquests instead.
-addopts = "-p no:pytest-betamax"

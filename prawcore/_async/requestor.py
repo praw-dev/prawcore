@@ -64,6 +64,8 @@ class AsyncRequestor:
     ) -> niquests.Response:
         """Issue the HTTP request capturing any errors that may occur."""
         try:
-            return await self._http.request(*args, timeout=timeout or self.timeout, **kwargs)
+            return await self._http.request(
+                *args, timeout=timeout or self.timeout, **kwargs
+            )
         except Exception as exc:  # noqa: BLE001
             raise RequestException(exc, args, kwargs) from exc

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Awaitable
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from niquests import Request, Response
 from niquests.status_codes import codes
@@ -80,8 +80,8 @@ class AsyncBaseAuthenticator(ABC):
 
         :raises: :class:`.InvalidInvocation` if ``redirect_uri`` is not provided, if
             ``implicit`` is ``True`` and an authenticator other than
-            :class:`.AsyncUntrustedAuthenticator` is used, or ``implicit`` is ``True`` and
-            ``duration`` is ``"permanent"``.
+            :class:`.AsyncUntrustedAuthenticator` is used, or ``implicit`` is ``True``
+            and ``duration`` is ``"permanent"``.
 
         """
         if self.redirect_uri is None:
@@ -237,13 +237,18 @@ class AsyncAuthorizer(AsyncBaseAuthorizer):
         self,
         authenticator: AsyncBaseAuthenticator,
         *,
-        post_refresh_callback: Callable[[AsyncAuthorizer], Awaitable[None]] | None = None,
-        pre_refresh_callback: Callable[[AsyncAuthorizer], Awaitable[None]] | None = None,
+        post_refresh_callback: (
+            Callable[[AsyncAuthorizer], Awaitable[None]] | None
+        ) = None,
+        pre_refresh_callback: (
+            Callable[[AsyncAuthorizer], Awaitable[None]] | None
+        ) = None,
         refresh_token: str | None = None,
     ):
         """Represent a single authorization to Reddit's API.
 
-        :param authenticator: An instance of a subclass of :class:`.AsyncBaseAuthenticator`.
+        :param authenticator: An instance of a subclass of
+            :class:`.AsyncBaseAuthenticator`.
         :param post_refresh_callback: When a single-argument function is passed, the
             function will be called prior to refreshing the access and refresh tokens.
             The argument to the callback is the :class:`.AsyncAuthorizer` instance. This
@@ -251,8 +256,8 @@ class AsyncAuthorizer(AsyncBaseAuthorizer):
             :class:`.AsyncAuthorizer`.
         :param pre_refresh_callback: When a single-argument function is passed, the
             function will be called after refreshing the access and refresh tokens. The
-            argument to the callback is the :class:`.AsyncAuthorizer` instance. This callback
-            can be used to inspect and modify the attributes of the
+            argument to the callback is the :class:`.AsyncAuthorizer` instance. This
+            callback can be used to inspect and modify the attributes of the
             :class:`.AsyncAuthorizer`.
         :param refresh_token: Enables the ability to refresh the authorization.
 
