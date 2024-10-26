@@ -3,6 +3,3 @@ exclude_lines =
     @abstract
     if TYPE_CHECKING:
     pragma: no cover
-[run]
-omit =
-  prawcore/_async/*.py
