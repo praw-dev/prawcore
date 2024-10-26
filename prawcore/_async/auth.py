@@ -370,12 +370,12 @@ class AsyncReadOnlyAuthorizer(AsyncAuthorizer):
         super().__init__(authenticator)
         self._scopes = scopes
 
-    def refresh(self):
+    async def refresh(self):
         """Obtain a new ReadOnly access token."""
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        self._request_token(grant_type="client_credentials", **additional_kwargs)
+        await self._request_token(grant_type="client_credentials", **additional_kwargs)
 
 
 class AsyncScriptAuthorizer(AsyncAuthorizer):

@@ -277,9 +277,9 @@ class AsyncSession:
         except ValueError:
             raise BadJSON(response) from None
 
-    def _set_header_callback(self) -> dict[str, str]:
+    async def _set_header_callback(self) -> dict[str, str]:
         if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
-            self._authorizer.refresh()
+            await self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
     async def close(self):
