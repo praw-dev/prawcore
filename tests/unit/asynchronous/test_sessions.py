@@ -44,7 +44,9 @@ class TestSession(UnitTest):
         prawcore.AsyncSession(authorizer)
 
     async def test_init__with_implicit_authorizer(self, async_untrusted_authenticator):
-        authorizer = prawcore.AsyncImplicitAuthorizer(async_untrusted_authenticator, None, 0, "")
+        authorizer = prawcore.AsyncImplicitAuthorizer(
+            async_untrusted_authenticator, None, 0, ""
+        )
         prawcore.AsyncSession(authorizer)
 
     async def test_init__without_authenticator(self):
@@ -62,8 +64,10 @@ class TestSession(UnitTest):
         session_instance = mock_session.return_value
         # Handle Auth
         response_dict = {"access_token": "", "expires_in": 99, "scope": ""}
+
         async def override():
             return Mock(headers={}, json=lambda: response_dict, status_code=200)
+
         session_instance.request.return_value = override()
         requestor = prawcore.AsyncRequestor("prawcore:test (by /u/bboe)")
         authenticator = prawcore.AsyncTrustedAuthenticator(
@@ -99,5 +103,6 @@ class TestSession(UnitTest):
 class TestSessionFunction(UnitTest):
     async def test_session(self, async_requestor):
         assert isinstance(
-            prawcore.async_session(AsyncInvalidAuthorizer(async_requestor)), prawcore.AsyncSession
+            prawcore.async_session(AsyncInvalidAuthorizer(async_requestor)),
+            prawcore.AsyncSession,
         )

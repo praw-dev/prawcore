@@ -62,7 +62,9 @@ class TestSession(AsyncIntegrationTest):
             )
         assert "reason" in exception_info.value.response.json()
 
-    async def test_request__cloudflare_connection_timed_out(self, async_readonly_authorizer):
+    async def test_request__cloudflare_connection_timed_out(
+        self, async_readonly_authorizer
+    ):
         session = prawcore.AsyncSession(async_readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
             await session.request("GET", "/")
@@ -206,7 +208,9 @@ class TestSession(AsyncIntegrationTest):
             await session.request("GET", "/")
         assert exception_info.value.response.status_code == 503
 
-    async def test_request__too__many_requests__with_retry_headers(self, async_readonly_authorizer):
+    async def test_request__too__many_requests__with_retry_headers(
+        self, async_readonly_authorizer
+    ):
         session = prawcore.AsyncSession(async_readonly_authorizer)
         session._requestor._http.headers.update(
             {"User-Agent": "python-requests/2.25.1"}
@@ -221,7 +225,9 @@ class TestSession(AsyncIntegrationTest):
         )
         assert exception_info.value.message.startswith("\n<!doctype html>")
 
-    async def test_request__too__many_requests__without_retry_headers(self, async_requestor):
+    async def test_request__too__many_requests__without_retry_headers(
+        self, async_requestor
+    ):
         async_requestor._http.headers.update({"User-Agent": "python-requests/2.25.1"})
         authorizer = prawcore.AsyncReadOnlyAuthorizer(
             prawcore.AsyncTrustedAuthenticator(
@@ -255,7 +261,9 @@ class TestSession(AsyncIntegrationTest):
                 )
         assert exception_info.value.response.status_code == 413
 
-    async def test_request__unavailable_for_legal_reasons(self, async_readonly_authorizer):
+    async def test_request__unavailable_for_legal_reasons(
+        self, async_readonly_authorizer
+    ):
         session = prawcore.AsyncSession(async_readonly_authorizer)
         exception_class = prawcore.UnavailableForLegalReasons
         with pytest.raises(exception_class) as exception_info:
@@ -294,14 +302,20 @@ class TestSession(AsyncIntegrationTest):
                 "/api/v1/me",
             )
 
-    async def test_request__with_invalid_access_token(self, async_untrusted_authenticator):
-        authorizer = prawcore.AsyncImplicitAuthorizer(async_untrusted_authenticator, None, 0, "")
+    async def test_request__with_invalid_access_token(
+        self, async_untrusted_authenticator
+    ):
+        authorizer = prawcore.AsyncImplicitAuthorizer(
+            async_untrusted_authenticator, None, 0, ""
+        )
         session = prawcore.AsyncSession(authorizer)
         session._authorizer.access_token = "invalid"
         with pytest.raises(prawcore.InvalidToken):
             r = await session.request("get", "/")
 
-    async def test_request__with_invalid_access_token__retry(self, async_readonly_authorizer):
+    async def test_request__with_invalid_access_token__retry(
+        self, async_readonly_authorizer
+    ):
         session = prawcore.AsyncSession(async_readonly_authorizer)
         session._authorizer.access_token += "invalid"
         response = await session.request("GET", "/")

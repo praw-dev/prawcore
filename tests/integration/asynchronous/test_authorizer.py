@@ -91,7 +91,9 @@ class TestAuthorizer(AsyncIntegrationTest):
             await authorizer.refresh()
         assert not authorizer.is_valid()
 
-    async def test_revoke__access_token_with_refresh_set(self, async_trusted_authenticator):
+    async def test_revoke__access_token_with_refresh_set(
+        self, async_trusted_authenticator
+    ):
         authorizer = prawcore.AsyncAuthorizer(
             async_trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
         )
@@ -107,7 +109,9 @@ class TestAuthorizer(AsyncIntegrationTest):
 
         assert authorizer.is_valid()
 
-    async def test_revoke__access_token_without_refresh_set(self, async_trusted_authenticator):
+    async def test_revoke__access_token_without_refresh_set(
+        self, async_trusted_authenticator
+    ):
         async_trusted_authenticator.redirect_uri = pytest.placeholders.redirect_uri
         authorizer = prawcore.AsyncAuthorizer(async_trusted_authenticator)
         await authorizer.authorize(pytest.placeholders.temporary_grant_code)
@@ -118,7 +122,9 @@ class TestAuthorizer(AsyncIntegrationTest):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-    async def test_revoke__refresh_token_with_access_set(self, async_trusted_authenticator):
+    async def test_revoke__refresh_token_with_access_set(
+        self, async_trusted_authenticator
+    ):
         authorizer = prawcore.AsyncAuthorizer(
             async_trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
         )
@@ -130,7 +136,9 @@ class TestAuthorizer(AsyncIntegrationTest):
         assert authorizer.scopes is None
         assert not authorizer.is_valid()
 
-    async def test_revoke__refresh_token_without_access_set(self, async_trusted_authenticator):
+    async def test_revoke__refresh_token_without_access_set(
+        self, async_trusted_authenticator
+    ):
         authorizer = prawcore.AsyncAuthorizer(
             async_trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
         )
@@ -170,7 +178,9 @@ class TestDeviceIDAuthorizer(AsyncIntegrationTest):
         assert authorizer.is_valid()
 
     async def test_refresh__with_short_device_id(self, async_untrusted_authenticator):
-        authorizer = prawcore.AsyncDeviceIDAuthorizer(async_untrusted_authenticator, "a" * 19)
+        authorizer = prawcore.AsyncDeviceIDAuthorizer(
+            async_untrusted_authenticator, "a" * 19
+        )
         with pytest.raises(prawcore.OAuthException):
             await authorizer.refresh()
 
@@ -229,7 +239,9 @@ class TestScriptAuthorizer(AsyncIntegrationTest):
             await authorizer.refresh()
         assert not authorizer.is_valid()
 
-    async def test_refresh__with_invalid_username_or_password(self, async_trusted_authenticator):
+    async def test_refresh__with_invalid_username_or_password(
+        self, async_trusted_authenticator
+    ):
         authorizer = prawcore.AsyncScriptAuthorizer(
             async_trusted_authenticator, pytest.placeholders.username, "invalidpassword"
         )

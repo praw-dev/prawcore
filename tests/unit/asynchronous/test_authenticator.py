@@ -29,7 +29,9 @@ class TestTrustedAuthenticator(UnitTest):
                 "temporary", ["identity", "read"], "a_state", implicit=True
             )
 
-    def test_authorize_url__fail_without_redirect_uri(self, async_trusted_authenticator):
+    def test_authorize_url__fail_without_redirect_uri(
+        self, async_trusted_authenticator
+    ):
         async_trusted_authenticator.redirect_uri = None
         with pytest.raises(prawcore.InvalidInvocation):
             async_trusted_authenticator.authorize_url(
@@ -66,7 +68,9 @@ class TestUntrustedAuthenticator(UnitTest):
                 implicit=True,
             )
 
-    def test_authorize_url__fail_without_redirect_uri(self, async_untrusted_authenticator):
+    def test_authorize_url__fail_without_redirect_uri(
+        self, async_untrusted_authenticator
+    ):
         async_untrusted_authenticator.redirect_uri = None
         with pytest.raises(prawcore.InvalidInvocation):
             async_untrusted_authenticator.authorize_url(

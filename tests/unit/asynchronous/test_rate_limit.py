@@ -60,7 +60,9 @@ class TestRateLimiter(UnitTest):
         assert not mock_sleep.called
 
     @patch("time.time")
-    async def test_update__compute_delay_with_no_previous_info(self, mock_time, rate_limiter):
+    async def test_update__compute_delay_with_no_previous_info(
+        self, mock_time, rate_limiter
+    ):
         mock_time.return_value = 100
         rate_limiter.update(self._headers(60, 100, 60))
         assert rate_limiter.remaining == 60
@@ -68,7 +70,9 @@ class TestRateLimiter(UnitTest):
         assert rate_limiter.next_request_timestamp == 100
 
     @patch("time.time")
-    async def test_update__compute_delay_with_single_client(self, mock_time, rate_limiter):
+    async def test_update__compute_delay_with_single_client(
+        self, mock_time, rate_limiter
+    ):
         rate_limiter.remaining = 61
         rate_limiter.window_size = 150
         mock_time.return_value = 100
@@ -78,7 +82,9 @@ class TestRateLimiter(UnitTest):
         assert rate_limiter.next_request_timestamp == 110
 
     @patch("time.time")
-    async def test_update__compute_delay_with_six_clients(self, mock_time, rate_limiter):
+    async def test_update__compute_delay_with_six_clients(
+        self, mock_time, rate_limiter
+    ):
         rate_limiter.remaining = 66
         rate_limiter.window_size = 180
         mock_time.return_value = 100
@@ -99,7 +105,9 @@ class TestRateLimiter(UnitTest):
         assert rate_limiter.next_request_timestamp == 50
 
     @patch("time.time")
-    async def test_update__delay_full_time_with_zero_remaining(self, mock_time, rate_limiter):
+    async def test_update__delay_full_time_with_zero_remaining(
+        self, mock_time, rate_limiter
+    ):
         mock_time.return_value = 37
         rate_limiter.remaining = 0
         rate_limiter.update(self._headers(0, 100, 13))

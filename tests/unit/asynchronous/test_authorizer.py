@@ -14,7 +14,9 @@ class AsyncInvalidAuthenticator(prawcore._async.auth.AsyncBaseAuthenticator):
 
 @pytest.mark.asyncio
 class TestAuthorizer(UnitTest):
-    async def test_authorize__fail_without_redirect_uri(self, async_trusted_authenticator):
+    async def test_authorize__fail_without_redirect_uri(
+        self, async_trusted_authenticator
+    ):
         authorizer = prawcore.AsyncAuthorizer(async_trusted_authenticator)
         with pytest.raises(prawcore.InvalidInvocation):
             await authorizer.authorize("dummy code")
@@ -72,7 +74,9 @@ class TestDeviceIDAuthorizer(UnitTest):
         assert not authorizer.is_valid()
 
     async def test_initialize__with_invalid_authenticator(self):
-        authenticator = prawcore.AsyncAuthorizer(AsyncInvalidAuthenticator(None, None, None))
+        authenticator = prawcore.AsyncAuthorizer(
+            AsyncInvalidAuthenticator(None, None, None)
+        )
         with pytest.raises(prawcore.InvalidInvocation):
             prawcore.AsyncDeviceIDAuthorizer(authenticator)
 
@@ -87,20 +91,28 @@ class TestImplicitAuthorizer(UnitTest):
         assert authorizer.scopes == {"modposts", "read"}
         assert authorizer.is_valid()
 
-    async def test_initialize__with_trusted_authenticator(self, async_trusted_authenticator):
+    async def test_initialize__with_trusted_authenticator(
+        self, async_trusted_authenticator
+    ):
         with pytest.raises(prawcore.InvalidInvocation):
-            prawcore.AsyncImplicitAuthorizer(async_trusted_authenticator, None, None, None)
+            prawcore.AsyncImplicitAuthorizer(
+                async_trusted_authenticator, None, None, None
+            )
 
 
 @pytest.mark.asyncio
 class TestReadOnlyAuthorizer(UnitTest):
-    async def test_initialize__with_untrusted_authenticator(self, async_untrusted_authenticator):
+    async def test_initialize__with_untrusted_authenticator(
+        self, async_untrusted_authenticator
+    ):
         with pytest.raises(prawcore.InvalidInvocation):
             prawcore.AsyncReadOnlyAuthorizer(async_untrusted_authenticator)
 
 
 @pytest.mark.asyncio
 class TestScriptAuthorizer(UnitTest):
-    async def test_initialize__with_untrusted_authenticator(self, async_untrusted_authenticator):
+    async def test_initialize__with_untrusted_authenticator(
+        self, async_untrusted_authenticator
+    ):
         with pytest.raises(prawcore.InvalidInvocation):
             prawcore.AsyncScriptAuthorizer(async_untrusted_authenticator, None, None)

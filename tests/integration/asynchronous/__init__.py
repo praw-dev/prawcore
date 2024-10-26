@@ -1,4 +1,5 @@
 """prawcore Integration test suite."""
+
 from __future__ import annotations
 
 import base64
@@ -33,23 +34,27 @@ class AsyncIntegrationTest:
 
     @pytest.fixture(autouse=True)
     def inject_fake_async_response(self, cassette_name, monkeypatch):
-        """betamax does not support Niquests async capabilities.
-        This fixture is made to compensate for this missing feature.
-        """
+        """betamax does not support Niquests async capabilities. This fixture is made to compensate for this missing feature."""
         cassette_base_dir = os.path.join(os.path.dirname(__file__), "..", "cassettes")
-        cassette = Cassette(cassette_name, serialization_format="json", cassette_library_dir=cassette_base_dir)
+        cassette = Cassette(
+            cassette_name,
+            serialization_format="json",
+            cassette_library_dir=cassette_base_dir,
+        )
         cassette.match_options.update({"method"})
 
         def patch_add_urllib3_response(serialized, response, headers):
             """This function is patched so that we can construct a proper async dummy response."""
-            if 'base64_string' in serialized['body']:
+            if "base64_string" in serialized["body"]:
                 body = io.BytesIO(
-                    base64.b64decode(serialized['body']['base64_string'].encode())
+                    base64.b64decode(serialized["body"]["base64_string"].encode())
                 )
             else:
-                body = body_io(**serialized['body'])
+                body = body_io(**serialized["body"])
 
-            async def fake_inner_read(*args) -> tuple[bytes, bool, HTTPHeaderDict | None]:
+            async def fake_inner_read(
+                *args,
+            ) -> tuple[bytes, bool, HTTPHeaderDict | None]:
                 """Fake the async iter socket read from AsyncHTTPConnection down in urllib3-future."""
                 nonlocal body
                 return body.getvalue(), True, None
@@ -73,7 +78,9 @@ class AsyncIntegrationTest:
 
             response.raw = h
 
-        monkeypatch.setattr(betamax.util, "add_urllib3_response", patch_add_urllib3_response)
+        monkeypatch.setattr(
+            betamax.util, "add_urllib3_response", patch_add_urllib3_response
+        )
 
         async def fake_send(_, *args, **kwargs) -> Response:
             nonlocal cassette

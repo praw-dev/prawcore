@@ -39,13 +39,16 @@ class TestRequestor(UnitTest):
     async def test_request__use_custom_session(self):
         async def override() -> str:
             return "ASYNC OVERRIDE"
+
         expected_return = await override()
         custom_header = "CUSTOM SESSION HEADER"
         headers = {"session_header": custom_header}
         attrs = {"request.return_value": override(), "headers": headers}
         session = Mock(**attrs)
 
-        requestor = prawcore.AsyncRequestor("prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.AsyncRequestor(
+            "prawcore:test (by /u/bboe)", session=session
+        )
 
         assert (
             requestor._http.headers["User-Agent"]
@@ -69,8 +72,7 @@ class TestRequestor(UnitTest):
         assert exception_info.value.request_kwargs == {"data": "bar"}
 
     async def test_getattr_async_requestor(self, async_requestor):
-        """This test is added to cover one line of code in the
-        async requestor that was indirectly used by betamax"""
+        """This test is added to cover one line of code in the async requestor that was indirectly used by betamax"""
         adapters = getattr(async_requestor, "adapters", None)
 
         assert adapters is not None
