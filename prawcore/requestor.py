@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import niquests
 
 from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
+
+if TYPE_CHECKING:
+    from niquests import Response, Session
 
 
 class Requestor:
@@ -24,7 +27,7 @@ class Requestor:
         user_agent: str,
         oauth_url: str = "https://oauth.reddit.com",
         reddit_url: str = "https://www.reddit.com",
-        session: niquests.Session | None = None,
+        session: Session | None = None,
         timeout: float = TIMEOUT,
     ):
         """Create an instance of the Requestor class.
@@ -61,7 +64,7 @@ class Requestor:
 
     def request(
         self, *args: Any, timeout: float | None = None, **kwargs: Any
-    ) -> niquests.Response:
+    ) -> Response:
         """Issue the HTTP request capturing any errors that may occur."""
         try:
             return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)
