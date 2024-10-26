@@ -45,7 +45,8 @@ lint = [
 ]
 test = [
   "betamax >=0.8, <0.9",
-  "pytest ==7.*"
+  "pytest ==7.*",
+  "pytest-asyncio>=0.20,<0.25"
 ]
 
 [project.urls]

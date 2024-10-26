@@ -3,6 +3,7 @@
 import os
 import socket
 import time
+import asyncio
 from base64 import b64encode
 from sys import platform, modules
 
@@ -35,6 +36,11 @@ betamax.mock_response.MockHTTPResponse.close = lambda _: None
 import pytest
 
 from prawcore import Requestor, TrustedAuthenticator, UntrustedAuthenticator
+from prawcore import (
+    AsyncRequestor,
+    AsyncTrustedAuthenticator,
+    AsyncUntrustedAuthenticator,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -46,6 +52,17 @@ def patch_sleep(monkeypatch):
         pass
 
     monkeypatch.setattr(time, "sleep", value=_sleep)
+
+
+@pytest.fixture(autouse=True)
+def patch_async_sleep(monkeypatch):
+    """Auto patch sleep to speed up tests."""
+
+    async def _sleep(*_, **__):
+        """Dud sleep function."""
+        pass
+
+    monkeypatch.setattr(asyncio, "sleep", value=_sleep)
 
 
 @pytest.fixture
@@ -66,6 +83,11 @@ def requestor():
 
 
 @pytest.fixture
+def async_requestor():
+    return AsyncRequestor("prawcore:test (by /u/bboe)")
+
+
+@pytest.fixture
 def trusted_authenticator(requestor):
     """Return a TrustedAuthenticator instance."""
     return TrustedAuthenticator(
@@ -76,9 +98,25 @@ def trusted_authenticator(requestor):
 
 
 @pytest.fixture
+def async_trusted_authenticator(async_requestor):
+    """Return a TrustedAuthenticator instance."""
+    return AsyncTrustedAuthenticator(
+        async_requestor,
+        pytest.placeholders.client_id,
+        pytest.placeholders.client_secret,
+    )
+
+
+@pytest.fixture
 def untrusted_authenticator(requestor):
     """Return an UntrustedAuthenticator instance."""
     return UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
+
+
+@pytest.fixture
+def async_untrusted_authenticator(async_requestor):
+    """Return an UntrustedAuthenticator instance."""
+    return AsyncUntrustedAuthenticator(async_requestor, pytest.placeholders.client_id)
 
 
 def env_default(key):
