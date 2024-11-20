@@ -3,12 +3,44 @@
 import os
 import socket
 import time
+import asyncio
 from base64 import b64encode
-from sys import platform
+from sys import platform, modules
+
+import requests
+import niquests
+import urllib3
+
+# betamax is tied to Requests
+# and Niquests is almost entirely compatible with it.
+# we can fool it without effort.
+modules["requests"] = niquests
+modules["requests.adapters"] = niquests.adapters
+modules["requests.models"] = niquests.models
+modules["requests.exceptions"] = niquests.exceptions
+modules["requests.packages.urllib3"] = urllib3
+
+# niquests no longer have a compat submodule
+# but betamax need it. no worries, as betamax
+# explicitly need requests, we'll give it to him.
+modules["requests.compat"] = requests.compat
+
+# doing the import now will make betamax working with Niquests!
+# no extra effort.
+import betamax
+
+# the base mock does not implement close(), which is required
+# for our HTTP client. No biggy.
+betamax.mock_response.MockHTTPResponse.close = lambda _: None
 
 import pytest
 
 from prawcore import Requestor, TrustedAuthenticator, UntrustedAuthenticator
+from prawcore import (
+    AsyncRequestor,
+    AsyncTrustedAuthenticator,
+    AsyncUntrustedAuthenticator,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -20,6 +52,17 @@ def patch_sleep(monkeypatch):
         pass
 
     monkeypatch.setattr(time, "sleep", value=_sleep)
+
+
+@pytest.fixture(autouse=True)
+def patch_async_sleep(monkeypatch):
+    """Auto patch sleep to speed up tests."""
+
+    async def _sleep(*_, **__):
+        """Dud sleep function."""
+        pass
+
+    monkeypatch.setattr(asyncio, "sleep", value=_sleep)
 
 
 @pytest.fixture
@@ -40,6 +83,11 @@ def requestor():
 
 
 @pytest.fixture
+def async_requestor():
+    return AsyncRequestor("prawcore:test (by /u/bboe)")
+
+
+@pytest.fixture
 def trusted_authenticator(requestor):
     """Return a TrustedAuthenticator instance."""
     return TrustedAuthenticator(
@@ -50,9 +98,25 @@ def trusted_authenticator(requestor):
 
 
 @pytest.fixture
+def async_trusted_authenticator(async_requestor):
+    """Return a TrustedAuthenticator instance."""
+    return AsyncTrustedAuthenticator(
+        async_requestor,
+        pytest.placeholders.client_id,
+        pytest.placeholders.client_secret,
+    )
+
+
+@pytest.fixture
 def untrusted_authenticator(requestor):
     """Return an UntrustedAuthenticator instance."""
     return UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
+
+
+@pytest.fixture
+def async_untrusted_authenticator(async_requestor):
+    """Return an UntrustedAuthenticator instance."""
+    return AsyncUntrustedAuthenticator(async_requestor, pytest.placeholders.client_id)
 
 
 def env_default(key):

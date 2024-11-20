@@ -1,10 +1,11 @@
-"""Provide the RateLimiter class."""
+"""Provide the AsyncRateLimiter class."""
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Mapping
 
 if TYPE_CHECKING:
     from niquests.models import Response
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__package__)
 
 
-class RateLimiter:
+class AsyncRateLimiter:
     """Facilitates the rate limiting of requests to Reddit.
 
     Rate limits are controlled based on feedback from requests to Reddit.
@@ -27,10 +28,10 @@ class RateLimiter:
         self.used: int | None = None
         self.window_size: int = window_size
 
-    def call(
+    async def call(
         self,
-        request_function: Callable[[Any], Response],
-        set_header_callback: Callable[[], dict[str, str]],
+        request_function: Callable[[Any], Awaitable[Response]],
+        set_header_callback: Callable[[], Awaitable[dict[str, str]]],
         *args: Any,
         **kwargs: Any,
     ) -> Response:
@@ -43,13 +44,13 @@ class RateLimiter:
         :param kwargs: The keyword arguments to ``request_function``.
 
         """
-        self.delay()
-        kwargs["headers"] = set_header_callback()
-        response = request_function(*args, **kwargs)
+        await self.delay()
+        kwargs["headers"] = await set_header_callback()
+        response = await request_function(*args, **kwargs)
         self.update(response.headers)
         return response
 
-    def delay(self):
+    async def delay(self):
         """Sleep for an amount of time to remain under the rate limit."""
         if self.next_request_timestamp is None:
             return
@@ -58,7 +59,7 @@ class RateLimiter:
             return
         message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to call"
         log.debug(message)
-        time.sleep(sleep_seconds)
+        await asyncio.sleep(sleep_seconds)
 
     def update(self, response_headers: Mapping[str, str]):
         """Update the state of the rate limiter based on the response headers.

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from .exceptions import Forbidden, InsufficientScope, InvalidToken
 
 if TYPE_CHECKING:
-    from requests.models import Response
+    from niquests.models import Response
 
 _auth_error_mapping = {
     403: Forbidden,

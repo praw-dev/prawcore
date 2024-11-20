@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import random
 import time
@@ -14,9 +15,8 @@ from urllib.parse import urljoin
 from niquests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
 from niquests.status_codes import codes
 
-from .auth import BaseAuthorizer
-from .const import TIMEOUT, WINDOW_SIZE
-from .exceptions import (
+from ..const import TIMEOUT, WINDOW_SIZE
+from ..exceptions import (
     BadJSON,
     BadRequest,
     Conflict,
@@ -31,19 +31,20 @@ from .exceptions import (
     UnavailableForLegalReasons,
     URITooLong,
 )
-from .rate_limit import RateLimiter
-from .util import authorization_error_class
+from ..util import authorization_error_class
+from .auth import AsyncBaseAuthorizer
+from .rate_limit import AsyncRateLimiter
 
 if TYPE_CHECKING:
     from niquests.models import Response
 
-    from .auth import Authorizer
-    from .requestor import Requestor
+    from .auth import AsyncAuthorizer
+    from .requestor import AsyncRequestor
 
 log = logging.getLogger(__package__)
 
 
-class RetryStrategy(ABC):
+class AsyncRetryStrategy(ABC):
     """An abstract class for scheduling request retries.
 
     The strategy controls both the number and frequency of retry attempts.
@@ -56,16 +57,16 @@ class RetryStrategy(ABC):
     def _sleep_seconds(self) -> float | None:
         pass
 
-    def sleep(self):
+    async def sleep(self):
         """Sleep until we are ready to attempt the request."""
         sleep_seconds = self._sleep_seconds()
         if sleep_seconds is not None:
             message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to retry"
             log.debug(message)
-            time.sleep(sleep_seconds)
+            await asyncio.sleep(sleep_seconds)
 
 
-class Session:
+class AsyncSession:
     """The low-level connection interface to Reddit's API."""
 
     RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
@@ -114,36 +115,36 @@ class Session:
         log.debug("Params: %s", pformat(params))
 
     @property
-    def _requestor(self) -> Requestor:
+    def _requestor(self) -> AsyncRequestor:
         return self._authorizer._authenticator._requestor
 
-    def __enter__(self) -> Session:  # noqa: PYI034
+    async def __aenter__(self) -> AsyncSession:  # noqa: PYI034
         """Allow this object to be used as a context manager."""
         return self
 
-    def __exit__(self, *_args):
+    async def __aexit__(self, *_args):
         """Allow this object to be used as a context manager."""
-        self.close()
+        await self.close()
 
     def __init__(
         self,
-        authorizer: BaseAuthorizer | None,
+        authorizer: AsyncBaseAuthorizer | None,
         window_size: int = WINDOW_SIZE,
     ):
         """Prepare the connection to Reddit's API.
 
-        :param authorizer: An instance of :class:`.Authorizer`.
+        :param authorizer: An instance of :class:`.AsyncAuthorizer`.
         :param window_size: The size of the rate limit reset window in seconds.
 
         """
-        if not isinstance(authorizer, BaseAuthorizer):
-            msg = f"invalid Authorizer: {authorizer}"
+        if not isinstance(authorizer, AsyncBaseAuthorizer):
+            msg = f"invalid AsyncAuthorizer: {authorizer}"
             raise InvalidInvocation(msg)
         self._authorizer = authorizer
-        self._rate_limiter = RateLimiter(window_size=window_size)
-        self._retry_strategy_class = FiniteRetryStrategy
+        self._rate_limiter = AsyncRateLimiter(window_size=window_size)
+        self._retry_strategy_class = AsyncFiniteRetryStrategy
 
-    def _do_retry(
+    async def _do_retry(
         self,
         data: list[tuple[str, Any]],
         files: dict[str, BinaryIO | TextIO],
@@ -151,14 +152,14 @@ class Session:
         method: str,
         params: dict[str, int],
         response: Response | None,
-        retry_strategy_state: FiniteRetryStrategy,
+        retry_strategy_state: AsyncFiniteRetryStrategy,
         saved_exception: Exception | None,
         timeout: float,
         url: str,
     ) -> dict[str, Any] | str | None:
         status = repr(saved_exception) if saved_exception else response.status_code
         log.warning("Retrying due to %s status: %s %s", status, method, url)
-        return self._request_with_retries(
+        return await self._request_with_retries(
             data=data,
             files=files,
             json=json,
@@ -170,19 +171,19 @@ class Session:
             # noqa: E501
         )
 
-    def _make_request(
+    async def _make_request(
         self,
         data: list[tuple[str, Any]],
         files: dict[str, BinaryIO | TextIO],
         json: dict[str, Any],
         method: str,
         params: dict[str, Any],
-        retry_strategy_state: FiniteRetryStrategy,
+        retry_strategy_state: AsyncFiniteRetryStrategy,
         timeout: float,
         url: str,
     ) -> tuple[Response, None] | tuple[None, Exception]:
         try:
-            response = self._rate_limiter.call(
+            response = await self._rate_limiter.call(
                 self._requestor.request,
                 self._set_header_callback,
                 method,
@@ -214,7 +215,7 @@ class Session:
                 raise
             return None, exception.original_exception
 
-    def _request_with_retries(
+    async def _request_with_retries(
         self,
         data: list[tuple[str, Any]],
         files: dict[str, BinaryIO | TextIO],
@@ -223,14 +224,14 @@ class Session:
         params: dict[str, Any],
         timeout: float,
         url: str,
-        retry_strategy_state: FiniteRetryStrategy | None = None,
+        retry_strategy_state: AsyncFiniteRetryStrategy | None = None,
     ) -> dict[str, Any] | str | None:
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
-        retry_strategy_state.sleep()
+        await retry_strategy_state.sleep()
         self._log_request(data, method, params, url)
-        response, saved_exception = self._make_request(
+        response, saved_exception = await self._make_request(
             data,
             files,
             json,
@@ -250,7 +251,7 @@ class Session:
         if retry_strategy_state.should_retry_on_failure() and (
             do_retry or response is None or response.status_code in self.RETRY_STATUSES
         ):
-            return self._do_retry(
+            return await self._do_retry(
                 data,
                 files,
                 json,
@@ -276,16 +277,16 @@ class Session:
         except ValueError:
             raise BadJSON(response) from None
 
-    def _set_header_callback(self) -> dict[str, str]:
+    async def _set_header_callback(self) -> dict[str, str]:
         if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
-            self._authorizer.refresh()
+            await self._authorizer.refresh()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
-    def close(self):
+    async def close(self):
         """Close the session and perform any clean up."""
-        self._requestor.close()
+        await self._requestor.close()
 
-    def request(
+    async def request(
         self,
         method: str,
         path: str,
@@ -299,7 +300,7 @@ class Session:
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
         :param path: The path of the request. This path will be combined with the
-            ``oauth_url`` of the Requestor.
+            ``oauth_url`` of the AsyncRequestor.
         :param data: Dictionary, bytes, or file-like object to send in the body of the
             request.
         :param files: Dictionary, mapping ``filename`` to file-like object.
@@ -324,7 +325,7 @@ class Session:
             json = deepcopy(json)
             json["api_type"] = "json"
         url = urljoin(self._requestor.oauth_url, path)
-        return self._request_with_retries(
+        return await self._request_with_retries(
             data=data,
             files=files,
             json=json,
@@ -336,19 +337,19 @@ class Session:
 
 
 def session(
-    authorizer: Authorizer = None,
+    authorizer: AsyncAuthorizer = None,
     window_size: int = WINDOW_SIZE,
-) -> Session:
-    """Return a :class:`.Session` instance.
+) -> AsyncSession:
+    """Return a :class:`.AsyncSession` instance.
 
-    :param authorizer: An instance of :class:`.Authorizer`.
+    :param authorizer: An instance of :class:`.AsyncAuthorizer`.
     :param window_size: The size of the rate limit reset window in seconds.
 
     """
-    return Session(authorizer=authorizer, window_size=window_size)
+    return AsyncSession(authorizer=authorizer, window_size=window_size)
 
 
-class FiniteRetryStrategy(RetryStrategy):
+class AsyncFiniteRetryStrategy(AsyncRetryStrategy):
     """A ``RetryStrategy`` that retries requests a finite number of times."""
 
     def __init__(self, retries: int = 3):
@@ -365,7 +366,7 @@ class FiniteRetryStrategy(RetryStrategy):
             return base + 2 * random.random()  # noqa: S311
         return None
 
-    def consume_available_retry(self) -> FiniteRetryStrategy:
+    def consume_available_retry(self) -> AsyncFiniteRetryStrategy:
         """Allow one fewer retry."""
         return type(self)(self._retries - 1)
 

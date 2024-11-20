@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12"
 ]
 dependencies = [
-  "requests >=2.6.0, <3.0"
+  "niquests >=3.10, <4.0"
 ]
 dynamic = ["version", "description"]
 keywords = ["praw", "reddit", "api"]
@@ -45,7 +45,7 @@ lint = [
 test = [
   "betamax >=0.8, <0.9",
   "pytest ==7.*",
-  "urllib3 ==1.*"
+  "pytest-asyncio>=0.20,<0.25"
 ]
 
 [project.urls]
@@ -59,6 +59,11 @@ line-length = 88
 [tool.isort]
 profile = 'black'
 skip_glob = '.venv*'
+
+[tool.pytest.ini_options]
+# this avoids pytest loading betamax+Requests at boot.
+# this allows us to patch betamax and makes it use Niquests instead.
+addopts = "-p no:pytest-betamax"
 
 [tool.ruff]
 target-version = "py38"
@@ -78,7 +83,8 @@ ignore = [
   "E501", # line-length
   "PLR0913", # too many arguments
   "PLR2004", # Magic value used in comparison,
-  "S101" # use of assert
+  "S101", # use of assert
+  "ISC001" # ruff deprecation warning
 ]
 select = [
   "A", # flake8-builtins

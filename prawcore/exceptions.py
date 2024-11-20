@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
-    from requests.models import Response
+    from niquests.models import Response
 
 
 class PrawcoreException(Exception):  # noqa: N818
@@ -23,7 +23,7 @@ class OAuthException(PrawcoreException):
     def __init__(self, response: Response, error: str, description: str | None = None):
         """Initialize a OAuthException instance.
 
-        :param response: A ``requests.response`` instance.
+        :param response: A ``niquests.response`` instance.
         :param error: The error type returned by Reddit.
         :param description: A description of the error when provided.
 
@@ -67,7 +67,7 @@ class ResponseException(PrawcoreException):
     def __init__(self, response: Response):
         """Initialize a ResponseException instance.
 
-        :param response: A ``requests.response`` instance.
+        :param response: A ``niquests.response`` instance.
 
         """
         self.response = response
@@ -113,7 +113,7 @@ class Redirect(ResponseException):
     def __init__(self, response: Response):
         """Initialize a Redirect exception instance.
 
-        :param response: A ``requests.response`` instance containing a location header.
+        :param response: A ``niquests.response`` instance containing a location header.
 
         """
         path = urlparse(response.headers["location"]).path
@@ -139,7 +139,7 @@ class SpecialError(ResponseException):
     def __init__(self, response: Response):
         """Initialize a SpecialError exception instance.
 
-        :param response: A ``requests.response`` instance containing a message and a
+        :param response: A ``niquests.response`` instance containing a message and a
             list of special errors.
 
         """
@@ -162,7 +162,7 @@ class TooManyRequests(ResponseException):
     def __init__(self, response: Response):
         """Initialize a TooManyRequests exception instance.
 
-        :param response: A ``requests.response`` instance that may contain a retry-after
+        :param response: A ``niquests.response`` instance that may contain a retry-after
             header and a message.
 
         """

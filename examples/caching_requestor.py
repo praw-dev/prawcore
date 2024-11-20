@@ -10,12 +10,12 @@ Demonstrates the use of custom sessions with :class:`.Requestor`. It's an adapta
 import os
 import sys
 
-import requests
+import niquests
 
 import prawcore
 
 
-class CachingSession(requests.Session):
+class CachingSession(niquests.Session):
     """Cache GETs in memory.
 
     Toy example of custom session to showcase the ``session`` parameter of
