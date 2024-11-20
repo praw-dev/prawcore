@@ -60,7 +60,9 @@ logger.addHandler(explain_handler)
 
 def black_reformat(tmp_dir: str) -> list[str]:
     """Simply run black and retrieve which file were reformatted if any."""
-    process = Popen(f"black {tmp_dir}", shell=True, stdout=PIPE, stderr=PIPE)
+    process = Popen(
+        f"black prawcore/_async", shell=True, stdout=PIPE, stderr=PIPE, cwd=tmp_dir
+    )
     stdout, stderr = process.communicate()
 
     stdout, stderr = stdout.decode(), stderr.decode()
@@ -78,7 +80,13 @@ def black_reformat(tmp_dir: str) -> list[str]:
 
 
 def docstrfmt_reformat(tmp_dir: str) -> list[str]:
-    process = Popen(f"docstrfmt {tmp_dir}", shell=True, stdout=PIPE, stderr=PIPE)
+    process = Popen(
+        f"docstrfmt prawcore/_async/*.py",
+        shell=True,
+        stdout=PIPE,
+        stderr=PIPE,
+        cwd=tmp_dir,
+    )
     stdout, stderr = process.communicate()
 
     stdout, stderr = stdout.decode(), stderr.decode()
@@ -97,7 +105,9 @@ def docstrfmt_reformat(tmp_dir: str) -> list[str]:
 
 def ruff_reformat(tmp_dir: str) -> list[str]:
     """Run Ruff linter and extract unfixable errors if any."""
-    process = Popen(f"ruff format {tmp_dir}", shell=True, stdout=PIPE, stderr=PIPE)
+    process = Popen(
+        f"ruff check --fix", shell=True, stdout=PIPE, stderr=PIPE, cwd=tmp_dir
+    )
     stdout, stderr = process.communicate()
 
     stdout, stderr = stdout.decode(), stderr.decode()
