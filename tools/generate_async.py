@@ -847,7 +847,8 @@ if __name__ == "__main__":
 
             os.mkdir(subpackage_tmp_rootdir)
 
-            os.mknod(os.path.join(subpackage_tmp_rootdir, "__init__.py"))
+            with open(os.path.join(subpackage_tmp_rootdir, "__init__.py"), "wb") as fp:
+                pass
 
             for file_path in file_to_copy:
                 logger.info(f"Copy and patch module '{file_path}'")
