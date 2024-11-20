@@ -12,7 +12,8 @@ from ._async.auth import (
     AsyncUntrustedAuthenticator,
 )
 from ._async.requestor import AsyncRequestor
-from ._async.sessions import AsyncSession, async_session
+from ._async.sessions import AsyncSession
+from ._async.sessions import session as async_session
 from .auth import (
     Authorizer,
     DeviceIDAuthorizer,

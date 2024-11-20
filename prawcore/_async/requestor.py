@@ -30,7 +30,7 @@ class AsyncRequestor:
         session: AsyncSession | None = None,
         timeout: float = TIMEOUT,
     ):
-        """Create an instance of the Requestor class.
+        """Create an instance of the AsyncRequestor class.
 
         :param user_agent: The user-agent for your application. Please follow Reddit's
             user-agent guidelines: https://github.com/reddit/reddit/wiki/API#rules
@@ -39,7 +39,7 @@ class AsyncRequestor:
         :param reddit_url: The URL used when obtaining access tokens (default:
             ``"https://www.reddit.com"``).
         :param session: A session instance to handle requests, compatible with
-            ``niquests.Session()`` (default: ``None``).
+            ``niquests.AsyncSession()`` (default: ``None``).
         :param timeout: How many seconds to wait for the server to send data before
             giving up (default: ``prawcore.const.TIMEOUT``).
 

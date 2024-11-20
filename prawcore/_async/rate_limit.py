@@ -1,4 +1,4 @@
-"""Provide the RateLimiter class."""
+"""Provide the AsyncRateLimiter class."""
 
 from __future__ import annotations
 

@@ -138,7 +138,7 @@ class AsyncSession:
 
         """
         if not isinstance(authorizer, AsyncBaseAuthorizer):
-            msg = f"invalid Authorizer: {authorizer}"
+            msg = f"invalid AsyncAuthorizer: {authorizer}"
             raise InvalidInvocation(msg)
         self._authorizer = authorizer
         self._rate_limiter = AsyncRateLimiter(window_size=window_size)
@@ -300,7 +300,7 @@ class AsyncSession:
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
         :param path: The path of the request. This path will be combined with the
-            ``oauth_url`` of the Requestor.
+            ``oauth_url`` of the AsyncRequestor.
         :param data: Dictionary, bytes, or file-like object to send in the body of the
             request.
         :param files: Dictionary, mapping ``filename`` to file-like object.
@@ -336,8 +336,8 @@ class AsyncSession:
         )
 
 
-def async_session(
-    authorizer: AsyncAuthorizer | None = None,
+def session(
+    authorizer: AsyncAuthorizer = None,
     window_size: int = WINDOW_SIZE,
 ) -> AsyncSession:
     """Return a :class:`.AsyncSession` instance.

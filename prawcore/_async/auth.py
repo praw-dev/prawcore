@@ -6,13 +6,15 @@ import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
-from niquests import Request, Response
+from niquests import Request
 from niquests.status_codes import codes
 
 from .. import const
 from ..exceptions import InvalidInvocation, OAuthException, ResponseException
 
 if TYPE_CHECKING:
+    from niquests.models import Response
+
     from .requestor import AsyncRequestor
 
 
@@ -88,9 +90,7 @@ class AsyncBaseAuthenticator(ABC):
             msg = "redirect URI not provided"
             raise InvalidInvocation(msg)
         if implicit and not isinstance(self, AsyncUntrustedAuthenticator):
-            msg = (
-                "Only UntrustedAuthenticator instances can use the implicit grant flow."
-            )
+            msg = "Only AsyncUntrustedAuthenticator instances can use the implicit grant flow."
             raise InvalidInvocation(msg)
         if implicit and duration != "temporary":
             msg = "The implicit grant flow only supports temporary access tokens."
