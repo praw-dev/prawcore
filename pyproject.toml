@@ -83,7 +83,8 @@ ignore = [
   "E501", # line-length
   "PLR0913", # too many arguments
   "PLR2004", # Magic value used in comparison,
-  "S101" # use of assert
+  "S101", # use of assert
+  "ISC001" # ruff deprecation warning
 ]
 select = [
   "A", # flake8-builtins

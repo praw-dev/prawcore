@@ -1,4 +1,17 @@
 repos:
+  - repo: local
+    hooks:
+      - id: async-generator
+        name: check async code
+        entry: python tools/generate_async.py -a --fix
+        language: python
+        types: [ python ]
+        pass_filenames: false
+        additional_dependencies:
+          - "ruff==0.7.4"
+          - "black==24.10.0"
+          - "docstrfmt==1.9.0"
+          - niquests
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -24,11 +37,11 @@ repos:
         files: ^(.*\.toml)$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.7.4
     hooks:
       - id: ruff
         args: [ --exit-non-zero-on-fix, --fix ]
-        files: ^(prawcore/.*.py)$
+        files: ^(prawcore/.*)$
 
   - repo: https://github.com/psf/black
     hooks:
