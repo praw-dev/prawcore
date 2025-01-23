@@ -12,11 +12,11 @@ classifiers = [
   "Natural Language :: English",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12"
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13"
 ]
 dependencies = [
   "requests >=2.6.0, <3.0"
@@ -29,7 +29,7 @@ maintainers = [
 ]
 name = "prawcore"
 readme = "README.rst"
-requires-python = "~=3.8"
+requires-python = "~=3.9"
 
 [project.optional-dependencies]
 ci = ["coveralls"]
@@ -40,7 +40,7 @@ dev = [
 ]
 lint = [
   "pre-commit",
-  "ruff ==0.1.*"
+  "ruff ==0.9.*"
 ]
 test = [
   "betamax >=0.8, <0.9",
@@ -52,16 +52,8 @@ test = [
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
 "Source Code" = "https://github.com/praw-dev/prawcore"
 
-[tool.black]
-extend_exclude = '/(\.venv.*)/'
-line-length = 88
-
-[tool.isort]
-profile = 'black'
-skip_glob = '.venv*'
-
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 include = [
   "prawcore/*.py"
 ]

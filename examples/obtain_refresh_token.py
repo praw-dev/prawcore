@@ -9,6 +9,7 @@ This tool can be used to conveniently create refresh tokens for later use with y
 application OAuth2 credentials.
 
 """
+
 import os
 import random
 import socket

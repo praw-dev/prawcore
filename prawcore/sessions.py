@@ -205,11 +205,8 @@ class Session:
             )
             return response, None
         except RequestException as exception:
-            if (
-                not retry_strategy_state.should_retry_on_failure()
-                or not isinstance(  # noqa: E501
-                    exception.original_exception, self.RETRY_EXCEPTIONS
-                )
+            if not retry_strategy_state.should_retry_on_failure() or not isinstance(  # noqa: E501
+                exception.original_exception, self.RETRY_EXCEPTIONS
             ):
                 raise
             return None, exception.original_exception
@@ -266,9 +263,9 @@ class Session:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
         if response.status_code == codes["no_content"]:
             return None
-        assert (
-            response.status_code in self.SUCCESS_STATUSES
-        ), f"Unexpected status code: {response.status_code}"
+        assert response.status_code in self.SUCCESS_STATUSES, (
+            f"Unexpected status code: {response.status_code}"
+        )
         if response.headers.get("content-length") == "0":
             return ""
         try:

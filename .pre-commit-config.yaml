@@ -29,11 +29,7 @@ repos:
       - id: ruff
         args: [ --exit-non-zero-on-fix, --fix ]
         files: ^(prawcore/.*.py)$
-
-  - repo: https://github.com/psf/black
-    hooks:
-      - id: black
-    rev: 24.10.0
+      - id: ruff-format
 
   - repo: https://github.com/LilSpazJoekp/docstrfmt
     hooks:

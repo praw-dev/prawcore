@@ -6,14 +6,18 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 Unreleased
 ----------
 
+**Changed**
+
+- Drop support for Python 3.8, which was end-of-life on 2024-10-07.
+
 2.4.0 (2023/10/01)
 ------------------
 
 **Changed**
 
-- Drop support for Python 3.6, which is end-of-life on 2021-12-23.
+- Drop support for Python 3.6, which was end-of-life on 2021-12-23.
 - Updated rate limit algorithm to better handle Reddit's new rate limits.
-- Drop support for Python 3.7, which is end-of-life on 2023-06-27.
+- Drop support for Python 3.7, which was end-of-life on 2023-06-27.
 
 2.3.0 (2021-07-26)
 ------------------
@@ -75,7 +79,7 @@ Unreleased
 
 **Changed**
 
-- Drop support for Python 3.5, which is end-of-life on 2020-09-13.
+- Drop support for Python 3.5, which was end-of-life on 2020-09-13.
 
 1.4.0 (2020-05-28)
 ------------------

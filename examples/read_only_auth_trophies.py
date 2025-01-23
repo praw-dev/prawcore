@@ -6,6 +6,7 @@ This program demonstrates the use of ``prawcore.ReadOnlyAuthorizer`` that does n
 require an access token to make authenticated requests to Reddit.
 
 """
+
 import os
 import sys
 

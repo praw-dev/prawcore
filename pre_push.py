@@ -64,7 +64,7 @@ def main():
         "-n",
         "--unstatic",
         action="store_true",
-        help="Do not run static tests (black/flake8/pydocstyle)",
+        help="Do not run static tests (ruff)",
         default=False,
     )
     parser.add_argument(

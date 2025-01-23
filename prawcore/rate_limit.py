@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from requests.models import Response
 
 log = logging.getLogger(__package__)
