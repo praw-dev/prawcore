@@ -1,4 +1,4 @@
-""""Low-level communication layer for PRAW 4+."""
+"""Low-level communication layer for PRAW 4+."""
 
 import logging
 

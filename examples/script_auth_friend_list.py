@@ -7,6 +7,7 @@ listed as a developer of the application to authenticate using their username an
 password.
 
 """
+
 import os
 import sys
 
