@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
     from requests.models import Response
 
+from prawcore.const import NANOSECONDS
+
 log = logging.getLogger(__package__)
 
 
@@ -20,8 +22,6 @@ class RateLimiter:
     Rate limits are controlled based on feedback from requests to Reddit.
 
     """
-
-    NANOSECONDS = 1_000_000_000
 
     def __init__(self, *, window_size: int):
         """Create an instance of the RateLimit class."""
@@ -57,8 +57,7 @@ class RateLimiter:
         if self.next_request_timestamp_ns is None:
             return
         sleep_seconds = (
-            float(self.next_request_timestamp_ns - time.monotonic_ns())
-            / self.NANOSECONDS
+            float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
         )
         if sleep_seconds <= 0:
             return
@@ -90,7 +89,7 @@ class RateLimiter:
 
         if self.remaining <= 0:
             self.next_request_timestamp_ns = now_ns + max(
-                self.NANOSECONDS / 2, seconds_to_reset * self.NANOSECONDS
+                NANOSECONDS / 2, seconds_to_reset * NANOSECONDS
             )
             return
 
@@ -110,5 +109,5 @@ class RateLimiter:
                 ),
                 10,
             )
-            * self.NANOSECONDS
+            * NANOSECONDS
         )
