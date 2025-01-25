@@ -1,3 +1,6 @@
+permissions:
+  contents: read
+
 jobs:
   pypi-publish:
     environment: release
@@ -6,9 +9,9 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           cache: pip
           python-version: 3.x
@@ -19,7 +22,7 @@ jobs:
       - name: Build package
         run: python -m build
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # release/v1
 name: Upload Python Package
 on:
   release:
