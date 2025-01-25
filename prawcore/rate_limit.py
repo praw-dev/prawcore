@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
     from requests.models import Response
 
+from prawcore.const import NANOSECONDS
+
 log = logging.getLogger(__package__)
 
 
@@ -23,9 +25,8 @@ class RateLimiter:
 
     def __init__(self, *, window_size: int):
         """Create an instance of the RateLimit class."""
-        self.remaining: float | None = None
-        self.next_request_timestamp: float | None = None
-        self.reset_timestamp: float | None = None
+        self.remaining: int | None = None
+        self.next_request_timestamp_ns: int | None = None
         self.used: int | None = None
         self.window_size: int = window_size
 
@@ -53,9 +54,11 @@ class RateLimiter:
 
     def delay(self):
         """Sleep for an amount of time to remain under the rate limit."""
-        if self.next_request_timestamp is None:
+        if self.next_request_timestamp_ns is None:
             return
-        sleep_seconds = self.next_request_timestamp - time.time()
+        sleep_seconds = (
+            float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
+        )
         if sleep_seconds <= 0:
             return
         message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to call"
@@ -78,29 +81,33 @@ class RateLimiter:
                 self.used += 1
             return
 
-        now = time.time()
-
-        seconds_to_reset = int(response_headers["x-ratelimit-reset"])
-        self.remaining = float(response_headers["x-ratelimit-remaining"])
+        self.remaining = int(float(response_headers["x-ratelimit-remaining"]))
         self.used = int(response_headers["x-ratelimit-used"])
-        self.reset_timestamp = now + seconds_to_reset
+
+        now_ns = time.monotonic_ns()
+        seconds_to_reset = int(response_headers["x-ratelimit-reset"])
 
         if self.remaining <= 0:
-            self.next_request_timestamp = self.reset_timestamp
+            self.next_request_timestamp_ns = now_ns + max(
+                NANOSECONDS / 2, seconds_to_reset * NANOSECONDS
+            )
             return
 
-        self.next_request_timestamp = min(
-            self.reset_timestamp,
-            now
+        self.next_request_timestamp_ns = (
+            now_ns
             + min(
+                seconds_to_reset,
                 max(
                     seconds_to_reset
                     - (
                         self.window_size
-                        - (self.window_size / (self.remaining + self.used) * self.used)
+                        - self.window_size
+                        / (float(self.remaining) + self.used)
+                        * self.used
                     ),
                     0,
                 ),
                 10,
-            ),
+            )
+            * NANOSECONDS
         )

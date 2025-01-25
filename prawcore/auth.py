@@ -142,13 +142,13 @@ class BaseAuthorizer:
         self._validate_authenticator()
 
     def _clear_access_token(self):
-        self._expiration_timestamp: float
+        self._expiration_timestamp_ns: int
         self.access_token: str | None = None
         self.scopes: set[str] | None = None
 
     def _request_token(self, **data: Any):
         url = self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
-        pre_request_time = time.time()
+        pre_request_timestamp_ns = time.monotonic_ns()
         response = self._authenticator._post(url=url, **data)
         payload = response.json()
         if "error" in payload:  # Why are these OKAY responses?
@@ -156,7 +156,9 @@ class BaseAuthorizer:
                 response, payload["error"], payload.get("error_description")
             )
 
-        self._expiration_timestamp = pre_request_time - 10 + payload["expires_in"]
+        self._expiration_timestamp_ns = (
+            pre_request_timestamp_ns + (payload["expires_in"] + 10) * const.NANOSECONDS
+        )
         self.access_token = payload["access_token"]
         if "refresh_token" in payload:
             self.refresh_token = payload["refresh_token"]
@@ -181,7 +183,8 @@ class BaseAuthorizer:
 
         """
         return (
-            self.access_token is not None and time.time() < self._expiration_timestamp
+            self.access_token is not None
+            and time.monotonic_ns() < self._expiration_timestamp_ns
         )
 
     def revoke(self):
@@ -338,7 +341,9 @@ class ImplicitAuthorizer(BaseAuthorizer):
 
         """
         super().__init__(authenticator)
-        self._expiration_timestamp = time.time() + expires_in
+        self._expiration_timestamp_ns = (
+            time.monotonic_ns() + expires_in * const.NANOSECONDS
+        )
         self.access_token = access_token
         self.scopes = set(scope.split(" "))
 
