@@ -17,4 +17,4 @@ from .sessions import Session, session
 
 logging.getLogger(__package__).addHandler(logging.NullHandler())
 
-__version__ = "3.0.1.dev0"
+__version__ = "3.0.1"
