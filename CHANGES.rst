@@ -6,6 +6,9 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 Unreleased
 ----------
 
+3.0.1 (2025/01/26)
+------------------
+
 **Fixed**
 
 - Increase half-second delay introduced in ``3.0.0`` to a full second delay.
