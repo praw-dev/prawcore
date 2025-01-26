@@ -121,7 +121,7 @@ class TestRateLimiter(UnitTest):
         rate_limiter.update(self._headers(0, 100, 0))
         assert rate_limiter.remaining == 0
         assert rate_limiter.used == 100
-        assert rate_limiter.next_request_timestamp_ns == 37.5 * NANOSECONDS
+        assert rate_limiter.next_request_timestamp_ns == 38 * NANOSECONDS
 
     def test_update__no_change_without_headers(self, rate_limiter):
         prev = copy(rate_limiter)

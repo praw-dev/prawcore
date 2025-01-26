@@ -89,7 +89,7 @@ class RateLimiter:
 
         if self.remaining <= 0:
             self.next_request_timestamp_ns = now_ns + max(
-                NANOSECONDS / 2, seconds_to_reset * NANOSECONDS
+                NANOSECONDS, seconds_to_reset * NANOSECONDS
             )
             return
 
