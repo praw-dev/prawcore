@@ -19,10 +19,6 @@ prawcore
     :alt: GitHub Actions Status
     :target: https://github.com/praw-dev/prawcore/actions/workflows/ci.yml
 
-.. image:: https://coveralls.io/repos/github/praw-dev/prawcore/badge.svg
-    :alt: Coveralls Coverage
-    :target: https://coveralls.io/github/praw-dev/prawcore
-
 .. image:: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore/badge
     :alt: OpenSSF Scorecard
     :target: https://api.securityscorecards.dev/projects/github.com/praw-dev/prawcore
