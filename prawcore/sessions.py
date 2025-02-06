@@ -263,9 +263,7 @@ class Session:
             raise self.STATUS_EXCEPTIONS[response.status_code](response)
         if response.status_code == codes["no_content"]:
             return None
-        assert response.status_code in self.SUCCESS_STATUSES, (
-            f"Unexpected status code: {response.status_code}"
-        )
+        assert response.status_code in self.SUCCESS_STATUSES, f"Unexpected status code: {response.status_code}"
         if response.headers.get("content-length") == "0":
             return ""
         try:

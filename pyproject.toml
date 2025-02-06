@@ -52,10 +52,10 @@ test = [
 "Source Code" = "https://github.com/praw-dev/prawcore"
 
 [tool.ruff]
-target-version = "py39"
 include = [
   "prawcore/*.py"
 ]
+line-length = 120
 
 [tool.ruff.lint]
 ignore = [

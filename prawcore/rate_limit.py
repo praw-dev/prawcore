@@ -56,9 +56,7 @@ class RateLimiter:
         """Sleep for an amount of time to remain under the rate limit."""
         if self.next_request_timestamp_ns is None:
             return
-        sleep_seconds = (
-            float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
-        )
+        sleep_seconds = float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
         if sleep_seconds <= 0:
             return
         message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to call"
@@ -88,9 +86,7 @@ class RateLimiter:
         seconds_to_reset = int(response_headers["x-ratelimit-reset"])
 
         if self.remaining <= 0:
-            self.next_request_timestamp_ns = now_ns + max(
-                NANOSECONDS, seconds_to_reset * NANOSECONDS
-            )
+            self.next_request_timestamp_ns = now_ns + max(NANOSECONDS, seconds_to_reset * NANOSECONDS)
             return
 
         self.next_request_timestamp_ns = (
@@ -99,12 +95,7 @@ class RateLimiter:
                 seconds_to_reset,
                 max(
                     seconds_to_reset
-                    - (
-                        self.window_size
-                        - self.window_size
-                        / (float(self.remaining) + self.used)
-                        * self.used
-                    ),
+                    - (self.window_size - self.window_size / (float(self.remaining) + self.used) * self.used),
                     0,
                 ),
                 10,

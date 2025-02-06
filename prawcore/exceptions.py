@@ -44,9 +44,7 @@ class RequestException(PrawcoreException):
         self,
         original_exception: Exception,
         request_args: tuple[Any, ...],
-        request_kwargs: dict[
-            str, bool | (dict[str, int] | (dict[str, str] | str)) | None
-        ],
+        request_kwargs: dict[str, bool | (dict[str, int] | (dict[str, str] | str)) | None],
     ):
         """Initialize a RequestException instance.
 
@@ -121,8 +119,7 @@ class Redirect(ResponseException):
         self.response = response
         msg = f"Redirect to {self.path}"
         msg += (
-            " (You may be trying to perform a non-read-only action via a "
-            "read-only instance.)"
+            " (You may be trying to perform a non-read-only action via a read-only instance.)"
             if "/login/" in self.path
             else ""
         )
@@ -172,10 +169,7 @@ class TooManyRequests(ResponseException):
 
         msg = f"received {response.status_code} HTTP response"
         if self.retry_after:
-            msg += (
-                f". Please wait at least {float(self.retry_after)} seconds before"
-                f" re-trying this request."
-            )
+            msg += f". Please wait at least {float(self.retry_after)} seconds before re-trying this request."
         PrawcoreException.__init__(self, msg)
 
 

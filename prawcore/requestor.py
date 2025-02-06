@@ -62,9 +62,7 @@ class Requestor:
         """Call close on the underlying session."""
         self._http.close()
 
-    def request(
-        self, *args: Any, timeout: float | None = None, **kwargs: Any
-    ) -> Response:
+    def request(self, *args: Any, timeout: float | None = None, **kwargs: Any) -> Response:
         """Issue the HTTP request capturing any errors that may occur."""
         try:
             return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)

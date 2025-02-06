@@ -46,9 +46,7 @@ class BaseAuthenticator(ABC):
         self.client_id = client_id
         self.redirect_uri = redirect_uri
 
-    def _post(
-        self, url: str, success_status: int = codes["ok"], **data: Any
-    ) -> Response:
+    def _post(self, url: str, success_status: int = codes["ok"], **data: Any) -> Response:
         response = self._requestor.request(
             "post",
             url,
@@ -60,9 +58,7 @@ class BaseAuthenticator(ABC):
             raise ResponseException(response)
         return response
 
-    def authorize_url(
-        self, duration: str, scopes: list[str], state: str, implicit: bool = False
-    ) -> str:
+    def authorize_url(self, duration: str, scopes: list[str], state: str, implicit: bool = False) -> str:
         """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``"permanent"`` or ``"temporary"``. ``"temporary"``
@@ -90,9 +86,7 @@ class BaseAuthenticator(ABC):
             msg = "redirect URI not provided"
             raise InvalidInvocation(msg)
         if implicit and not isinstance(self, UntrustedAuthenticator):
-            msg = (
-                "Only UntrustedAuthenticator instances can use the implicit grant flow."
-            )
+            msg = "Only UntrustedAuthenticator instances can use the implicit grant flow."
             raise InvalidInvocation(msg)
         if implicit and duration != "temporary":
             msg = "The implicit grant flow only supports temporary access tokens."
@@ -152,13 +146,9 @@ class BaseAuthorizer:
         response = self._authenticator._post(url=url, **data)
         payload = response.json()
         if "error" in payload:  # Why are these OKAY responses?
-            raise OAuthException(
-                response, payload["error"], payload.get("error_description")
-            )
+            raise OAuthException(response, payload["error"], payload.get("error_description"))
 
-        self._expiration_timestamp_ns = (
-            pre_request_timestamp_ns + (payload["expires_in"] + 10) * const.NANOSECONDS
-        )
+        self._expiration_timestamp_ns = pre_request_timestamp_ns + (payload["expires_in"] + 10) * const.NANOSECONDS
         self.access_token = payload["access_token"]
         if "refresh_token" in payload:
             self.refresh_token = payload["refresh_token"]
@@ -170,9 +160,7 @@ class BaseAuthorizer:
             if isinstance(self.AUTHENTICATOR_CLASS, type):
                 msg += f" {self.AUTHENTICATOR_CLASS.__name__}."
             else:
-                msg += (
-                    f" {' or '.join([i.__name__ for i in self.AUTHENTICATOR_CLASS])}."
-                )
+                msg += f" {' or '.join([i.__name__ for i in self.AUTHENTICATOR_CLASS])}."
             raise InvalidInvocation(msg)
 
     def is_valid(self) -> bool:
@@ -182,10 +170,7 @@ class BaseAuthorizer:
         valid on the server side.
 
         """
-        return (
-            self.access_token is not None
-            and time.monotonic_ns() < self._expiration_timestamp_ns
-        )
+        return self.access_token is not None and time.monotonic_ns() < self._expiration_timestamp_ns
 
     def revoke(self):
         """Revoke the current Authorization."""
@@ -290,9 +275,7 @@ class Authorizer(BaseAuthorizer):
         if self.refresh_token is None:
             msg = "refresh token not provided"
             raise InvalidInvocation(msg)
-        self._request_token(
-            grant_type="refresh_token", refresh_token=self.refresh_token
-        )
+        self._request_token(grant_type="refresh_token", refresh_token=self.refresh_token)
         if self._post_refresh_callback:
             self._post_refresh_callback(self)
 
@@ -341,9 +324,7 @@ class ImplicitAuthorizer(BaseAuthorizer):
 
         """
         super().__init__(authenticator)
-        self._expiration_timestamp_ns = (
-            time.monotonic_ns() + expires_in * const.NANOSECONDS
-        )
+        self._expiration_timestamp_ns = time.monotonic_ns() + expires_in * const.NANOSECONDS
         self.access_token = access_token
         self.scopes = set(scope.split(" "))
 
