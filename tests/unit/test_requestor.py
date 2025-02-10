@@ -14,10 +14,7 @@ from . import UnitTest
 
 class TestRequestor(UnitTest):
     def test_initialize(self, requestor):
-        assert (
-            requestor._http.headers["User-Agent"]
-            == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
-        )
+        assert requestor._http.headers["User-Agent"] == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
 
     def test_initialize__failures(self):
         for agent in [None, "shorty"]:
@@ -41,10 +38,7 @@ class TestRequestor(UnitTest):
 
         requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
 
-        assert (
-            requestor._http.headers["User-Agent"]
-            == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
-        )
+        assert requestor._http.headers["User-Agent"] == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
         assert requestor._http.headers["session_header"] == custom_header
 
         assert requestor.request("https://reddit.com") == override

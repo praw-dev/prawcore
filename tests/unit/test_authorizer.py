@@ -27,9 +27,7 @@ class TestAuthorizer(UnitTest):
         assert not authorizer.is_valid()
 
     def test_initialize__with_refresh_token(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(
-            trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
-        )
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
         assert authorizer.access_token is None
         assert authorizer.scopes is None
         assert pytest.placeholders.refresh_token == authorizer.refresh_token
@@ -50,9 +48,7 @@ class TestAuthorizer(UnitTest):
         assert not authorizer.is_valid()
 
     def test_revoke__without_access_token(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(
-            trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
-        )
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
         with pytest.raises(prawcore.InvalidInvocation):
             authorizer.revoke(only_access=True)
 
@@ -77,9 +73,7 @@ class TestDeviceIDAuthorizer(UnitTest):
 
 class TestImplicitAuthorizer(UnitTest):
     def test_initialize(self, untrusted_authenticator):
-        authorizer = prawcore.ImplicitAuthorizer(
-            untrusted_authenticator, "fake token", 1, "modposts read"
-        )
+        authorizer = prawcore.ImplicitAuthorizer(untrusted_authenticator, "fake token", 1, "modposts read")
         assert authorizer.access_token == "fake token"
         assert authorizer.scopes == {"modposts", "read"}
         assert authorizer.is_valid()

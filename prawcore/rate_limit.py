@@ -23,7 +23,7 @@ class RateLimiter:
 
     """
 
-    def __init__(self, *, window_size: int):
+    def __init__(self, *, window_size: int) -> None:
         """Create an instance of the RateLimit class."""
         self.remaining: int | None = None
         self.next_request_timestamp_ns: int | None = None
@@ -52,20 +52,18 @@ class RateLimiter:
         self.update(response.headers)
         return response
 
-    def delay(self):
+    def delay(self) -> None:
         """Sleep for an amount of time to remain under the rate limit."""
         if self.next_request_timestamp_ns is None:
             return
-        sleep_seconds = (
-            float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
-        )
+        sleep_seconds = float(self.next_request_timestamp_ns - time.monotonic_ns()) / NANOSECONDS
         if sleep_seconds <= 0:
             return
         message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to call"
         log.debug(message)
         time.sleep(sleep_seconds)
 
-    def update(self, response_headers: Mapping[str, str]):
+    def update(self, response_headers: Mapping[str, str]) -> None:
         """Update the state of the rate limiter based on the response headers.
 
         This method should only be called following an HTTP request to Reddit.
@@ -76,7 +74,7 @@ class RateLimiter:
 
         """
         if "x-ratelimit-remaining" not in response_headers:
-            if self.remaining is not None:
+            if self.remaining is not None and self.used is not None:
                 self.remaining -= 1
                 self.used += 1
             return
@@ -88,23 +86,16 @@ class RateLimiter:
         seconds_to_reset = int(response_headers["x-ratelimit-reset"])
 
         if self.remaining <= 0:
-            self.next_request_timestamp_ns = now_ns + max(
-                NANOSECONDS, seconds_to_reset * NANOSECONDS
-            )
+            self.next_request_timestamp_ns = now_ns + max(NANOSECONDS, seconds_to_reset * NANOSECONDS)
             return
 
-        self.next_request_timestamp_ns = (
+        self.next_request_timestamp_ns = int(
             now_ns
             + min(
                 seconds_to_reset,
                 max(
                     seconds_to_reset
-                    - (
-                        self.window_size
-                        - self.window_size
-                        / (float(self.remaining) + self.used)
-                        * self.used
-                    ),
+                    - (self.window_size - self.window_size / (float(self.remaining) + self.used) * self.used),
                     0,
                 ),
                 10,

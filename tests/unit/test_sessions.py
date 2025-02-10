@@ -8,13 +8,14 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeo
 
 import prawcore
 from prawcore.exceptions import RequestException
+from prawcore.sessions import FiniteRetryStrategy
 
 from . import UnitTest
 
 
 class InvalidAuthorizer(prawcore.Authorizer):
     def __init__(self, requestor):
-        super(InvalidAuthorizer, self).__init__(
+        super().__init__(
             prawcore.TrustedAuthenticator(
                 requestor,
                 pytest.placeholders.client_id,
@@ -61,9 +62,7 @@ class TestSession(UnitTest):
         session_instance = mock_session.return_value
         # Handle Auth
         response_dict = {"access_token": "", "expires_in": 99, "scope": ""}
-        session_instance.request.return_value = Mock(
-            headers={}, json=lambda: response_dict, status_code=200
-        )
+        session_instance.request.return_value = Mock(headers={}, json=lambda: response_dict, status_code=200)
         requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
         authenticator = prawcore.TrustedAuthenticator(
             requestor,
@@ -81,8 +80,7 @@ class TestSession(UnitTest):
         assert (
             "prawcore",
             logging.WARNING,
-            f"Retrying due to {exception.__class__.__name__}() status: GET "
-            "https://oauth.reddit.com/",
+            f"Retrying due to {exception.__class__.__name__}(): GET https://oauth.reddit.com/",
         ) in caplog.record_tuples
         assert isinstance(exception_info.value, RequestException)
         assert exception is exception_info.value.original_exception
@@ -96,6 +94,26 @@ class TestSession(UnitTest):
 
 class TestSessionFunction(UnitTest):
     def test_session(self, requestor):
-        assert isinstance(
-            prawcore.session(InvalidAuthorizer(requestor)), prawcore.Session
-        )
+        assert isinstance(prawcore.session(InvalidAuthorizer(requestor)), prawcore.Session)
+
+
+class TestFiniteRetryStrategy(UnitTest):
+    @patch("time.sleep")
+    def test_strategy(self, mock_sleep):
+        strategy = FiniteRetryStrategy()
+        assert strategy.should_retry_on_failure()
+        strategy.sleep()
+        mock_sleep.assert_not_called()
+
+        strategy = strategy.consume_available_retry()
+        assert strategy.should_retry_on_failure()
+        strategy.sleep()
+        assert len(calls := mock_sleep.mock_calls) == 1
+        assert 0 < calls[0].args[0] < 2
+        mock_sleep.reset_mock()
+
+        strategy = strategy.consume_available_retry()
+        assert not strategy.should_retry_on_failure()
+        strategy.sleep()
+        assert len(calls := mock_sleep.mock_calls) == 1
+        assert 2 < calls[0].args[0] < 4

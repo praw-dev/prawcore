@@ -7,8 +7,9 @@ import random
 import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from dataclasses import dataclass
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, BinaryIO, TextIO
+from typing import TYPE_CHECKING, BinaryIO, TextIO
 from urllib.parse import urljoin
 
 from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
@@ -24,6 +25,7 @@ from .exceptions import (
     NotFound,
     Redirect,
     RequestException,
+    ResponseException,
     ServerError,
     SpecialError,
     TooLarge,
@@ -36,6 +38,7 @@ from .util import authorization_error_class
 
 if TYPE_CHECKING:
     from requests.models import Response
+    from typing_extensions import Self
 
     from .auth import Authorizer
     from .requestor import Requestor
@@ -56,13 +59,44 @@ class RetryStrategy(ABC):
     def _sleep_seconds(self) -> float | None:
         pass
 
-    def sleep(self):
+    @abstractmethod
+    def consume_available_retry(self) -> RetryStrategy:
+        """Allow one fewer retry."""
+
+    @abstractmethod
+    def should_retry_on_failure(self) -> bool:
+        """Return True when a retry should occur."""
+
+    def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
         sleep_seconds = self._sleep_seconds()
         if sleep_seconds is not None:
             message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to retry"
             log.debug(message)
             time.sleep(sleep_seconds)
+
+
+@dataclass(frozen=True)
+class FiniteRetryStrategy(RetryStrategy):
+    """A ``RetryStrategy`` that retries requests a finite number of times."""
+
+    DEFAULT_RETRIES = 2
+
+    retries: int = DEFAULT_RETRIES
+
+    def _sleep_seconds(self) -> float | None:
+        if self.retries < self.DEFAULT_RETRIES:
+            base = 0 if self.retries > 0 else 2
+            return base + 2 * random.random()  # noqa: S311
+        return None
+
+    def consume_available_retry(self) -> FiniteRetryStrategy:
+        """Allow one fewer retry."""
+        return type(self)(retries=self.retries - 1)
+
+    def should_retry_on_failure(self) -> bool:
+        """Return ``True`` if and only if the strategy will allow another retry."""
+        return self.retries > 0
 
 
 class Session:
@@ -104,11 +138,12 @@ class Session:
 
     @staticmethod
     def _log_request(
-        data: list[tuple[str, str]] | None,
+        *,
+        data: list[tuple[str, object]] | None,
         method: str,
-        params: dict[str, int],
+        params: dict[str, object],
         url: str,
-    ):
+    ) -> None:
         log.debug("Fetching: %s %s at %s", method, url, time.monotonic())
         log.debug("Data: %s", pformat(data))
         log.debug("Params: %s", pformat(params))
@@ -117,11 +152,11 @@ class Session:
     def _requestor(self) -> Requestor:
         return self._authorizer._authenticator._requestor
 
-    def __enter__(self) -> Session:  # noqa: PYI034
+    def __enter__(self) -> Self:
         """Allow this object to be used as a context manager."""
         return self
 
-    def __exit__(self, *_args):
+    def __exit__(self, *_args) -> None:
         """Allow this object to be used as a context manager."""
         self.close()
 
@@ -129,7 +164,7 @@ class Session:
         self,
         authorizer: BaseAuthorizer | None,
         window_size: int = WINDOW_SIZE,
-    ):
+    ) -> None:
         """Prepare the connection to Reddit's API.
 
         :param authorizer: An instance of :class:`.Authorizer`.
@@ -145,127 +180,134 @@ class Session:
 
     def _do_retry(
         self,
-        data: list[tuple[str, Any]],
-        files: dict[str, BinaryIO | TextIO],
-        json: dict[str, Any],
+        *,
+        data: list[tuple[str, object]] | None,
+        files: dict[str, BinaryIO | TextIO] | None,
+        json: dict[str, object] | None,
         method: str,
-        params: dict[str, int],
-        response: Response | None,
+        params: dict[str, object],
         retry_strategy_state: FiniteRetryStrategy,
-        saved_exception: Exception | None,
+        status: str,
         timeout: float,
         url: str,
-    ) -> dict[str, Any] | str | None:
-        status = repr(saved_exception) if saved_exception else response.status_code
-        log.warning("Retrying due to %s status: %s %s", status, method, url)
+    ) -> dict[str, object] | str | None:
+        log.warning("Retrying due to %s: %s %s", status, method, url)
         return self._request_with_retries(
             data=data,
             files=files,
             json=json,
             method=method,
             params=params,
+            retry_strategy_state=retry_strategy_state.consume_available_retry(),
             timeout=timeout,
             url=url,
-            retry_strategy_state=retry_strategy_state.consume_available_retry(),
             # noqa: E501
         )
 
     def _make_request(
         self,
-        data: list[tuple[str, Any]],
-        files: dict[str, BinaryIO | TextIO],
-        json: dict[str, Any],
+        data: list[tuple[str, object]] | None,
+        files: dict[str, BinaryIO | TextIO] | None,
+        json: dict[str, object] | None,
         method: str,
-        params: dict[str, Any],
-        retry_strategy_state: FiniteRetryStrategy,
+        params: dict[str, object],
         timeout: float,
         url: str,
-    ) -> tuple[Response, None] | tuple[None, Exception]:
-        try:
-            response = self._rate_limiter.call(
-                self._requestor.request,
-                self._set_header_callback,
-                method,
-                url,
-                allow_redirects=False,
-                data=data,
-                files=files,
-                json=json,
-                params=params,
-                timeout=timeout,
-            )
-            log.debug(
-                "Response: %s (%s bytes) (rst-%s:rem-%s:used-%s ratelimit) at %s",
-                response.status_code,
-                response.headers.get("content-length"),
-                response.headers.get("x-ratelimit-reset"),
-                response.headers.get("x-ratelimit-remaining"),
-                response.headers.get("x-ratelimit-used"),
-                time.monotonic(),
-            )
-            return response, None
-        except RequestException as exception:
-            if not retry_strategy_state.should_retry_on_failure() or not isinstance(  # noqa: E501
-                exception.original_exception, self.RETRY_EXCEPTIONS
-            ):
-                raise
-            return None, exception.original_exception
+    ) -> Response:
+        response = self._rate_limiter.call(
+            self._requestor.request,
+            self._set_header_callback,
+            method,
+            url,
+            allow_redirects=False,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            timeout=timeout,
+        )
+        log.debug(
+            "Response: %s (%s bytes) (rst-%s:rem-%s:used-%s ratelimit) at %s",
+            response.status_code,
+            response.headers.get("content-length"),
+            response.headers.get("x-ratelimit-reset"),
+            response.headers.get("x-ratelimit-remaining"),
+            response.headers.get("x-ratelimit-used"),
+            time.monotonic(),
+        )
+        return response
 
     def _request_with_retries(
         self,
-        data: list[tuple[str, Any]],
-        files: dict[str, BinaryIO | TextIO],
-        json: dict[str, Any],
+        *,
+        data: list[tuple[str, object]] | None,
+        files: dict[str, BinaryIO | TextIO] | None,
+        json: dict[str, object] | None,
         method: str,
-        params: dict[str, Any],
+        params: dict[str, object],
+        retry_strategy_state: FiniteRetryStrategy | None = None,
         timeout: float,
         url: str,
-        retry_strategy_state: FiniteRetryStrategy | None = None,
-    ) -> dict[str, Any] | str | None:
+    ) -> dict[str, object] | str | None:
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
         retry_strategy_state.sleep()
-        self._log_request(data, method, params, url)
-        response, saved_exception = self._make_request(
-            data,
-            files,
-            json,
-            method,
-            params,
-            retry_strategy_state,
-            timeout,
-            url,
-        )
+        self._log_request(data=data, method=method, params=params, url=url)
 
-        do_retry = False
-        if response is not None and response.status_code == codes["unauthorized"]:
+        try:
+            response = self._make_request(
+                data=data,
+                files=files,
+                json=json,
+                method=method,
+                params=params,
+                timeout=timeout,
+                url=url,
+            )
+        except RequestException as exception:
+            if retry_strategy_state.should_retry_on_failure() and isinstance(  # noqa: E501
+                exception.original_exception, self.RETRY_EXCEPTIONS
+            ):
+                return self._do_retry(
+                    data=data,
+                    files=files,
+                    json=json,
+                    method=method,
+                    params=params,
+                    retry_strategy_state=retry_strategy_state,
+                    status=repr(exception.original_exception),
+                    timeout=timeout,
+                    url=url,
+                )
+            raise
+
+        retry_status = None
+        if response.status_code == codes["unauthorized"]:
             self._authorizer._clear_access_token()
             if hasattr(self._authorizer, "refresh"):
-                do_retry = True
+                retry_status = f"{response.status_code} status"
+        elif response.status_code in self.RETRY_STATUSES:
+            retry_status = f"{response.status_code} status"
 
-        if retry_strategy_state.should_retry_on_failure() and (
-            do_retry or response is None or response.status_code in self.RETRY_STATUSES
-        ):
+        if retry_status is not None and retry_strategy_state.should_retry_on_failure():
             return self._do_retry(
-                data,
-                files,
-                json,
-                method,
-                params,
-                response,
-                retry_strategy_state,
-                saved_exception,
-                timeout,
-                url,
+                data=data,
+                files=files,
+                json=json,
+                method=method,
+                params=params,
+                retry_strategy_state=retry_strategy_state,
+                status=retry_status,
+                timeout=timeout,
+                url=url,
             )
-        if response.status_code in self.STATUS_EXCEPTIONS:
-            raise self.STATUS_EXCEPTIONS[response.status_code](response)
         if response.status_code == codes["no_content"]:
             return None
-        assert response.status_code in self.SUCCESS_STATUSES, (
-            f"Unexpected status code: {response.status_code}"
-        )
+        if response.status_code in self.STATUS_EXCEPTIONS:
+            raise self.STATUS_EXCEPTIONS[response.status_code](response)
+        if response.status_code not in self.SUCCESS_STATUSES:
+            raise ResponseException(response)
         if response.headers.get("content-length") == "0":
             return ""
         try:
@@ -274,11 +316,12 @@ class Session:
             raise BadJSON(response) from None
 
     def _set_header_callback(self) -> dict[str, str]:
-        if not self._authorizer.is_valid() and hasattr(self._authorizer, "refresh"):
-            self._authorizer.refresh()
+        refresh_method = getattr(self._authorizer, "refresh", None)
+        if not self._authorizer.is_valid() and refresh_method is not None:
+            refresh_method()
         return {"Authorization": f"bearer {self._authorizer.access_token}"}
 
-    def close(self):
+    def close(self) -> None:
         """Close the session and perform any clean up."""
         self._requestor.close()
 
@@ -286,12 +329,12 @@ class Session:
         self,
         method: str,
         path: str,
-        data: dict[str, Any] | None = None,
+        data: dict[str, object] | None = None,
         files: dict[str, BinaryIO | TextIO] | None = None,
-        json: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
+        json: dict[str, object] | None = None,
+        params: dict[str, object] | None = None,
         timeout: float = TIMEOUT,
-    ) -> dict[str, Any] | str | None:
+    ) -> dict[str, object] | str | None:
         """Return the json content from the resource at ``path``.
 
         :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
@@ -316,13 +359,15 @@ class Session:
         if isinstance(data, dict):
             data = deepcopy(data)
             data["api_type"] = "json"
-            data = sorted(data.items())
+            data_list = sorted(data.items())
+        else:
+            data_list = data
         if isinstance(json, dict):
             json = deepcopy(json)
             json["api_type"] = "json"
         url = urljoin(self._requestor.oauth_url, path)
         return self._request_with_retries(
-            data=data,
+            data=data_list,
             files=files,
             json=json,
             method=method,
@@ -333,7 +378,7 @@ class Session:
 
 
 def session(
-    authorizer: Authorizer = None,
+    authorizer: Authorizer | None = None,
     window_size: int = WINDOW_SIZE,
 ) -> Session:
     """Return a :class:`.Session` instance.
@@ -343,29 +388,3 @@ def session(
 
     """
     return Session(authorizer=authorizer, window_size=window_size)
-
-
-class FiniteRetryStrategy(RetryStrategy):
-    """A ``RetryStrategy`` that retries requests a finite number of times."""
-
-    def __init__(self, retries: int = 3):
-        """Initialize the strategy.
-
-        :param retries: Number of times to attempt a request (default: ``3``).
-
-        """
-        self._retries = retries
-
-    def _sleep_seconds(self) -> float | None:
-        if self._retries < 3:
-            base = 0 if self._retries == 2 else 2
-            return base + 2 * random.random()  # noqa: S311
-        return None
-
-    def consume_available_retry(self) -> FiniteRetryStrategy:
-        """Allow one fewer retry."""
-        return type(self)(self._retries - 1)
-
-    def should_retry_on_failure(self) -> bool:
-        """Return ``True`` if and only if the strategy will allow another retry."""
-        return self._retries > 1

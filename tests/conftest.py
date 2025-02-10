@@ -4,6 +4,7 @@ import os
 import socket
 import time
 from base64 import b64encode
+from pathlib import Path
 from sys import platform
 
 import pytest
@@ -17,7 +18,6 @@ def patch_sleep(monkeypatch):
 
     def _sleep(*_, **__):
         """Dud sleep function."""
-        pass
 
     monkeypatch.setattr(time, "sleep", value=_sleep)
 
@@ -28,7 +28,7 @@ def image_path():
 
     def _get_path(name):
         """Return path to image."""
-        return os.path.join(os.path.dirname(__file__), "integration", "files", name)
+        return Path(__file__).parent / "integration" / "files" / name
 
     return _get_path
 
@@ -65,20 +65,14 @@ def env_default(key):
 
 def pytest_configure(config):
     pytest.placeholders = Placeholders(placeholders)
-    config.addinivalue_line(
-        "markers", "add_placeholder: Define an additional placeholder for the cassette."
-    )
-    config.addinivalue_line(
-        "markers", "cassette_name: Name of cassette to use for test."
-    )
-    config.addinivalue_line(
-        "markers", "recorder_kwargs: Arguments to pass to the recorder."
-    )
+    config.addinivalue_line("markers", "add_placeholder: Define an additional placeholder for the cassette.")
+    config.addinivalue_line("markers", "cassette_name: Name of cassette to use for test.")
+    config.addinivalue_line("markers", "recorder_kwargs: Arguments to pass to the recorder.")
 
 
 def two_factor_callback():
     """Return an OTP code."""
-    return None
+    return
 
 
 class Placeholders:
@@ -94,18 +88,13 @@ placeholders = {
     ).split()
 }
 
-if (
-    placeholders["client_id"] != "fake_client_id"
-    and placeholders["client_secret"] == "fake_client_secret"
-):
-    placeholders["basic_auth"] = b64encode(
-        f"{placeholders['client_id']}:".encode("utf-8")
-    ).decode("utf-8")
+if placeholders["client_id"] != "fake_client_id" and placeholders["client_secret"] == "fake_client_secret":
+    placeholders["basic_auth"] = b64encode(f"{placeholders['client_id']}:".encode()).decode("utf-8")
 else:
     placeholders["basic_auth"] = b64encode(
-        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode("utf-8")
+        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode()
     ).decode("utf-8")
 
 
 if platform == "darwin":  # Work around issue with betamax on OS X
-    socket.gethostbyname = lambda x: "127.0.0.1"
+    socket.gethostbyname = lambda _: "127.0.0.1"

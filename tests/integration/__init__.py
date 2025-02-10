@@ -24,20 +24,17 @@ class IntegrationTest:
     @pytest.fixture(autouse=True, scope="session")
     def cassette_tracker(self):
         """Track cassettes to ensure unused cassettes are not uploaded."""
-        global existing_cassettes
         for cassette in os.listdir(CASSETTES_PATH):
             existing_cassettes.add(cassette[: cassette.rindex(".")])
         yield
         unused_cassettes = existing_cassettes - used_cassettes
         if unused_cassettes and os.getenv("ENSURE_NO_UNUSED_CASSETTES", "0") == "1":
-            raise AssertionError(
-                f"The following cassettes are unused: {', '.join(unused_cassettes)}."
-            )
+            msg = f"The following cassettes are unused: {', '.join(unused_cassettes)}."
+            raise AssertionError(msg)
 
     @pytest.fixture(autouse=True)
     def cassette(self, request, recorder, cassette_name):
         """Wrap a test in a Betamax cassette."""
-        global used_cassettes
         kwargs = {}
         for marker in request.node.iter_markers("add_placeholder"):
             for key, value in marker.kwargs.items():
@@ -49,9 +46,9 @@ class IntegrationTest:
                 #  Don't overwrite existing values since function markers are provided
                 #  before class markers.
                 kwargs.setdefault(key, value)
-        with recorder.use_cassette(cassette_name, **kwargs) as recorder:
-            cassette = recorder.current_cassette
-            yield recorder
+        with recorder.use_cassette(cassette_name, **kwargs) as recorder_context:
+            cassette = recorder_context.current_cassette
+            yield recorder_context
             ensure_integration_test(cassette)
             used_cassettes.add(cassette_name)
 
@@ -66,7 +63,7 @@ class IntegrationTest:
             config.before_record(callback=filter_access_token)
             for key, value in pytest.placeholders.__dict__.items():
                 if key == "password":
-                    value = quote_plus(value)
+                    value = quote_plus(value)  # noqa: PLW2901
                 config.define_cassette_placeholder(f"<{key.upper()}>", value)
             yield recorder
             # since placeholders persist between tests
@@ -77,9 +74,5 @@ class IntegrationTest:
         """Return the name of the cassette to use."""
         marker = request.node.get_closest_marker("cassette_name")
         if marker is None:
-            return (
-                f"{request.cls.__name__}.{request.node.name}"
-                if request.cls
-                else request.node.name
-            )
+            return f"{request.cls.__name__}.{request.node.name}" if request.cls else request.node.name
         return marker.args[0]

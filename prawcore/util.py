@@ -26,8 +26,5 @@ def authorization_error_class(
     """
     message = response.headers.get("www-authenticate")
     error: int | str
-    if message:
-        error = message.replace('"', "").rsplit("=", 1)[1]
-    else:
-        error = response.status_code
+    error = message.replace('"', "").rsplit("=", 1)[1] if message else response.status_code
     return _auth_error_mapping[error](response)

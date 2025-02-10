@@ -2,6 +2,7 @@
 
 import logging
 from json import dumps
+from pathlib import Path
 
 import pytest
 
@@ -33,11 +34,7 @@ class TestSession(IntegrationTest):
         session.request("POST", "api/read_all_messages")
         found_message = False
         for package, level, message in caplog.record_tuples:
-            if (
-                package == "prawcore"
-                and level == logging.DEBUG
-                and "Response: 202 (2 bytes)" in message
-            ):
+            if package == "prawcore" and level == logging.DEBUG and "Response: 202 (2 bytes)" in message:
                 found_message = True
         assert found_message, f"'Response: 202 (2 bytes)' in {caplog.record_tuples}"
 
@@ -56,24 +53,18 @@ class TestSession(IntegrationTest):
     def test_request__bad_request(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.BadRequest) as exception_info:
-            session.request(
-                "PUT", "/api/v1/me/friends/spez", data='{"note": "prawcore"}'
-            )
+            session.request("PUT", "/api/v1/me/friends/spez", data='{"note": "prawcore"}')
         assert "reason" in exception_info.value.response.json()
 
     def test_request__cloudflare_connection_timed_out(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
             session.request("GET", "/")
-            session.request("GET", "/")
-            session.request("GET", "/")
         assert exception_info.value.response.status_code == 522
 
     def test_request__cloudflare_unknown_error(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
-            session.request("GET", "/")
             session.request("GET", "/")
         assert exception_info.value.response.status_code == 520
 
@@ -164,7 +155,7 @@ class TestSession(IntegrationTest):
     def test_request__post__with_files(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"upload_type": "header"}
-        with open("tests/integration/files/white-square.png", "rb") as fp:
+        with Path("tests/integration/files/white-square.png").open("rb") as fp:
             files = {"file": fp}
             response = session.request(
                 "POST",
@@ -180,10 +171,7 @@ class TestSession(IntegrationTest):
             "GET",
             "/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
         )
-        assert (
-            "WANT_RAW_JSON test: < > &"
-            == response[0]["data"]["children"][0]["data"]["title"]
-        )
+        assert response[0]["data"]["children"][0]["data"]["title"] == "WANT_RAW_JSON test: < > &"
 
     def test_request__redirect(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
@@ -201,23 +189,17 @@ class TestSession(IntegrationTest):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
             session.request("GET", "/")
-            session.request("GET", "/")
-            session.request("GET", "/")
         assert exception_info.value.response.status_code == 503
 
     def test_request__too__many_requests__with_retry_headers(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
-        session._requestor._http.headers.update(
-            {"User-Agent": "python-requests/2.25.1"}
-        )
+        session._requestor._http.headers.update({"User-Agent": "python-requests/2.25.1"})
         with pytest.raises(prawcore.TooManyRequests) as exception_info:
             session.request("GET", "/api/v1/me")
         assert exception_info.value.response.status_code == 429
         assert exception_info.value.response.headers.get("retry-after")
         assert exception_info.value.response.reason == "Too Many Requests"
-        assert str(exception_info.value).startswith(
-            "received 429 HTTP response. Please wait at least"
-        )
+        assert str(exception_info.value).startswith("received 429 HTTP response. Please wait at least")
         assert exception_info.value.message.startswith("\n<!doctype html>")
 
     def test_request__too__many_requests__without_retry_headers(self, requestor):
@@ -243,7 +225,7 @@ class TestSession(IntegrationTest):
     def test_request__too_large(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"upload_type": "header"}
-        with open("tests/integration/files/too_large.jpg", "rb") as fp:
+        with Path("tests/integration/files/too_large.jpg").open("rb") as fp:
             files = {"file": fp}
             with pytest.raises(prawcore.TooLarge) as exception_info:
                 session.request(
@@ -256,35 +238,37 @@ class TestSession(IntegrationTest):
 
     def test_request__unavailable_for_legal_reasons(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
-        exception_class = prawcore.UnavailableForLegalReasons
-        with pytest.raises(exception_class) as exception_info:
+        with pytest.raises(prawcore.UnavailableForLegalReasons) as exception_info:
             session.request("GET", "/")
         assert exception_info.value.response.status_code == 451
 
+    def test_request__unexpected_status_code(self, script_authorizer):
+        session = prawcore.Session(script_authorizer)
+        with pytest.raises(prawcore.ResponseException) as exception_info:
+            session.request("DELETE", "/api/v1/me/friends/spez")
+        assert exception_info.value.response.status_code == 205
+
     def test_request__unsupported_media_type(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
-        exception_class = prawcore.SpecialError
         data = {
             "content": "type: submission\naction: upvote",
             "page": "config/automoderator",
         }
-        with pytest.raises(exception_class) as exception_info:
+        with pytest.raises(prawcore.SpecialError) as exception_info:
             session.request("POST", "r/ttft/api/wiki/edit/", data=data)
         assert exception_info.value.response.status_code == 415
 
     def test_request__uri_too_long(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         path_start = "/api/morechildren?link_id=t3_n7r3uz&children="
-        with open("tests/integration/files/comment_ids.txt") as fp:
+        with Path("tests/integration/files/comment_ids.txt").open() as fp:
             ids = fp.read()
         with pytest.raises(prawcore.URITooLong) as exception_info:
             session.request("GET", (path_start + ids)[:9996])
         assert exception_info.value.response.status_code == 414
 
     def test_request__with_insufficient_scope(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(
-            trusted_authenticator, refresh_token=pytest.placeholders.refresh_token
-        )
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
         authorizer.refresh()
         session = prawcore.Session(authorizer)
         with pytest.raises(prawcore.InsufficientScope):
