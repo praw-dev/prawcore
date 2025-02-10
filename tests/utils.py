@@ -3,7 +3,6 @@
 import json
 
 import betamax
-import pytest
 from betamax.serializers import JSONSerializer
 
 
@@ -12,9 +11,7 @@ def ensure_integration_test(cassette):
         is_integration_test = bool(cassette.interactions)
         action = "record"
     else:
-        is_integration_test = any(
-            interaction.used for interaction in cassette.interactions
-        )
+        is_integration_test = any(interaction.used for interaction in cassette.interactions)
         action = "play back"
     message = f"Cassette did not {action} any requests. This test can be a unit test."
     assert is_integration_test, message
@@ -33,9 +30,7 @@ def filter_access_token(interaction, current_cassette):
         except (KeyError, TypeError, ValueError):
             continue
         current_cassette.placeholders.append(
-            betamax.cassette.cassette.Placeholder(
-                placeholder=f"<{token_key.upper()}_TOKEN>", replace=token
-            )
+            betamax.cassette.cassette.Placeholder(placeholder=f"<{token_key.upper()}_TOKEN>", replace=token)
         )
 
 

@@ -10,13 +10,15 @@ from .const import TIMEOUT
 from .exceptions import InvalidInvocation, RequestException
 
 if TYPE_CHECKING:
-    from requests.models import Response, Session
+    from requests import Response, Session
 
 
 class Requestor:
     """Requestor provides an interface to HTTP requests."""
 
-    def __getattr__(self, attribute: str) -> Any:
+    MIN_USER_AGENT_LENGTH = 7
+
+    def __getattr__(self, attribute: str) -> object:
         """Pass all undefined attributes to the ``_http`` attribute."""
         if attribute.startswith("__"):
             raise AttributeError
@@ -29,7 +31,7 @@ class Requestor:
         reddit_url: str = "https://www.reddit.com",
         session: Session | None = None,
         timeout: float = TIMEOUT,
-    ):
+    ) -> None:
         """Create an instance of the Requestor class.
 
         :param user_agent: The user-agent for your application. Please follow Reddit's
@@ -47,7 +49,7 @@ class Requestor:
         # Imported locally to avoid an import cycle, with __init__
         from . import __version__
 
-        if user_agent is None or len(user_agent) < 7:
+        if user_agent is None or len(user_agent) < self.MIN_USER_AGENT_LENGTH:
             msg = "user_agent is not descriptive"
             raise InvalidInvocation(msg)
 
@@ -58,7 +60,7 @@ class Requestor:
         self.reddit_url = reddit_url
         self.timeout = timeout
 
-    def close(self):
+    def close(self) -> None:
         """Call close on the underlying session."""
         self._http.close()
 

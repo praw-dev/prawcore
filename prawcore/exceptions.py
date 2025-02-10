@@ -20,7 +20,7 @@ class InvalidInvocation(PrawcoreException):
 class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
-    def __init__(self, response: Response, error: str, description: str | None = None):
+    def __init__(self, response: Response, error: str, description: str | None = None) -> None:
         """Initialize a OAuthException instance.
 
         :param response: A ``requests.response`` instance.
@@ -45,7 +45,7 @@ class RequestException(PrawcoreException):
         original_exception: Exception,
         request_args: tuple[Any, ...],
         request_kwargs: dict[str, bool | (dict[str, int] | (dict[str, str] | str)) | None],
-    ):
+    ) -> None:
         """Initialize a RequestException instance.
 
         :param original_exception: The original exception that occurred.
@@ -62,7 +62,7 @@ class RequestException(PrawcoreException):
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response: Response):
+    def __init__(self, response: Response) -> None:
         """Initialize a ResponseException instance.
 
         :param response: A ``requests.response`` instance.
@@ -108,7 +108,7 @@ class Redirect(ResponseException):
 
     """
 
-    def __init__(self, response: Response):
+    def __init__(self, response: Response) -> None:
         """Initialize a Redirect exception instance.
 
         :param response: A ``requests.response`` instance containing a location header.
@@ -133,7 +133,7 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response: Response):
+    def __init__(self, response: Response) -> None:
         """Initialize a SpecialError exception instance.
 
         :param response: A ``requests.response`` instance containing a message and a
@@ -156,7 +156,7 @@ class TooLarge(ResponseException):
 class TooManyRequests(ResponseException):
     """Indicate that the user has sent too many requests in a given amount of time."""
 
-    def __init__(self, response: Response):
+    def __init__(self, response: Response) -> None:
         """Initialize a TooManyRequests exception instance.
 
         :param response: A ``requests.response`` instance that may contain a retry-after
