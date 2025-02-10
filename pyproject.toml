@@ -2,6 +2,25 @@
 build-backend = "flit_core.buildapi"
 requires = ["flit_core >=3.4,<4"]
 
+[dependency-groups]
+dev = [
+  "tox-uv>=1.22.1"
+]
+lint = [
+  "pre-commit",
+  "ruff>=0.9.5"
+]
+test = [
+  "betamax >=0.8, <0.9",
+  "coverage>=7.6.10",
+  "pytest>=8.3.4",
+  "urllib3 ==1.*"
+]
+type = [
+  "pyright>=1.1.393",
+  "pytest>=8.3.4"
+]
+
 [project]
 authors = [{name = "Bryce Boe", email = "bbzbryce@gmail.com"}]
 classifiers = [
@@ -30,23 +49,6 @@ maintainers = [
 name = "prawcore"
 readme = "README.rst"
 requires-python = "~=3.9"
-
-[project.optional-dependencies]
-dev = [
-  "prawcore[lint]",
-  "prawcore[test]"
-]
-lint = [
-  "pre-commit",
-  "ruff ==0.9.*"
-]
-test = [
-  "betamax >=0.8, <0.9",
-  "pyright",
-  "pytest ==7.*",
-  "types-requests",
-  "urllib3 ==1.*"
-]
 
 [project.urls]
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
@@ -117,6 +119,50 @@ suppress-dummy-args = true
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"pre_push.py" = ["T201"]
 "examples/*.py" = ["ANN", "PLR2004", "T201"]
 "tests/**.py" = ["ANN", "D", "PLR2004", "S101", "S105", "S106", "S301"]
+
+[tool.tox]
+envlist = ["py39", "py310", "py311", "py312", "py313", "pre-commit", "style", "type"]
+minversion = "4.22"
+
+[tool.tox.env.pre-commit]
+commands = [
+  ["pre-commit", "run", "--all-files"]
+]
+description = "run pre-commit on code base"
+dependency_groups = ["lint"]
+runner = "uv-venv-lock-runner"
+
+[tool.tox.env.style]
+commands = [
+  ["ruff", "check"],
+  ["ruff", "format", "--diff", "--target-version", "py39"]
+]
+description = "run lint check on code base"
+dependency_groups = ["lint"]
+runner = "uv-venv-lock-runner"
+
+[tool.tox.env.stylefix]
+commands = [
+  ["ruff", "check", "--fix"],
+  ["ruff", "format", "--target-version", "py39"]
+]
+description = "run lint check on code base"
+dependency_groups = ["lint"]
+runner = "uv-venv-lock-runner"
+
+[tool.tox.env.type]
+commands = [["pyright", "prawcore"]]
+dependency_groups = ["type"]
+description = "run type check on code base"
+runner = "uv-venv-lock-runner"
+
+[tool.tox.env_run_base]
+commands = [
+  ["coverage", "run", "-m", "pytest", "{posargs}"],
+  ["coverage", "report", "-m", "--fail-under=100"]
+]
+description = "Run test under {base_python}"
+dependency_groups = ["test"]
+runner = "uv-venv-lock-runner"
