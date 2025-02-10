@@ -7,7 +7,7 @@ from betamax.serializers import JSONSerializer
 
 
 def ensure_integration_test(cassette):
-    if cassette.is_recording():
+    if cassette.is_recording():  # pragma: no cover
         is_integration_test = bool(cassette.interactions)
         action = "record"
     else:
@@ -17,7 +17,7 @@ def ensure_integration_test(cassette):
     assert is_integration_test, message
 
 
-def filter_access_token(interaction, current_cassette):
+def filter_access_token(interaction, current_cassette):  # pragma: no cover
     """Add Betamax placeholder to filter access token."""
     request_uri = interaction.data["request"]["uri"]
     response = interaction.data["response"]
@@ -34,7 +34,7 @@ def filter_access_token(interaction, current_cassette):
         )
 
 
-class PrettyJSONSerializer(JSONSerializer):
+class PrettyJSONSerializer(JSONSerializer):  # pragma: no cover
     name = "prettyjson"
 
     def serialize(self, cassette_data):

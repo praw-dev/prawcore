@@ -22,7 +22,7 @@ class IntegrationTest:
     """Base class for prawcore integration tests."""
 
     @pytest.fixture(autouse=True, scope="session")
-    def cassette_tracker(self):
+    def cassette_tracker(self):  # pragma: no cover
         """Track cassettes to ensure unused cassettes are not uploaded."""
         for cassette in os.listdir(CASSETTES_PATH):
             existing_cassettes.add(cassette[: cassette.rindex(".")])
@@ -36,11 +36,6 @@ class IntegrationTest:
     def cassette(self, request, recorder, cassette_name):
         """Wrap a test in a Betamax cassette."""
         kwargs = {}
-        for marker in request.node.iter_markers("add_placeholder"):
-            for key, value in marker.kwargs.items():
-                recorder.config.default_cassette_options["placeholders"].append(
-                    {"placeholder": f"<{key.upper()}>", "replace": value}
-                )
         for marker in request.node.iter_markers("recorder_kwargs"):
             for key, value in marker.kwargs.items():
                 #  Don't overwrite existing values since function markers are provided
