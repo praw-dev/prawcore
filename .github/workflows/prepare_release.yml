@@ -4,7 +4,9 @@ jobs:
     secrets: inherit
     uses: praw-dev/.github/.github/workflows/prepare_release.yml@main
     with:
+      package: prawcore
       version: ${{ inputs.version }}
+      version_file: __init__.py
 name: Prepare Release
 on:
   workflow_dispatch:
