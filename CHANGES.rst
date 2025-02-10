@@ -3,8 +3,8 @@ Change Log
 
 prawcore follows `semantic versioning <https://semver.org/>`_.
 
-Unreleased
-----------
+3.0.2 (2025/02/10)
+------------------
 
 **Changed**
 
