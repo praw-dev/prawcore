@@ -48,7 +48,7 @@ maintainers = [
 ]
 name = "prawcore"
 readme = "README.rst"
-requires-python = "~=3.9"
+requires-python = ">=3.9"
 
 [project.urls]
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
