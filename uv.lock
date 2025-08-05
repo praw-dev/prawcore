@@ -322,7 +322,7 @@ lint = [
     { name = "ruff", specifier = ">=0.9.5" },
 ]
 test = [
-    { name = "betamax", specifier = ">=0.8,<0.9" },
+    { name = "betamax", specifier = ">=0.8,<0.10" },
     { name = "coverage", specifier = ">=7.6.10" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "urllib3", specifier = "==1.*" },

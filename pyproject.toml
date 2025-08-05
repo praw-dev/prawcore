@@ -11,7 +11,7 @@ lint = [
   "ruff>=0.9.5"
 ]
 test = [
-  "betamax >=0.8, <0.9",
+  "betamax >=0.8, <0.10",
   "coverage>=7.6.10",
   "pytest>=8.3.4",
   "urllib3 ==1.*"
