@@ -1,6 +1,7 @@
 """prawcore Integration test suite."""
 
 import os
+from pathlib import Path
 from urllib.parse import quote_plus
 
 import betamax
@@ -13,7 +14,7 @@ from ..utils import (
     filter_access_token,
 )
 
-CASSETTES_PATH = "tests/integration/cassettes"
+CASSETTES_PATH = Path("tests/integration/cassettes")
 existing_cassettes = set()
 used_cassettes = set()
 
@@ -24,8 +25,8 @@ class IntegrationTest:
     @pytest.fixture(autouse=True, scope="session")
     def cassette_tracker(self):  # pragma: no cover
         """Track cassettes to ensure unused cassettes are not uploaded."""
-        for cassette in os.listdir(CASSETTES_PATH):
-            existing_cassettes.add(cassette[: cassette.rindex(".")])
+        for cassette in CASSETTES_PATH.iterdir():
+            existing_cassettes.add(cassette.name[: cassette.name.rindex(".")])
         yield
         unused_cassettes = existing_cassettes - used_cassettes
         if unused_cassettes and os.getenv("ENSURE_NO_UNUSED_CASSETTES", "0") == "1":
@@ -42,16 +43,16 @@ class IntegrationTest:
                 #  before class markers.
                 kwargs.setdefault(key, value)
         with recorder.use_cassette(cassette_name, **kwargs) as recorder_context:
-            cassette = recorder_context.current_cassette
+            _cassette = recorder_context.current_cassette
             yield recorder_context
-            ensure_integration_test(cassette)
+            ensure_integration_test(_cassette)
             used_cassettes.add(cassette_name)
 
     @pytest.fixture(autouse=True)
     def recorder(self, requestor):
         """Configure Betamax."""
-        recorder = betamax.Betamax(requestor)
-        recorder.register_serializer(PrettyJSONSerializer)
+        _recorder = betamax.Betamax(requestor)
+        _recorder.register_serializer(PrettyJSONSerializer)
         with betamax.Betamax.configure() as config:
             config.cassette_library_dir = CASSETTES_PATH
             config.default_cassette_options["serialize_with"] = "prettyjson"
@@ -60,7 +61,7 @@ class IntegrationTest:
                 if key == "password":
                     value = quote_plus(value)  # noqa: PLW2901
                 config.define_cassette_placeholder(f"<{key.upper()}>", value)
-            yield recorder
+            yield _recorder
             # since placeholders persist between tests
             Cassette.default_cassette_options["placeholders"] = []
 
