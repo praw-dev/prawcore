@@ -64,10 +64,17 @@ class Placeholders:
 
 placeholders = {
     x: env_default(x)
-    for x in (
-        "client_id client_secret password permanent_grant_code temporary_grant_code"
-        " redirect_uri refresh_token user_agent username"
-    ).split()
+    for x in [
+        "client_id",
+        "client_secret",
+        "password",
+        "permanent_grant_code",
+        "temporary_grant_code",
+        "redirect_uri",
+        "refresh_token",
+        "user_agent",
+        "username",
+    ]
 }
 
 if (
@@ -76,9 +83,8 @@ if (
     placeholders["basic_auth"] = b64encode(f"{placeholders['client_id']}:".encode()).decode("utf-8")
 else:
     placeholders["basic_auth"] = b64encode(
-        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode()
+        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode(),
     ).decode("utf-8")
-
 
 if platform == "darwin":  # Work around issue with betamax on OS X  # pragma: no cover
     socket.gethostbyname = lambda _: "127.0.0.1"
