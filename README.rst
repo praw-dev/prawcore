@@ -1,7 +1,8 @@
 .. _main_page:
 
-prawcore
-========
+##########
+ prawcore
+##########
 
 .. image:: https://img.shields.io/pypi/v/prawcore.svg
     :alt: Latest prawcore Version
@@ -33,8 +34,9 @@ prawcore
 
 prawcore is a low-level communication layer used by PRAW 4+.
 
-Installation
-------------
+**************
+ Installation
+**************
 
 Install prawcore using ``pip`` via:
 
@@ -42,8 +44,9 @@ Install prawcore using ``pip`` via:
 
     pip install prawcore
 
-Execution Example
------------------
+*******************
+ Execution Example
+*******************
 
 The following example demonstrates how to use prawcore to obtain the list of trophies
 for a given user using the script-app type. This example assumes you have the
@@ -77,8 +80,9 @@ Save the above as ``trophies.py`` and then execute via:
 Additional examples can be found at:
 https://github.com/praw-dev/prawcore/tree/main/examples
 
-Depending on prawcore
----------------------
+***********************
+ Depending on prawcore
+***********************
 
 prawcore follows `semantic versioning <https://semver.org/>`_ with the exception that
 deprecations will not be preceded by a minor release. In essence, expect only major
@@ -89,14 +93,14 @@ prawcore your package requires, but to also limit the major version.
 Below are two examples of how you may want to specify your prawcore dependency:
 
 setup.py
-~~~~~~~~
+========
 
 .. code-block:: python
 
     setup(..., install_requires=["prawcore >=0.1, <1"], ...)
 
 requirements.txt
-~~~~~~~~~~~~~~~~
+================
 
 .. code-block:: text
 
