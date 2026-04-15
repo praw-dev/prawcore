@@ -24,7 +24,7 @@ jobs:
           - env: "3.13"
             os: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6.0.1
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
       - name: Install tox
