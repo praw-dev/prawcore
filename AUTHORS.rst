@@ -1,10 +1,12 @@
-Maintainers
-===========
+#############
+ Maintainers
+#############
 
 - Bryce Boe <bbzbryce@gmail.com> `@bboe <https://github.com/bboe>`_
 
-Contributors
-============
+##############
+ Contributors
+##############
 
 - nmtake `@nmtake <https://github.com/nmtake>`_
 - elnuno `@elnuno <https://github.com/elnuno>`_
