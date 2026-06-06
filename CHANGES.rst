@@ -6,6 +6,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 Unreleased
 ----------
 
+**Changed**
+
+- Drop support for Python 3.9, which was end-of-life on 2025-10-31.
+
 3.0.2 (2025/02/10)
 ------------------
 

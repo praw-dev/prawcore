@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from requests import Request
 from requests.status_codes import codes
@@ -13,6 +13,8 @@ from . import const
 from .exceptions import InvalidInvocation, OAuthException, ResponseException
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from requests.models import Response
 
     from prawcore.requestor import Requestor
