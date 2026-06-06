@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-executables-have-shebangs
@@ -18,13 +18,13 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/pappasam/toml-sort
-    rev: v0.24.3
+    rev: 2970ae9bb7124fe5117a27e10c10d2da051ce05a  # frozen: v0.24.4
     hooks:
       - id: toml-sort-fix
         files: ^(.*\.toml)$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.3
+    rev: 22f0422809455ec89ffdcf5a00170ba816e42ddb  # frozen: v0.15.16
     hooks:
       - id: ruff
         args: [ --exit-non-zero-on-fix, --fix ]
@@ -35,4 +35,4 @@ repos:
     hooks:
       - id: docstrfmt
         require_serial: true
-    rev: v1.11.1
+    rev: 7653faa707cb660bc80cef0e8433932363b43504  # frozen: v2.0.2
