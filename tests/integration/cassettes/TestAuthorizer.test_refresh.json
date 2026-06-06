@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-02-22T05:34:53",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
-        },
+        "body": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>",
         "headers": {
           "Accept": [
             "*/*"
@@ -35,7 +32,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"0000000-aaaaaaaaaaaaaaaaaaaaaa-0000000\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"refresh_token\": \"aaaaaaa-0000000000000000000000-aaaaaaa\", \"scope\": \"modmail\"}"
         },
         "headers": {
@@ -90,5 +86,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-02-22T05:34:53",
+  "version": 1
 }

@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-06-07T10:30:40",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "code=<TEMP_CODE>&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8080"
-        },
+        "body": "code=<TEMP_CODE>&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8080",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"identity\"}"
         },
         "headers": {
@@ -104,10 +100,7 @@
     {
       "recorded_at": "2021-06-07T10:30:40",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "token=1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&token_type_hint=access_token"
-        },
+        "body": "token=1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&token_type_hint=access_token",
         "headers": {
           "Accept": [
             "*/*"
@@ -139,7 +132,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": ""
         },
         "headers": {
@@ -203,5 +195,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-06-07T10:30:40",
+  "version": 1
 }

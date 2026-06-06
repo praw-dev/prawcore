@@ -2,14 +2,13 @@
 
 import os
 from pathlib import Path
-from urllib.parse import quote_plus
 
-import betamax
 import pytest
-from betamax.cassette import Cassette
+from vcr import VCR
 
 from ..utils import (
-    PrettyJSONSerializer,
+    CustomPersister,
+    CustomSerializer,
     ensure_integration_test,
     filter_access_token,
 )
@@ -35,35 +34,32 @@ class IntegrationTest:
 
     @pytest.fixture(autouse=True)
     def cassette(self, request, recorder, cassette_name):
-        """Wrap a test in a Betamax cassette."""
+        """Wrap a test in a VCR cassette."""
         kwargs = {}
         for marker in request.node.iter_markers("recorder_kwargs"):
             for key, value in marker.kwargs.items():
                 #  Don't overwrite existing values since function markers are provided
                 #  before class markers.
                 kwargs.setdefault(key, value)
-        with recorder.use_cassette(cassette_name, **kwargs) as recorder_context:
-            _cassette = recorder_context.current_cassette
-            yield recorder_context
+        with recorder.use_cassette(cassette_name, **kwargs) as _cassette:
+            yield _cassette
             ensure_integration_test(_cassette)
             used_cassettes.add(cassette_name)
 
     @pytest.fixture(autouse=True)
-    def recorder(self, requestor):
-        """Configure Betamax."""
-        _recorder = betamax.Betamax(requestor)
-        _recorder.register_serializer(PrettyJSONSerializer)
-        with betamax.Betamax.configure() as config:
-            config.cassette_library_dir = CASSETTES_PATH
-            config.default_cassette_options["serialize_with"] = "prettyjson"
-            config.before_record(callback=filter_access_token)
-            for key, value in pytest.placeholders.__dict__.items():
-                if key == "password":
-                    value = quote_plus(value)  # noqa: PLW2901
-                config.define_cassette_placeholder(f"<{key.upper()}>", value)
-            yield _recorder
-            # since placeholders persist between tests
-            Cassette.default_cassette_options["placeholders"] = []
+    def recorder(self):
+        """Configure VCR."""
+        vcr = VCR()
+        vcr.before_record_response = filter_access_token
+        vcr.cassette_library_dir = str(CASSETTES_PATH)
+        vcr.decode_compressed_response = True
+        vcr.match_on = ["uri", "method"]
+        vcr.path_transformer = VCR.ensure_suffix(".json")
+        vcr.register_persister(CustomPersister)
+        vcr.register_serializer("custom_serializer", CustomSerializer)
+        vcr.serializer = "custom_serializer"
+        yield vcr
+        CustomPersister.clear_additional_placeholders()
 
     @pytest.fixture
     def cassette_name(self, request):

@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-05-10T23:45:20",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=client_credentials"
-        },
+        "body": "grant_type=client_credentials",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"0000000000000000000000000000000\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"*\"}"
         },
         "headers": {
@@ -95,10 +91,7 @@
     {
       "recorded_at": "2021-05-10T23:45:20",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": ""
-        },
+        "body": "",
         "headers": {
           "Accept": [
             "*/*"
@@ -124,7 +117,6 @@
       },
       "response": {
         "body": {
-          "encoding": "ISO-8859-1",
           "string": "Error: URI Too Long"
         },
         "headers": {
@@ -164,5 +156,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-05-10T23:45:20",
+  "version": 1
 }

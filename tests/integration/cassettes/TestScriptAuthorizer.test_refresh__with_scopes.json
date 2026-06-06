@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-06-25T11:21:09",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=password&password=<PASSWORD>&scope=adsedit+adsread+creddits+history&username=<USERNAME>"
-        },
+        "body": "grant_type=password&password=<PASSWORD>&scope=adsedit+adsread+creddits+history&username=<USERNAME>",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"12345678-000000000000000000000000000000\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"adsedit adsread creddits history\"}"
         },
         "headers": {
@@ -102,5 +98,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-06-25T11:21:09",
+  "version": 1
 }

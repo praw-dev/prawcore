@@ -13,6 +13,11 @@ from . import UnitTest
 
 
 class TestRequestor(UnitTest):
+    def test_getattr(self, requestor):
+        assert requestor.headers is requestor._http.headers
+        with pytest.raises(AttributeError):
+            requestor.__dunder__  # noqa: B018
+
     def test_initialize(self, requestor):
         assert requestor._http.headers["User-Agent"] == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
 

@@ -11,6 +11,8 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 **Changed**
 
 - Drop support for Python 3.9, which was end-of-life on 2025-10-31.
+- Migrate the test suite from Betamax to VCR.py, enabling urllib3 2.x in the test
+  environment. Existing cassettes were converted without re-recording.
 
 ********************
  3.0.2 (2025/02/10)

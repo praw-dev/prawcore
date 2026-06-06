@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-06-07T09:31:09",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "token=<REFRESH_TOKEN>&token_type_hint=refresh_token"
-        },
+        "body": "token=<REFRESH_TOKEN>&token_type_hint=refresh_token",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": ""
         },
         "headers": {
@@ -102,5 +98,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-06-07T09:31:09",
+  "version": 1
 }

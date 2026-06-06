@@ -130,7 +130,7 @@ class TestSession(IntegrationTest):
         response = session.request("DELETE", path, data=data)
         assert response == ""
 
-    @pytest.mark.recorder_kwargs(match_requests_on=["method", "uri", "body"])
+    @pytest.mark.recorder_kwargs(match_on=["method", "uri", "body"])
     def test_request__patch(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         json = {"lang": "ja", "num_comments": 123}
@@ -151,7 +151,6 @@ class TestSession(IntegrationTest):
         assert "a_test_from_prawcore" in response["json"]["data"]["url"]
         assert key_count == len(data)  # Ensure data is untouched
 
-    @pytest.mark.recorder_kwargs(match_requests_on=["uri", "method"])
     def test_request__post__with_files(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"upload_type": "header"}
@@ -221,7 +220,6 @@ class TestSession(IntegrationTest):
             "error": 429,
         }
 
-    @pytest.mark.recorder_kwargs(match_requests_on=["uri", "method"])
     def test_request__too_large(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"upload_type": "header"}

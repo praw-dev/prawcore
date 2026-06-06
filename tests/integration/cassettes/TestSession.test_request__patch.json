@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2020-04-29T00:42:33",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=password&password=<PASSWORD>&username=<USERNAME>"
-        },
+        "body": "grant_type=password&password=<PASSWORD>&username=<USERNAME>",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"<BEARER>\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"*\"}"
         },
         "headers": {
@@ -107,10 +103,7 @@
     {
       "recorded_at": "2020-04-29T00:42:33",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "{\"lang\": \"ja\", \"num_comments\": 123, \"api_type\": \"json\"}"
-        },
+        "body": "{\"lang\": \"ja\", \"num_comments\": 123, \"api_type\": \"json\"}",
         "headers": {
           "Accept": [
             "*/*"
@@ -142,9 +135,7 @@
       },
       "response": {
         "body": {
-          "base64_string": "H4sIAHnNqF4C/41VQW7cMAz8SuBzDk2LAkU/I9ASbbMri4ZEebMt+vdSsrORNjn0tFhKpGaGQ/rP4HCC7MXIgiuaFIefTyF7//w0yBIRHDqzYkowY9KjCXxCPVvIoXF8DW3Qw4jehDRdNSgxlxhYoZ3kZiJ63CGIAdfm4ArkP3thizyRR8ObGM7SnOz6NhvIwpuHW3MgC0VnNoj6XCJRgCBgNoyJA3j6rVQsB8HQVksLX42ncDGTByr0T+T1QCIGR2HugNEOWnxC7JisHEg4KpcgxFWYs9KWR0/WJIw7Rv1REF1mxIQQ7dKEaA4ctR15VlVEgSeOHWqFZWzklDZO0up3vnno6qik9z26HWp+0T8hr6rIWhCXOy9fv2nQKtbLDG7Gcu0slxOa2fMIWvMwTFu0SpUCswoDjYRc+L78eNA0yc1jWhBrjfPE0669jhBmjL2uGGBUH3Q+7RjhDFYb/iihY5UgaJ6oEm2CZe9hU0IeJzFjBfwuT+318AuG59PleWuTW499tFfvbfBe6VY9JYK99D6qxafIq4k88kc95Uoi2ILTVm3qle6mFJvspHbvUb6NLrtihFYWTGouM6osTXRVpeoQJKsFh/sOWNGRcoy4E5apHniaijLH1LCFYnXVMOlbEQ8vuRpsehtoXkSRlLrv7OfFl3gdyVickghaoDPyxlv2tT9DefQ/5rtvQMo6cTfjQUckIQYjtLbklPRp/0fe58juLJ3X7tYp8n62taouD4tkhXi5362ZbUK1raFgfVY/fJiYwKZsQtDdUlbdGa3e6bk+NFSXo7lAXEF3yKgT5XqDBLxeKegCb2N5LaqWa9/Ldqi9L9pzqC0vK+eKXhXDTxZOZT6zdwZfN4rVA03x937r0+3SebtwLKwcFG6ykUbl53vfHvN/b9ixELUlYVI1gsUCEqxF/WBsayk9oKp544DD339ECS5M6AYAAA==",
-          "encoding": "UTF-8",
-          "string": ""
+          "string": "{\"default_theme_sr\": null, \"threaded_messages\": false, \"hide_downs\": false, \"label_nsfw\": true, \"activity_relevant_ads\": false, \"email_messages\": false, \"profile_opt_out\": false, \"video_autoplay\": false, \"third_party_site_data_personalized_content\": false, \"show_link_flair\": true, \"show_trending\": false, \"private_feeds\": false, \"monitor_mentions\": true, \"public_server_seconds\": false, \"research\": false, \"ignore_suggested_sort\": false, \"send_crosspost_messages\": true, \"email_digests\": false, \"layout\": 0, \"num_comments\": 123, \"clickgadget\": true, \"use_global_defaults\": false, \"show_snoovatar\": true, \"over_18\": true, \"show_stylesheets\": true, \"live_orangereds\": false, \"enable_default_themes\": false, \"legacy_search\": false, \"domain_details\": false, \"collapse_left_bar\": false, \"lang\": \"ja\", \"hide_ups\": false, \"third_party_data_personalized_ads\": false, \"allow_clicktracking\": false, \"hide_from_robots\": false, \"show_twitter\": false, \"compress\": false, \"store_visits\": false, \"threaded_modmail\": false, \"design_beta\": false, \"min_link_score\": null, \"media_preview\": \"off\", \"show_location_based_recommendations\": true, \"nightmode\": false, \"highlight_controversial\": false, \"geopopular\": \"\", \"third_party_site_data_personalized_ads\": false, \"survey_last_seen_time\": null, \"min_comment_score\": null, \"public_votes\": false, \"collapse_read_messages\": false, \"show_flair\": true, \"mark_messages_read\": false, \"search_include_over_18\": true, \"no_profanity\": true, \"hide_ads\": false, \"beta\": false, \"top_karma_subreddits\": false, \"newwindow\": false, \"numsites\": 50, \"media\": \"on\", \"send_welcome_messages\": true, \"show_gold_expiration\": false, \"highlight_new_comments\": false, \"email_unsubscribe_all\": false, \"default_comment_sort\": \"confidence\", \"accept_pms\": \"everyone\"}"
         },
         "headers": {
           "Accept-Ranges": [
@@ -153,11 +144,8 @@
           "Connection": [
             "keep-alive"
           ],
-          "Content-Encoding": [
-            "gzip"
-          ],
           "Content-Length": [
-            "718"
+            "1768"
           ],
           "Content-Type": [
             "application/json; charset=UTF-8"
@@ -230,5 +218,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2020-04-29T00:42:33",
+  "version": 1
 }

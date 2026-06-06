@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-06-25T11:21:08",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "device_id=DO_NOT_TRACK_THIS_DEVICE&grant_type=https%3A%2F%2Foauth.reddit.com%2Fgrants%2Finstalled_client&scope=adsedit+adsread+creddits+history"
-        },
+        "body": "device_id=DO_NOT_TRACK_THIS_DEVICE&grant_type=https%3A%2F%2Foauth.reddit.com%2Fgrants%2Finstalled_client&scope=adsedit+adsread+creddits+history",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"-000000000000000000000000000000\", \"token_type\": \"bearer\", \"device_id\": \"DO_NOT_TRACK_THIS_DEVICE\", \"expires_in\": 3600, \"scope\": \"adsedit adsread creddits history\"}"
         },
         "headers": {
@@ -105,5 +101,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-06-25T11:21:08",
+  "version": 1
 }
