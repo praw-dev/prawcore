@@ -31,7 +31,6 @@ classifiers = [
   "Natural Language :: English",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -48,7 +47,7 @@ maintainers = [
 ]
 name = "prawcore"
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.urls]
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
@@ -123,7 +122,7 @@ suppress-dummy-args = true
 "tests/**.py" = ["ANN", "D", "PLR2004", "S101", "S105", "S106", "S301"]
 
 [tool.tox]
-envlist = ["py39", "py310", "py311", "py312", "py313", "pre-commit", "style", "type"]
+envlist = ["py310", "py311", "py312", "py313", "pre-commit", "style", "type"]
 minversion = "4.22"
 
 [tool.tox.env.pre-commit]
@@ -137,7 +136,7 @@ runner = "uv-venv-lock-runner"
 [tool.tox.env.style]
 commands = [
   ["ruff", "check"],
-  ["ruff", "format", "--diff", "--target-version", "py39"]
+  ["ruff", "format", "--diff", "--target-version", "py310"]
 ]
 description = "run lint check on code base"
 dependency_groups = ["lint"]
@@ -146,7 +145,7 @@ runner = "uv-venv-lock-runner"
 [tool.tox.env.stylefix]
 commands = [
   ["ruff", "check", "--fix"],
-  ["ruff", "format", "--target-version", "py39"]
+  ["ruff", "format", "--target-version", "py310"]
 ]
 description = "run lint check on code base"
 dependency_groups = ["lint"]

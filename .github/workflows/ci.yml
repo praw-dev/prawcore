@@ -9,14 +9,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - env: "3.9"
+          - env: "3.10"
             os: macos-latest
-          - env: "3.9"
-            os: ubuntu-latest
-          - env: "3.9"
-            os: windows-latest
           - env: "3.10"
             os: ubuntu-latest
+          - env: "3.10"
+            os: windows-latest
           - env: "3.11"
             os: ubuntu-latest
           - env: "3.12"
@@ -31,9 +29,9 @@ jobs:
         run: uv tool install --python-preference only-managed --python ${{ matrix.env }} tox --with tox-uv
       - name: Run test suite
         run: |
-          tox run --skip-pkg-install -e ${{ fromJson('{ "3.9": "py39", "3.10": "py310", "3.11": "py311", "3.12": "py312", "3.13": "py313", }')[matrix.env] }}
+          tox run --skip-pkg-install -e ${{ fromJson('{ "3.10": "py310", "3.11": "py311", "3.12": "py312", "3.13": "py313", }')[matrix.env] }}
       - name: Run lint tests
-        if: matrix.env == '3.9'
+        if: matrix.env == '3.10'
         run: tox run --skip-pkg-install --skip-env py
 
 name: CI
