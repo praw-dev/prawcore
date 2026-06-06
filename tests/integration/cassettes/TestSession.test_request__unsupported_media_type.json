@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2018-03-17T04:29:33",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=password&password=<PASSWORD>&username=<USERNAME>"
-        },
+        "body": "grant_type=password&password=<PASSWORD>&username=<USERNAME>",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"0oMQ0UR6qTnRWidnH1mbXrIgucQ\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"*\"}"
         },
         "headers": {
@@ -108,10 +104,7 @@
     {
       "recorded_at": "2018-03-17T04:29:33",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "api_type=json&content=type%3A+submission%0Aaction%3A+upvote&page=config%2Fautomoderator"
-        },
+        "body": "api_type=json&content=type%3A+submission%0Aaction%3A+upvote&page=config%2Fautomoderator",
         "headers": {
           "Accept": [
             "*/*"
@@ -143,7 +136,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"reason\": \"SPECIAL_ERRORS\", \"message\": \"Unsupported Media Type\", \"special_errors\": [\"invalid value for `action`: `upvote` in rule:\\n\\ntype: submission\\naction: upvote\"]}"
         },
         "headers": {
@@ -226,5 +218,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2018-03-17T04:29:33",
+  "version": 1
 }

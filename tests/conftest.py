@@ -1,10 +1,8 @@
 """Prepare pytest."""
 
 import os
-import socket
 import time
 from base64 import b64encode
-from sys import platform
 
 import pytest
 
@@ -85,6 +83,3 @@ else:
     placeholders["basic_auth"] = b64encode(
         f"{placeholders['client_id']}:{placeholders['client_secret']}".encode(),
     ).decode("utf-8")
-
-if platform == "darwin":  # Work around issue with betamax on OS X  # pragma: no cover
-    socket.gethostbyname = lambda _: "127.0.0.1"

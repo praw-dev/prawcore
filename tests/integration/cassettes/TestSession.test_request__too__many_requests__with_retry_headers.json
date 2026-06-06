@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-05-24T01:25:55",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=client_credentials"
-        },
+        "body": "grant_type=client_credentials",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"-000000000000000000000000000000\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"*\"}"
         },
         "headers": {
@@ -104,10 +100,7 @@
     {
       "recorded_at": "2021-05-24T01:25:55",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": ""
-        },
+        "body": "",
         "headers": {
           "Accept": [
             "*/*"
@@ -133,9 +126,7 @@
       },
       "response": {
         "body": {
-          "base64_string": "H4sIAKQAq2AC/31UwW7bMAy9+yvYXtoCadwCxQ6ZZ2DHHQYMw36AsWhLqC1pFB3PGPbvo2ynyXpYDjFNPT0+PjIpqhsTGpkjgZWhr4tqfQBUltDkQENx0lP9IwT4in6G7/RzpCSpKteDFZRkPscAx2Bm+L295E8bvBwgDdj3cCI26HEHyA77HVjqTySu0UxCnx4TsWs/Xl2enBF7gA9PT/HXdX5A7pw/wBPgKOF88qfYAvv8jwRLrrMq4uUdyxGb147D6M0BhFVARCYvMHJ/X5bTNO2ZjHGSBFXkvglDuSZyuM82Ee+j7x7Ah0emSCiQGg7aqYQInKtetOXvqnwzqyrPPlfZs81L+1xPNiCIJaYdqCDjiW8U/LwiiqKoYj3RHROkwDzv4DgKzGEEjKqAtTQcCVAnIYDegGJPiiXyehTUOh0kb4MsWg7DcrlHoX7eKxrIt4GbTGG1PKRIZKB3gxMI/u2qStR2LzXVElrptHDKmch0ynbicUy0r8pYL9pdu6rVBnyWuAjNPeRMiiG0zndaieDkMEMZjhwm3Y27BMrEgJ3SFklYgQeIPWEiaCz6jlb8BQUrKsvBU3Am+7C8W5dgoJQUVWCHzl8EboQTasMveqEJ3tynh8VM4Rmu4cvQYo1J+2AanNeVyMWMtt6HSJx22VJWkmGgTJBda3qn2lQAvmYTFpYhaPt66qFS45naT7dWJB7KsnNix+PV+p0fk3t15edvX25rdWsh2YYDWl2FyhQ2+fqLxfq/Jqz95LVct1E3bvk/+AucXvM4KAQAAA==",
-          "encoding": "UTF-8",
-          "string": ""
+          "string": "\n<!doctype html>\n<html>\n  <head>\n    <title>Too Many Requests</title>\n    <style>\n      body {\n          font: small verdana, arial, helvetica, sans-serif;\n          width: 600px;\n          margin: 0 auto;\n      }\n\n      h1 {\n          height: 40px;\n          background: transparent url(//www.redditstatic.com/reddit.com.header.png) no-repeat scroll top right;\n      }\n    </style>\n  </head>\n  <body>\n    <h1>whoa there, pardner!</h1>\n    \n\n\n<p>we're sorry, but you appear to be a bot and we've seen too many requests\nfrom you lately. we enforce a hard speed limit on requests that appear to come\nfrom bots to prevent abuse.</p>\n\n<p>if you are not a bot but are spoofing one via your browser's user agent\nstring: please change your user agent string to avoid seeing this message\nagain.</p>\n\n<p>please wait 4 second(s) and try again.</p>\n\n    <p>as a reminder to developers, we recommend that clients make no\n    more than <a href=\"http://github.com/reddit/reddit/wiki/API\">one\n    request every two seconds</a> to avoid seeing this message.</p>\n  </body>\n</html>\n"
         },
         "headers": {
           "Accept-Ranges": [
@@ -144,11 +135,8 @@
           "Connection": [
             "keep-alive"
           ],
-          "Content-Encoding": [
-            "gzip"
-          ],
           "Content-Length": [
-            "592"
+            "1064"
           ],
           "Content-Type": [
             "text/html; charset=UTF-8"
@@ -203,5 +191,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-05-24T01:25:55",
+  "version": 1
 }

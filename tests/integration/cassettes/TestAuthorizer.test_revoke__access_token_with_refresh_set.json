@@ -1,12 +1,9 @@
 {
-  "http_interactions": [
+  "interactions": [
     {
       "recorded_at": "2021-06-07T11:40:17",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>"
-        },
+        "body": "grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>",
         "headers": {
           "Accept": [
             "*/*"
@@ -38,7 +35,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"refresh_token\": \"1234678-111111111111111111111111111111\", \"scope\": \"identity\"}"
         },
         "headers": {
@@ -104,10 +100,7 @@
     {
       "recorded_at": "2021-06-07T11:40:17",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "token=1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&token_type_hint=access_token"
-        },
+        "body": "token=1234678-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&token_type_hint=access_token",
         "headers": {
           "Accept": [
             "*/*"
@@ -139,7 +132,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": ""
         },
         "headers": {
@@ -205,10 +197,7 @@
     {
       "recorded_at": "2021-06-07T11:40:17",
       "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "grant_type=refresh_token&refresh_token=1234678-111111111111111111111111111111"
-        },
+        "body": "grant_type=refresh_token&refresh_token=1234678-111111111111111111111111111111",
         "headers": {
           "Accept": [
             "*/*"
@@ -240,7 +229,6 @@
       },
       "response": {
         "body": {
-          "encoding": "UTF-8",
           "string": "{\"access_token\": \"12345678-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"refresh_token\": \"12345678-222222222222222222222222222222\", \"scope\": \"identity\"}"
         },
         "headers": {
@@ -304,5 +292,6 @@
       }
     }
   ],
-  "recorded_with": "betamax/0.8.1"
+  "recorded_at": "2021-06-07T11:40:17",
+  "version": 1
 }
