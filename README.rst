@@ -38,7 +38,13 @@ prawcore is a low-level communication layer used by PRAW 4+.
  Installation
 **************
 
-Install prawcore using ``pip`` via:
+Install prawcore with `uv <https://docs.astral.sh/uv/>`_ via:
+
+.. code-block:: console
+
+    uv add prawcore
+
+Alternatively, install using ``pip`` via:
 
 .. code-block:: console
 
