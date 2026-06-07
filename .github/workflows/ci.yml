@@ -4,7 +4,7 @@ concurrency:
 jobs:
   ci:
     name: CI
-    uses: praw-dev/.github/.github/workflows/ci.yml@1149a76ab5ae488cdc632ce70548ec3c1a278305 # v1.3.0
+    uses: praw-dev/.github/.github/workflows/ci.yml@d00355f9d670fa915fd5cd4f0ac422061951f55a # v1.3.1
     with:
       min_python: "3.10"
       python_versions: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
