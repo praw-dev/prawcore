@@ -32,7 +32,7 @@ class TestRequestor(UnitTest):
 
     def test_request__session_timeout_default(self, requestor):
         requestor_signature = signature(requestor._http.request)
-        assert str(requestor_signature.parameters["timeout"]) == "timeout=None"
+        assert requestor_signature.parameters["timeout"].default is None
 
     def test_request__use_custom_session(self):
         override = "REQUEST OVERRIDDEN"
