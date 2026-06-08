@@ -16,7 +16,7 @@ test = [
   "vcrpy>=7.0.0"
 ]
 type = [
-  "pyright>=1.1.393",
+  "pyright>=1.1.410",
   "pytest>=9.0.3"
 ]
 
