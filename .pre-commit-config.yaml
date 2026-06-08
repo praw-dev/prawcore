@@ -35,4 +35,4 @@ repos:
     hooks:
       - id: docstrfmt
         require_serial: true
-    rev: 7653faa707cb660bc80cef0e8433932363b43504  # frozen: v2.0.2
+    rev: 06455715c8a81e176748e036c1c945f3e80d5b8d  # frozen: v2.1.0
