@@ -4,7 +4,7 @@ requires = ["flit_core >=3.4,<4"]
 
 [dependency-groups]
 dev = [
-  "tox-uv>=1.22.1"
+  "tox-uv>=1.35.2"
 ]
 lint = [
   "pre-commit",
