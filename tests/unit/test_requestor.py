@@ -8,6 +8,7 @@ import pytest
 
 import prawcore
 from prawcore import RequestException
+from prawcore.const import TIMEOUT
 
 from . import UnitTest
 
@@ -29,6 +30,20 @@ class TestRequestor(UnitTest):
     def test_pickle(self, requestor):
         for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
             pickle.loads(pickle.dumps(requestor, protocol=protocol))
+
+    def test_request__default_timeout(self):
+        attrs = {"headers": {}, "request.return_value": "response"}
+        session = Mock(**attrs)
+        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
+        requestor.request("get", "https://reddit.com")
+        assert session.request.call_args.kwargs["timeout"] == TIMEOUT
+
+    def test_request__explicit_timeout(self):
+        attrs = {"headers": {}, "request.return_value": "response"}
+        session = Mock(**attrs)
+        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
+        requestor.request("get", "https://reddit.com", timeout=5)
+        assert session.request.call_args.kwargs["timeout"] == 5
 
     def test_request__session_timeout_default(self, requestor):
         requestor_signature = signature(requestor._http.request)
