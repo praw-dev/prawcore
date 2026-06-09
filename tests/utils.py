@@ -9,7 +9,7 @@ from pathlib import Path
 from vcr.persisters.filesystem import FilesystemPersister
 from vcr.serialize import deserialize, serialize
 
-from tests.conftest import placeholders as _placeholders
+from tests.conftest import placeholder_values as _placeholders
 
 
 def ensure_integration_test(cassette):
@@ -73,13 +73,13 @@ class CustomPersister(FilesystemPersister):
             cassette_content = cassette_content.replace(value, replacement)
         return deserialize(cassette_content, serializer)
 
-    @classmethod
-    def save_cassette(cls, cassette_path, cassette_dict, serializer):  # pragma: no cover
+    @staticmethod
+    def save_cassette(cassette_path, cassette_dict, serializer):  # pragma: no cover
         """Save cassette."""
         cassette_path = Path(cassette_path)
         data = serialize(cassette_dict, serializer)
         for replacement, value in [
-            (f"<{k.upper()}>", v) for k, v in {**cls.additional_placeholders, **_placeholders}.items()
+            (f"<{k.upper()}>", v) for k, v in {**CustomPersister.additional_placeholders, **_placeholders}.items()
         ]:
             data = data.replace(value, replacement)
         dirname = cassette_path.parent

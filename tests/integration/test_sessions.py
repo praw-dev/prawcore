@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 import prawcore
+from tests.conftest import placeholders
 
 from . import IntegrationTest
 
@@ -22,8 +23,8 @@ class TestSession(IntegrationTest):
     def script_authorizer(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
             trusted_authenticator,
-            pytest.placeholders.username,
-            pytest.placeholders.password,
+            placeholders.username,
+            placeholders.password,
         )
         authorizer.refresh()
         return authorizer
@@ -126,7 +127,7 @@ class TestSession(IntegrationTest):
     def test_request__okay_with_0_byte_content(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"model": dumps({"name": "redditdev"})}
-        path = f"/api/multi/user/{pytest.placeholders.username}/m/praw_x5g968f66a/r/redditdev"
+        path = f"/api/multi/user/{placeholders.username}/m/praw_x5g968f66a/r/redditdev"
         response = session.request("DELETE", path, data=data)
         assert response == ""
 
@@ -206,8 +207,8 @@ class TestSession(IntegrationTest):
         authorizer = prawcore.ReadOnlyAuthorizer(
             prawcore.TrustedAuthenticator(
                 requestor,
-                pytest.placeholders.client_id,
-                pytest.placeholders.client_secret,
+                placeholders.client_id,
+                placeholders.client_secret,
             )
         )
         with pytest.raises(prawcore.exceptions.ResponseException) as exception_info:
@@ -266,7 +267,7 @@ class TestSession(IntegrationTest):
         assert exception_info.value.response.status_code == 414
 
     def test_request__with_insufficient_scope(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=placeholders.refresh_token)
         authorizer.refresh()
         session = prawcore.Session(authorizer)
         with pytest.raises(prawcore.InsufficientScope):

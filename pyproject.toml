@@ -34,7 +34,8 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
-  "Programming Language :: Python :: 3.14"
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed"
 ]
 dependencies = [
   "requests>=2.34.2,<3.0"
@@ -52,6 +53,14 @@ requires-python = ">=3.10"
 [project.urls]
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
 "Source Code" = "https://github.com/praw-dev/prawcore"
+
+[tool.pyright]
+include = ["prawcore"]
+pythonVersion = "3.10"
+# prawcore's authorizer, authenticator, and session classes intentionally share
+# protected members within the package.
+reportPrivateUsage = false
+typeCheckingMode = "strict"
 
 [tool.ruff]
 include = [
@@ -152,7 +161,7 @@ dependency_groups = ["lint"]
 runner = "uv-venv-lock-runner"
 
 [tool.tox.env.type]
-commands = [["pyright", "prawcore"]]
+commands = [["pyright"]]
 dependency_groups = ["type"]
 description = "run type check on code base"
 runner = "uv-venv-lock-runner"

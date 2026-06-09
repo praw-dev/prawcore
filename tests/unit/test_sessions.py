@@ -9,6 +9,7 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeo
 import prawcore
 from prawcore.exceptions import RequestException
 from prawcore.sessions import FiniteRetryStrategy
+from tests.conftest import placeholders
 
 from . import UnitTest
 
@@ -18,8 +19,8 @@ class InvalidAuthorizer(prawcore.Authorizer):
         super().__init__(
             prawcore.TrustedAuthenticator(
                 requestor,
-                pytest.placeholders.client_id,
-                pytest.placeholders.client_secret,
+                placeholders.client_id,
+                placeholders.client_secret,
             )
         )
 
@@ -66,8 +67,8 @@ class TestSession(UnitTest):
         requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
         authenticator = prawcore.TrustedAuthenticator(
             requestor,
-            pytest.placeholders.client_id,
-            pytest.placeholders.client_secret,
+            placeholders.client_id,
+            placeholders.client_secret,
         )
         authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
         authorizer.refresh()

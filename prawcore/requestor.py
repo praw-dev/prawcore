@@ -49,7 +49,11 @@ class Requestor:
         # Imported locally to avoid an import cycle, with __init__
         from . import __version__  # noqa: PLC0415
 
-        if user_agent is None or len(user_agent) < self.MIN_USER_AGENT_LENGTH:
+        # ``user_agent`` is typed ``str``, but validate at runtime for untyped callers.
+        if (
+            not isinstance(user_agent, str)  # pyright: ignore[reportUnnecessaryIsInstance]
+            or len(user_agent) < self.MIN_USER_AGENT_LENGTH
+        ):
             msg = "user_agent is not descriptive"
             raise InvalidInvocation(msg)
 
