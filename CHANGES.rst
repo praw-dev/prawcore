@@ -13,6 +13,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 - Add an ``__all__`` to the ``prawcore`` package to explicitly define its public API.
 - Add a ``py.typed`` marker (:PEP:`561`) so that downstream projects can type check
   against prawcore's inline annotations.
+- Add read-only :attr:`.Session.authorizer`, :attr:`.Session.rate_limiter`, and
+  :attr:`.Session.requestor` properties, a :attr:`.BaseAuthorizer.authenticator`
+  property, and a :attr:`.BaseAuthenticator.requestor` property, so that downstream code
+  can reach these objects without accessing protected attributes.
 
 **Changed**
 

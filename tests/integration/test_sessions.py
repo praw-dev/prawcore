@@ -193,7 +193,7 @@ class TestSession(IntegrationTest):
 
     def test_request__too__many_requests__with_retry_headers(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
-        session._requestor._http.headers.update({"User-Agent": "python-requests/2.25.1"})
+        session.requestor._http.headers.update({"User-Agent": "python-requests/2.25.1"})
         with pytest.raises(prawcore.TooManyRequests) as exception_info:
             session.request("GET", "/api/v1/me")
         assert exception_info.value.response.status_code == 429

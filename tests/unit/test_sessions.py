@@ -8,6 +8,7 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeo
 
 import prawcore
 from prawcore.exceptions import RequestException
+from prawcore.rate_limit import RateLimiter
 from prawcore.sessions import FiniteRetryStrategy
 from tests.conftest import placeholders
 
@@ -32,6 +33,13 @@ class TestSession(UnitTest):
     @pytest.fixture
     def readonly_authorizer(self, trusted_authenticator):
         return prawcore.ReadOnlyAuthorizer(trusted_authenticator)
+
+    def test_accessors(self, requestor, trusted_authenticator):
+        authorizer = prawcore.ReadOnlyAuthorizer(trusted_authenticator)
+        session = prawcore.Session(authorizer)
+        assert session.authorizer is authorizer
+        assert isinstance(session.rate_limiter, RateLimiter)
+        assert session.requestor is requestor
 
     def test_close(self, readonly_authorizer):
         prawcore.Session(readonly_authorizer).close()
