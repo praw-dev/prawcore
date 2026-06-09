@@ -17,6 +17,7 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
   :attr:`.Session.requestor` properties, a :attr:`.BaseAuthorizer.authenticator`
   property, and a :attr:`.BaseAuthenticator.requestor` property, so that downstream code
   can reach these objects without accessing protected attributes.
+- Add Sphinx-based documentation, published at https://prawcore.readthedocs.io/.
 
 **Changed**
 
@@ -65,18 +66,18 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 **Changed**
 
 - Drop support for Python 3.8, which was end-of-life on 2024-10-07.
-- :class:`RateLimiter` attribute ``next_request_timestamp`` has been removed and
+- :class:`.RateLimiter` attribute ``next_request_timestamp`` has been removed and
   replaced with ``next_request_timestamp_ns``.
 
 **Fixed**
 
 - Add a half-second delay when there are no more requests in the rate limit window and
   the window has zero seconds remaining to avoid a semi-rare case where Reddit will
-  return a 429 response resulting in a :class:`TooManyRequests` exception.
+  return a 429 response resulting in a :class:`.TooManyRequests` exception.
 
 **Removed**
 
-- Remove :class:`RateLimiter` attribute ``reset_timestamp``.
+- Remove :class:`.RateLimiter` attribute ``reset_timestamp``.
 
 ********************
  2.4.0 (2023/10/01)
@@ -95,15 +96,15 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 **Added**
 
 - 301 redirects result in a ``Redirect`` exception.
-- :class:`Requestor` is now initialized with a ``timeout`` parameter.
-- :class:`ScriptAuthorizer`, :class:`ReadOnlyAuthorizer`, and
-  :class:`DeviceIDAuthorizer` have a new parameter, ``scopes``, which determines the
+- :class:`.Requestor` is now initialized with a ``timeout`` parameter.
+- :class:`.ScriptAuthorizer`, :class:`.ReadOnlyAuthorizer`, and
+  :class:`.DeviceIDAuthorizer` have a new parameter, ``scopes``, which determines the
   scope of access requests.
 - Retry 408 "Request Timeout" HTTP responses.
 
 **Changed**
 
-- :class:`DeviceIDAuthorizer` can be now used with :class:`TrustedAuthenticator`.
+- :class:`.DeviceIDAuthorizer` can be now used with :class:`.TrustedAuthenticator`.
 
 ********************
  2.2.0 (2021-06-10)
@@ -124,10 +125,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 
 **Added**
 
-- Add a :class:`URITooLarge` exception.
-- :class:`ScriptAuthorizer` has a new parameter ``two_factor_callback`` that supplies
+- Add a :class:`.URITooLong` exception.
+- :class:`.ScriptAuthorizer` has a new parameter ``two_factor_callback`` that supplies
   OTPs (One-Time Passcodes) when :meth:`.ScriptAuthorizer.refresh` is called.
-- Add a :class:`TooManyRequests` exception.
+- Add a :class:`.TooManyRequests` exception.
 
 ********************
  2.0.0 (2021-02-23)
@@ -135,16 +136,16 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 
 **Added**
 
-- :class:`Authorizer` optionally takes a ``pre_refresh_callback`` keyword argument. If
-  provided, the function will called with the instance of :class:`Authorizer` prior to
+- :class:`.Authorizer` optionally takes a ``pre_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of :class:`.Authorizer` prior to
   refreshing the access and refresh tokens.
-- :class:`Authorizer` optionally takes a ``post_refresh_callback`` keyword argument. If
-  provided, the function will called with the instance of :class:`Authorizer` after
+- :class:`.Authorizer` optionally takes a ``post_refresh_callback`` keyword argument. If
+  provided, the function will called with the instance of :class:`.Authorizer` after
   refreshing the access and refresh tokens.
 
 **Changed**
 
-- The ``refresh_token`` argument to :class:`Authorizer` must now be passed by keyword,
+- The ``refresh_token`` argument to :class:`.Authorizer` must now be passed by keyword,
   and cannot be passed as a positional argument.
 
 ********************
@@ -199,7 +200,7 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 
 **Fixed**
 
-- :class:`RateLimiter` will not sleep longer than ``next_request_timestamp``.
+- :class:`.RateLimiter` will not sleep longer than ``next_request_timestamp``.
 
 ********************
  1.0.0 (2018-04-26)
@@ -277,8 +278,8 @@ changes will need to be introduced in the near future.
 
 **Changed**
 
-- Calling ``RateLimiter`` now requires a second positional
-  argument,``set_header_callback``.
+- Calling ``RateLimiter`` now requires a second positional argument,
+  ``set_header_callback``.
 - In the event a 401 unauthorized occurs, the access token is cleared and the request is
   retried.
 
@@ -357,7 +358,7 @@ All network requests now have a 16 second timeout by default. The environment va
 
 **Fixed**
 
-- :class:`Authorizer` class can be used with :class:`UntrustedAuthenticator`.
+- :class:`.Authorizer` class can be used with :class:`.UntrustedAuthenticator`.
 
 ********************
  0.2.1 (2016-08-07)
@@ -365,7 +366,7 @@ All network requests now have a 16 second timeout by default. The environment va
 
 **Fixed**
 
-- ``session`` works with :class:`DeviceIDAuthorizer` and :class:`ImplicitAuthorizer`.
+- ``session`` works with :class:`.DeviceIDAuthorizer` and :class:`.ImplicitAuthorizer`.
 
 ********************
  0.2.0 (2016-08-07)
@@ -373,12 +374,12 @@ All network requests now have a 16 second timeout by default. The environment va
 
 **Added**
 
-- Add :class:`ImplicitAuthorizer`.
+- Add :class:`.ImplicitAuthorizer`.
 
 **Changed**
 
-- Split ``Authenticator`` into :class:`TrustedAuthenticator` and
-  :class:`UntrustedAuthenticator`.
+- Split ``Authenticator`` into :class:`.TrustedAuthenticator` and
+  :class:`.UntrustedAuthenticator`.
 
 ********************
  0.1.1 (2016-08-06)
@@ -386,7 +387,7 @@ All network requests now have a 16 second timeout by default. The environment va
 
 **Added**
 
-- Add :class:`DeviceIDAuthorizer` that permits installed application access to the API.
+- Add :class:`.DeviceIDAuthorizer` that permits installed application access to the API.
 
 ********************
  0.1.0 (2016-08-05)

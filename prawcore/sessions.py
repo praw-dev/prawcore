@@ -66,7 +66,7 @@ class RetryStrategy(ABC):
 
     @abstractmethod
     def should_retry_on_failure(self) -> bool:
-        """Return True when a retry should occur."""
+        """Return ``True`` when a retry should occur."""
 
     def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
@@ -79,7 +79,7 @@ class RetryStrategy(ABC):
 
 @dataclass(frozen=True)
 class FiniteRetryStrategy(RetryStrategy):
-    """A ``RetryStrategy`` that retries requests a finite number of times."""
+    """A :class:`.RetryStrategy` that retries requests a finite number of times."""
 
     DEFAULT_RETRIES = 2
 

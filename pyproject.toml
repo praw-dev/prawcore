@@ -6,6 +6,11 @@ requires = ["flit_core>=3.12.0,<4"]
 dev = [
   "tox-uv>=1.35.2"
 ]
+docs = [
+  "furo",
+  "sphinx",
+  "sphinx-autodoc-typehints"
+]
 lint = [
   "pre-commit",
   "ruff>=0.9.5"
@@ -51,6 +56,7 @@ readme = "README.rst"
 requires-python = ">=3.10"
 
 [project.urls]
+"Documentation" = "https://prawcore.readthedocs.io/"
 "Issue Tracker" = "https://github.com/praw-dev/prawcore/issues"
 "Source Code" = "https://github.com/praw-dev/prawcore"
 
@@ -128,8 +134,16 @@ suppress-dummy-args = true
 "tests/**.py" = ["ANN", "D", "PLR2004", "S101", "S105", "S106", "S301"]
 
 [tool.tox]
-envlist = ["py310", "py311", "py312", "py313", "py314", "pre-commit", "style", "type"]
+envlist = ["py310", "py311", "py312", "py313", "py314", "docs", "pre-commit", "style", "type"]
 minversion = "4.22"
+
+[tool.tox.env.docs]
+commands = [
+  ["sphinx-build", "-W", "--keep-going", "-n", "-b", "html", "docs", "docs/_build/html"]
+]
+description = "build documentation"
+dependency_groups = ["docs"]
+runner = "uv-venv-lock-runner"
 
 [tool.tox.env.pre-commit]
 commands = [

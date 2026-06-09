@@ -79,7 +79,7 @@ class BaseAuthenticator(ABC):
             ``0x20`` through ``0x7E`` inclusive. This value should be temporarily unique
             to the client for whom the URL was generated.
         :param implicit: Use the implicit grant flow (default: ``False``). This flow is
-            only available for ``UntrustedAuthenticators``.
+            only available for :class:`.UntrustedAuthenticator` instances.
 
         :returns: URL to be used out-of-band for granting access to your application.
 
@@ -177,7 +177,7 @@ class BaseAuthorizer:
             raise InvalidInvocation(msg)
 
     def is_valid(self) -> bool:
-        """Return whether the :class`.Authorizer` is ready to authorize requests.
+        """Return whether the :class:`.Authorizer` is ready to authorize requests.
 
         A ``True`` return value does not guarantee that the ``access_token`` is actually
         valid on the server side.
@@ -282,7 +282,7 @@ class Authorizer(BaseAuthorizer):
         )
 
     def refresh(self) -> None:
-        """Obtain a new access token from the refresh_token."""
+        """Obtain a new access token from the ``refresh_token``."""
         if self._pre_refresh_callback:
             self._pre_refresh_callback(self)
         if self.refresh_token is None:
@@ -325,8 +325,8 @@ class ImplicitAuthorizer(BaseAuthorizer):
         """Represent a single implicit authorization to Reddit's API.
 
         :param authenticator: An instance of :class:`.UntrustedAuthenticator`.
-        :param access_token: The access_token obtained from Reddit via callback to the
-            authenticator's ``redirect_uri``.
+        :param access_token: The ``access_token`` obtained from Reddit via callback to
+            the authenticator's ``redirect_uri``.
         :param expires_in: The number of seconds the ``access_token`` is valid for. The
             origin of this value was returned from Reddit via callback to the
             authenticator's redirect uri. Note, you may need to subtract an offset
