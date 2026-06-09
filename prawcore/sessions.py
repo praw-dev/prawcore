@@ -156,7 +156,7 @@ class Session:
         """Allow this object to be used as a context manager."""
         return self
 
-    def __exit__(self, *_args) -> None:
+    def __exit__(self, *_args: object) -> None:
         """Allow this object to be used as a context manager."""
         self.close()
 

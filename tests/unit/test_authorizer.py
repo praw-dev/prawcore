@@ -3,6 +3,7 @@
 import pytest
 
 import prawcore
+from tests.conftest import placeholders
 
 from . import UnitTest
 
@@ -26,10 +27,10 @@ class TestAuthorizer(UnitTest):
         assert not authorizer.is_valid()
 
     def test_initialize__with_refresh_token(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=placeholders.refresh_token)
         assert authorizer.access_token is None
         assert authorizer.scopes is None
-        assert pytest.placeholders.refresh_token == authorizer.refresh_token
+        assert placeholders.refresh_token == authorizer.refresh_token
         assert not authorizer.is_valid()
 
     def test_initialize__with_untrusted_authenticator(self):
@@ -47,7 +48,7 @@ class TestAuthorizer(UnitTest):
         assert not authorizer.is_valid()
 
     def test_revoke__without_access_token(self, trusted_authenticator):
-        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=pytest.placeholders.refresh_token)
+        authorizer = prawcore.Authorizer(trusted_authenticator, refresh_token=placeholders.refresh_token)
         with pytest.raises(prawcore.InvalidInvocation):
             authorizer.revoke(only_access=True)
 

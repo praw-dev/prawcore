@@ -125,7 +125,7 @@ class BaseAuthenticator(ABC):
 class BaseAuthorizer:
     """Superclass for OAuth2 authorization tokens and scopes."""
 
-    AUTHENTICATOR_CLASS: tuple | type = BaseAuthenticator
+    AUTHENTICATOR_CLASS: type[BaseAuthenticator] | tuple[type[BaseAuthenticator], ...] = BaseAuthenticator
 
     def __init__(self, authenticator: BaseAuthenticator) -> None:
         """Represent a single authorization to Reddit's API.
@@ -378,7 +378,7 @@ class ScriptAuthorizer(Authorizer):
         authenticator: BaseAuthenticator,
         username: str | None,
         password: str | None,
-        two_factor_callback: Callable | None = None,
+        two_factor_callback: Callable[[], str] | None = None,
         scopes: list[str] | None = None,
     ) -> None:
         """Represent a single personal-use authorization to Reddit's API.

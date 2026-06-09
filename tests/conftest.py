@@ -30,15 +30,15 @@ def trusted_authenticator(requestor):
     """Return a TrustedAuthenticator instance."""
     return TrustedAuthenticator(
         requestor,
-        pytest.placeholders.client_id,
-        pytest.placeholders.client_secret,
+        placeholders.client_id,
+        placeholders.client_secret,
     )
 
 
 @pytest.fixture
 def untrusted_authenticator(requestor):
     """Return an UntrustedAuthenticator instance."""
-    return UntrustedAuthenticator(requestor, pytest.placeholders.client_id)
+    return UntrustedAuthenticator(requestor, placeholders.client_id)
 
 
 def env_default(key):
@@ -50,17 +50,28 @@ def env_default(key):
 
 
 def pytest_configure(config):
-    pytest.placeholders = Placeholders(placeholders)
     config.addinivalue_line("markers", "cassette_name: Name of cassette to use for test.")
     config.addinivalue_line("markers", "recorder_kwargs: Arguments to pass to the recorder.")
 
 
 class Placeholders:
+    access_token: str
+    basic_auth: str
+    client_id: str
+    client_secret: str
+    password: str
+    permanent_grant_code: str
+    redirect_uri: str
+    refresh_token: str
+    temporary_grant_code: str
+    user_agent: str
+    username: str
+
     def __init__(self, _dict):
         self.__dict__ = _dict
 
 
-placeholders = {
+placeholder_values = {
     x: env_default(x)
     for x in [
         "client_id",
@@ -76,10 +87,12 @@ placeholders = {
 }
 
 if (
-    placeholders["client_id"] != "fake_client_id" and placeholders["client_secret"] == "fake_client_secret"
+    placeholder_values["client_id"] != "fake_client_id" and placeholder_values["client_secret"] == "fake_client_secret"
 ):  # pragma: no cover
-    placeholders["basic_auth"] = b64encode(f"{placeholders['client_id']}:".encode()).decode("utf-8")
+    placeholder_values["basic_auth"] = b64encode(f"{placeholder_values['client_id']}:".encode()).decode("utf-8")
 else:
-    placeholders["basic_auth"] = b64encode(
-        f"{placeholders['client_id']}:{placeholders['client_secret']}".encode(),
+    placeholder_values["basic_auth"] = b64encode(
+        f"{placeholder_values['client_id']}:{placeholder_values['client_secret']}".encode(),
     ).decode("utf-8")
+
+placeholders = Placeholders(placeholder_values)

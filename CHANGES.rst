@@ -8,6 +8,12 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+**Added**
+
+- Add an ``__all__`` to the ``prawcore`` package to explicitly define its public API.
+- Add a ``py.typed`` marker (:PEP:`561`) so that downstream projects can type check
+  against prawcore's inline annotations.
+
 ********************
  3.1.0 (2026/06/07)
 ********************

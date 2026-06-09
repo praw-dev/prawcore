@@ -8,6 +8,28 @@ from urllib.parse import urlparse
 if TYPE_CHECKING:
     from requests.models import Response
 
+__all__ = [
+    "BadJSON",
+    "BadRequest",
+    "Conflict",
+    "Forbidden",
+    "InsufficientScope",
+    "InvalidInvocation",
+    "InvalidToken",
+    "NotFound",
+    "OAuthException",
+    "PrawcoreException",
+    "Redirect",
+    "RequestException",
+    "ResponseException",
+    "ServerError",
+    "SpecialError",
+    "TooLarge",
+    "TooManyRequests",
+    "URITooLong",
+    "UnavailableForLegalReasons",
+]
+
 
 class PrawcoreException(Exception):  # noqa: N818
     """Base exception class for exceptions that occur within this package."""
