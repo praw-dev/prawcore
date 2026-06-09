@@ -14,6 +14,12 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 - Add a ``py.typed`` marker (:PEP:`561`) so that downstream projects can type check
   against prawcore's inline annotations.
 
+**Changed**
+
+- Widen the ``authorizer`` parameter of :func:`.session` to ``BaseAuthorizer`` to match
+  :class:`.Session`, so that passing an :class:`.ImplicitAuthorizer` or
+  :class:`.DeviceIDAuthorizer` type checks.
+
 ********************
  3.1.0 (2026/06/07)
 ********************

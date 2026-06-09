@@ -40,7 +40,6 @@ if TYPE_CHECKING:
     from requests.models import Response
     from typing_extensions import Self
 
-    from .auth import Authorizer
     from .requestor import Requestor
 
 log = logging.getLogger(__package__)
@@ -378,12 +377,12 @@ class Session:
 
 
 def session(
-    authorizer: Authorizer | None = None,
+    authorizer: BaseAuthorizer | None = None,
     window_size: int = WINDOW_SIZE,
 ) -> Session:
     """Return a :class:`.Session` instance.
 
-    :param authorizer: An instance of :class:`.Authorizer`.
+    :param authorizer: An instance of :class:`.BaseAuthorizer`.
     :param window_size: The size of the rate limit reset window in seconds.
 
     """
