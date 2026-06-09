@@ -86,6 +86,12 @@ Save the above as ``trophies.py`` and then execute via:
 Additional examples can be found at:
 https://github.com/praw-dev/prawcore/tree/main/examples
 
+***************
+ Documentation
+***************
+
+prawcore's documentation is located at https://prawcore.readthedocs.io/.
+
 ***********************
  Depending on prawcore
 ***********************
