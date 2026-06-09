@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
-    from requests.models import Response
+    import requests
 
 __all__ = [
     "BadJSON",
@@ -42,10 +42,10 @@ class InvalidInvocation(PrawcoreException):
 class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
-    def __init__(self, response: Response, error: str, description: str | None = None) -> None:
+    def __init__(self, response: requests.Response, error: str, description: str | None = None) -> None:
         """Initialize a OAuthException instance.
 
-        :param response: A ``requests.response`` instance.
+        :param response: A :class:`requests.Response` instance.
         :param error: The error type returned by Reddit.
         :param description: A description of the error when provided.
 
@@ -84,10 +84,10 @@ class RequestException(PrawcoreException):
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response: Response) -> None:
+    def __init__(self, response: requests.Response) -> None:
         """Initialize a ResponseException instance.
 
-        :param response: A ``requests.response`` instance.
+        :param response: A :class:`requests.Response` instance.
 
         """
         self.response = response
@@ -130,10 +130,11 @@ class Redirect(ResponseException):
 
     """
 
-    def __init__(self, response: Response) -> None:
+    def __init__(self, response: requests.Response) -> None:
         """Initialize a Redirect exception instance.
 
-        :param response: A ``requests.response`` instance containing a location header.
+        :param response: A :class:`requests.Response` instance containing a location
+            header.
 
         """
         path = urlparse(response.headers["location"]).path
@@ -155,11 +156,11 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response: Response) -> None:
+    def __init__(self, response: requests.Response) -> None:
         """Initialize a SpecialError exception instance.
 
-        :param response: A ``requests.response`` instance containing a message and a
-            list of special errors.
+        :param response: A :class:`requests.Response` instance containing a message and
+            a list of special errors.
 
         """
         self.response = response
@@ -178,11 +179,11 @@ class TooLarge(ResponseException):
 class TooManyRequests(ResponseException):
     """Indicate that the user has sent too many requests in a given amount of time."""
 
-    def __init__(self, response: Response) -> None:
+    def __init__(self, response: requests.Response) -> None:
         """Initialize a TooManyRequests exception instance.
 
-        :param response: A ``requests.response`` instance that may contain a retry-after
-            header and a message.
+        :param response: A :class:`requests.Response` instance that may contain a
+            retry-after header and a message.
 
         """
         self.response = response
