@@ -8,6 +8,15 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+**Added**
+
+- Add Sphinx-based documentation, published at https://prawcore.readthedocs.io/.
+
+**Changed**
+
+- Improve source docstrings and type annotations so that references render cleanly in
+  the new documentation.
+
 ********************
  3.2.0 (2026/06/09)
 ********************
@@ -21,7 +30,6 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
   :attr:`.Session.requestor` properties, a :attr:`.BaseAuthorizer.authenticator`
   property, and a :attr:`.BaseAuthenticator.requestor` property, so that downstream code
   can reach these objects without accessing protected attributes.
-- Add Sphinx-based documentation, published at https://prawcore.readthedocs.io/.
 
 **Changed**
 
