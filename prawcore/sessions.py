@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from pprint import pformat
-from typing import TYPE_CHECKING, BinaryIO, TextIO
+from typing import IO, TYPE_CHECKING, Any
 from urllib.parse import urljoin
 
 from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
@@ -37,6 +37,8 @@ from .rate_limit import RateLimiter
 from .util import authorization_error_class
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from requests.models import Response
     from typing_extensions import Self
 
@@ -138,7 +140,7 @@ class Session:
     @staticmethod
     def _log_request(
         *,
-        data: list[tuple[str, object]] | None,
+        data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
         method: str,
         params: dict[str, object],
         url: str,
@@ -180,9 +182,9 @@ class Session:
     def _do_retry(
         self,
         *,
-        data: list[tuple[str, object]] | None,
-        files: dict[str, BinaryIO | TextIO] | None,
-        json: dict[str, object] | None,
+        data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
+        files: dict[str, IO[Any]] | None,
+        json: dict[str, object] | list[object] | None,
         method: str,
         params: dict[str, object],
         retry_strategy_state: FiniteRetryStrategy,
@@ -205,9 +207,9 @@ class Session:
 
     def _make_request(
         self,
-        data: list[tuple[str, object]] | None,
-        files: dict[str, BinaryIO | TextIO] | None,
-        json: dict[str, object] | None,
+        data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
+        files: dict[str, IO[Any]] | None,
+        json: dict[str, object] | list[object] | None,
         method: str,
         params: dict[str, object],
         timeout: float,
@@ -239,9 +241,9 @@ class Session:
     def _request_with_retries(
         self,
         *,
-        data: list[tuple[str, object]] | None,
-        files: dict[str, BinaryIO | TextIO] | None,
-        json: dict[str, object] | None,
+        data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
+        files: dict[str, IO[Any]] | None,
+        json: dict[str, object] | list[object] | None,
         method: str,
         params: dict[str, object],
         retry_strategy_state: FiniteRetryStrategy | None = None,
@@ -328,10 +330,10 @@ class Session:
         self,
         method: str,
         path: str,
-        data: dict[str, object] | None = None,
-        files: dict[str, BinaryIO | TextIO] | None = None,
-        json: dict[str, object] | None = None,
-        params: dict[str, object] | None = None,
+        data: dict[str, object] | bytes | IO[Any] | str | None = None,
+        files: dict[str, IO[Any]] | None = None,
+        json: dict[str, object] | list[object] | None = None,
+        params: Mapping[str, object] | None = None,
         timeout: float = TIMEOUT,
     ) -> dict[str, object] | str | None:
         """Return the json content from the resource at ``path``.
@@ -353,7 +355,7 @@ class Session:
             available.
 
         """
-        params = deepcopy(params) or {}
+        params = deepcopy(dict(params)) if params else {}
         params["raw_json"] = 1
         if isinstance(data, dict):
             data = deepcopy(data)

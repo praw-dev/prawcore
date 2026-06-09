@@ -19,6 +19,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 - Widen the ``authorizer`` parameter of :func:`.session` to ``BaseAuthorizer`` to match
   :class:`.Session`, so that passing an :class:`.ImplicitAuthorizer` or
   :class:`.DeviceIDAuthorizer` type checks.
+- Widen the ``data``, ``files``, ``json``, and ``params`` parameter annotations of
+  :meth:`.Session.request` to reflect the values it already accepts at runtime (for
+  example a non-dict ``data`` body, a ``list`` ``json`` payload, and any ``IO`` file
+  object), so that callers no longer need to cast these arguments.
 
 ********************
  3.1.0 (2026/06/07)
