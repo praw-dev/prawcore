@@ -13,6 +13,10 @@ class InvalidAuthenticator(prawcore.auth.BaseAuthenticator):
 
 
 class TestAuthorizer(UnitTest):
+    def test_authenticator(self, trusted_authenticator):
+        authorizer = prawcore.Authorizer(trusted_authenticator)
+        assert authorizer.authenticator is trusted_authenticator
+
     def test_authorize__fail_without_redirect_uri(self, trusted_authenticator):
         authorizer = prawcore.Authorizer(trusted_authenticator)
         with pytest.raises(prawcore.InvalidInvocation):

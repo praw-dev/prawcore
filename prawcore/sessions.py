@@ -137,6 +137,11 @@ class Session:
     }
     SUCCESS_STATUSES = {codes["accepted"], codes["created"], codes["ok"]}
 
+    @property
+    def authorizer(self) -> BaseAuthorizer:
+        """Return the :class:`.BaseAuthorizer` used to authorize requests."""
+        return self._authorizer
+
     @staticmethod
     def _log_request(
         *,
@@ -150,8 +155,14 @@ class Session:
         log.debug("Params: %s", pformat(params))
 
     @property
-    def _requestor(self) -> Requestor:
-        return self._authorizer._authenticator._requestor
+    def rate_limiter(self) -> RateLimiter:
+        """Return the :class:`.RateLimiter` that throttles requests."""
+        return self._rate_limiter
+
+    @property
+    def requestor(self) -> Requestor:
+        """Return the :class:`.Requestor` used to issue HTTP requests."""
+        return self._authorizer.authenticator.requestor
 
     def __enter__(self) -> Self:
         """Allow this object to be used as a context manager."""
@@ -216,7 +227,7 @@ class Session:
         url: str,
     ) -> Response:
         response = self._rate_limiter.call(
-            self._requestor.request,
+            self.requestor.request,
             self._set_header_callback,
             method,
             url,
@@ -285,7 +296,8 @@ class Session:
 
         retry_status = None
         if response.status_code == codes["unauthorized"]:
-            self._authorizer._clear_access_token()
+            # _clear_access_token is an internal helper shared with the authorizer.
+            self._authorizer._clear_access_token()  # pyright: ignore[reportPrivateUsage]
             if hasattr(self._authorizer, "refresh"):
                 retry_status = f"{response.status_code} status"
         elif response.status_code in self.RETRY_STATUSES:
@@ -324,7 +336,7 @@ class Session:
 
     def close(self) -> None:
         """Close the session and perform any clean up."""
-        self._requestor.close()
+        self.requestor.close()
 
     def request(
         self,
@@ -366,7 +378,7 @@ class Session:
         if isinstance(json, dict):
             json = deepcopy(json)
             json["api_type"] = "json"
-        url = urljoin(self._requestor.oauth_url, path)
+        url = urljoin(self.requestor.oauth_url, path)
         return self._request_with_retries(
             data=data_list,
             files=files,

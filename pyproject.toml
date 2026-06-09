@@ -57,9 +57,6 @@ requires-python = ">=3.10"
 [tool.pyright]
 include = ["prawcore"]
 pythonVersion = "3.10"
-# prawcore's authorizer, authenticator, and session classes intentionally share
-# protected members within the package.
-reportPrivateUsage = false
 typeCheckingMode = "strict"
 
 [tool.ruff]
