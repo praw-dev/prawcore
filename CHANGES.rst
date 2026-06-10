@@ -8,6 +8,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+********************
+ 3.2.1 (2026/06/10)
+********************
+
 **Added**
 
 - Add Sphinx-based documentation, published at https://prawcore.readthedocs.io/.
