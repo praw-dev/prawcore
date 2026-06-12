@@ -65,7 +65,7 @@ class BaseAuthenticator(ABC):
             raise ResponseException(response)
         return response
 
-    def authorize_url(self, duration: str, scopes: list[str], state: str, *, implicit: bool = False) -> str:
+    def authorize_url(self, *, duration: str, implicit: bool = False, scopes: list[str], state: str) -> str:
         """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``"permanent"`` or ``"temporary"``. ``"temporary"``
@@ -73,13 +73,13 @@ class BaseAuthenticator(ABC):
             authorizations additionally generate a refresh token that can be
             indefinitely used to generate new hour-long access tokens. Only
             ``"temporary"`` can be specified if ``implicit`` is set to ``True``.
+        :param implicit: Use the implicit grant flow (default: ``False``). This flow is
+            only available for :class:`.UntrustedAuthenticator` instances.
         :param scopes: A list of OAuth scopes to request authorization for.
         :param state: A string that will be reflected in the callback to
             ``redirect_uri``. Elements must be printable ASCII characters in the range
             ``0x20`` through ``0x7E`` inclusive. This value should be temporarily unique
             to the client for whom the URL was generated.
-        :param implicit: Use the implicit grant flow (default: ``False``). This flow is
-            only available for :class:`.UntrustedAuthenticator` instances.
 
         :returns: URL to be used out-of-band for granting access to your application.
 

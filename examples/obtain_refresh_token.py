@@ -54,7 +54,7 @@ def main():
     )
 
     state = str(random.randint(0, 65000))
-    url = authenticator.authorize_url("permanent", sys.argv[1:], state)
+    url = authenticator.authorize_url(duration="permanent", scopes=sys.argv[1:], state=state)
     print(url)
 
     client = receive_connection()
