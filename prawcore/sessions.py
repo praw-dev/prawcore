@@ -218,8 +218,9 @@ class Session:
             url=url,
         )
 
-    def _make_request(  # noqa: PLR0917
+    def _make_request(
         self,
+        *,
         data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
         files: dict[str, IO[Any]] | None,
         json: dict[str, object] | list[object] | None,
@@ -341,26 +342,27 @@ class Session:
         """Close the session and perform any clean up."""
         self.requestor.close()
 
-    def request(  # noqa: PLR0917
+    def request(
         self,
-        method: str,
-        path: str,
+        *,
         data: dict[str, object] | bytes | IO[Any] | str | None = None,
         files: dict[str, IO[Any]] | None = None,
         json: dict[str, object] | list[object] | None = None,
+        method: str,
         params: Mapping[str, object] | None = None,
+        path: str,
         timeout: float = TIMEOUT,
     ) -> dict[str, object] | str | None:
         """Return the json content from the resource at ``path``.
 
-        :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
-        :param path: The path of the request. This path will be combined with the
-            ``oauth_url`` of the Requestor.
         :param data: Dictionary, bytes, or file-like object to send in the body of the
             request.
         :param files: Dictionary, mapping ``filename`` to file-like object.
         :param json: Object to be serialized to JSON in the body of the request.
+        :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
         :param params: The query parameters to send with the request.
+        :param path: The path of the request. This path will be combined with the
+            ``oauth_url`` of the Requestor.
         :param timeout: Specifies a particular timeout, in seconds.
 
         Automatically refreshes the access token if it becomes invalid and a refresh

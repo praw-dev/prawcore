@@ -8,6 +8,11 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+**Changed**
+
+- Make the parameters of :meth:`.Session.request` keyword-only, so that callers must
+  pass ``method`` and ``path`` (and any other arguments) by name.
+
 ********************
  3.2.1 (2026/06/10)
 ********************

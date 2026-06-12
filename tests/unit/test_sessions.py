@@ -89,7 +89,7 @@ class TestSession(UnitTest):
         session_instance.request.side_effect = exception
 
         with pytest.raises(RequestException) as exception_info:
-            prawcore.Session(authorizer).request("GET", "/")
+            prawcore.Session(authorizer).request(method="GET", path="/")
         assert (
             "prawcore",
             logging.WARNING,
@@ -102,7 +102,7 @@ class TestSession(UnitTest):
     def test_request__with_invalid_authorizer(self, requestor):
         session = prawcore.Session(InvalidAuthorizer(requestor))
         with pytest.raises(prawcore.InvalidInvocation):
-            session.request("get", "/")
+            session.request(method="get", path="/")
 
 
 class TestSessionFunction(UnitTest):

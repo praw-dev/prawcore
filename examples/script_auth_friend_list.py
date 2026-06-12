@@ -29,7 +29,7 @@ def main():
     authorizer.refresh()
 
     with prawcore.session(authorizer) as session:
-        data = session.request("GET", "/api/v1/me/friends")
+        data = session.request(method="GET", path="/api/v1/me/friends")
 
     for friend in data["data"]["children"]:
         print(friend["name"])

@@ -27,7 +27,7 @@ def main():
 
     user = sys.argv[1]
     with prawcore.session(authorizer) as session:
-        data = session.request("GET", f"/api/v1/user/{user}/trophies")
+        data = session.request(method="GET", path=f"/api/v1/user/{user}/trophies")
 
     for trophy in data["data"]["trophies"]:
         description = trophy["data"]["description"]
