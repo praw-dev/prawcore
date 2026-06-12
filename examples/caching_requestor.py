@@ -47,18 +47,18 @@ def main():
 
     caching_requestor = prawcore.Requestor(user_agent="prawcore_device_id_auth_example", session=CachingSession())
     authenticator = prawcore.TrustedAuthenticator(
-        caching_requestor,
-        os.environ["PRAWCORE_CLIENT_ID"],
-        os.environ["PRAWCORE_CLIENT_SECRET"],
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
+        requestor=caching_requestor,
     )
-    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+    authorizer = prawcore.ReadOnlyAuthorizer(authenticator=authenticator)
     authorizer.refresh()
 
     user = sys.argv[1]
-    with prawcore.session(authorizer) as session:
+    with prawcore.session(authorizer=authorizer) as session:
         data1 = session.request(method="GET", path=f"/api/v1/user/{user}/trophies")
 
-    with prawcore.session(authorizer) as session:
+    with prawcore.session(authorizer=authorizer) as session:
         data2 = session.request(method="GET", path=f"/api/v1/user/{user}/trophies")
 
     for trophy in data1["data"]["trophies"]:

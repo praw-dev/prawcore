@@ -59,7 +59,7 @@ class TestRateLimiter(UnitTest):
     @patch("time.monotonic_ns")
     def test_update__compute_delay_with_no_previous_info(self, mock_monotonic_ns, rate_limiter):
         mock_monotonic_ns.return_value = 100 * NANOSECONDS
-        rate_limiter.update(self._headers(60, 100, 60))
+        rate_limiter.update(response_headers=self._headers(60, 100, 60))
         assert rate_limiter.remaining == 60
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 100 * NANOSECONDS
@@ -68,7 +68,7 @@ class TestRateLimiter(UnitTest):
     def test_update__compute_delay_with_single_client(self, mock_monotonic_ns, rate_limiter):
         rate_limiter.window_size = 150
         mock_monotonic_ns.return_value = 100 * NANOSECONDS
-        rate_limiter.update(self._headers(50, 100, 60))
+        rate_limiter.update(response_headers=self._headers(50, 100, 60))
         assert rate_limiter.remaining == 50
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 110 * NANOSECONDS
@@ -78,7 +78,7 @@ class TestRateLimiter(UnitTest):
         rate_limiter.remaining = 66
         rate_limiter.window_size = 180
         mock_monotonic_ns.return_value = 100 * NANOSECONDS
-        rate_limiter.update(self._headers(60, 100, 72))
+        rate_limiter.update(response_headers=self._headers(60, 100, 72))
         assert rate_limiter.remaining == 60
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 104.5 * NANOSECONDS
@@ -86,7 +86,7 @@ class TestRateLimiter(UnitTest):
     @patch("time.monotonic_ns")
     def test_update__delay_full_time_with_negative_remaining(self, mock_monotonic_ns, rate_limiter):
         mock_monotonic_ns.return_value = 37 * NANOSECONDS
-        rate_limiter.update(self._headers(0, 100, 13))
+        rate_limiter.update(response_headers=self._headers(0, 100, 13))
         assert rate_limiter.remaining == 0
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 50 * NANOSECONDS
@@ -94,7 +94,7 @@ class TestRateLimiter(UnitTest):
     @patch("time.monotonic_ns")
     def test_update__delay_full_time_with_zero_remaining(self, mock_monotonic_ns, rate_limiter):
         mock_monotonic_ns.return_value = 37 * NANOSECONDS
-        rate_limiter.update(self._headers(0, 100, 13))
+        rate_limiter.update(response_headers=self._headers(0, 100, 13))
         assert rate_limiter.remaining == 0
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 50 * NANOSECONDS
@@ -102,14 +102,14 @@ class TestRateLimiter(UnitTest):
     @patch("time.monotonic_ns")
     def test_update__delay_full_time_with_zero_remaining_and_no_sleep_time(self, mock_monotonic_ns, rate_limiter):
         mock_monotonic_ns.return_value = 37 * NANOSECONDS
-        rate_limiter.update(self._headers(0, 100, 0))
+        rate_limiter.update(response_headers=self._headers(0, 100, 0))
         assert rate_limiter.remaining == 0
         assert rate_limiter.used == 100
         assert rate_limiter.next_request_timestamp_ns == 38 * NANOSECONDS
 
     def test_update__no_change_without_headers(self, rate_limiter):
         prev = copy(rate_limiter)
-        rate_limiter.update({})
+        rate_limiter.update(response_headers={})
         assert prev.remaining == rate_limiter.remaining
         assert prev.used == rate_limiter.used
         assert rate_limiter.next_request_timestamp_ns == prev.next_request_timestamp_ns
@@ -117,6 +117,6 @@ class TestRateLimiter(UnitTest):
     def test_update__values_change_without_headers(self, rate_limiter):
         rate_limiter.remaining = 10
         rate_limiter.used = 99
-        rate_limiter.update({})
+        rate_limiter.update(response_headers={})
         assert rate_limiter.remaining == 9
         assert rate_limiter.used == 100

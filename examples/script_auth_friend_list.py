@@ -17,18 +17,18 @@ import prawcore
 def main():
     """Provide the program's entry point when directly executed."""
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor(user_agent="prawcore_script_auth_example"),
-        os.environ["PRAWCORE_CLIENT_ID"],
-        os.environ["PRAWCORE_CLIENT_SECRET"],
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
+        requestor=prawcore.Requestor(user_agent="prawcore_script_auth_example"),
     )
     authorizer = prawcore.ScriptAuthorizer(
-        authenticator,
-        os.environ["PRAWCORE_USERNAME"],
-        os.environ["PRAWCORE_PASSWORD"],
+        authenticator=authenticator,
+        username=os.environ["PRAWCORE_USERNAME"],
+        password=os.environ["PRAWCORE_PASSWORD"],
     )
     authorizer.refresh()
 
-    with prawcore.session(authorizer) as session:
+    with prawcore.session(authorizer=authorizer) as session:
         data = session.request(method="GET", path="/api/v1/me/friends")
 
     for friend in data["data"]["children"]:

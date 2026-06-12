@@ -47,10 +47,10 @@ def main():
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor(user_agent="prawcore_refresh_token_example"),
-        os.environ["PRAWCORE_CLIENT_ID"],
-        os.environ["PRAWCORE_CLIENT_SECRET"],
-        "http://localhost:8080",
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
+        redirect_uri="http://localhost:8080",
+        requestor=prawcore.Requestor(user_agent="prawcore_refresh_token_example"),
     )
 
     state = str(random.randint(0, 65000))
@@ -72,7 +72,7 @@ def main():
         send_message(client, params["error"])
         return 1
 
-    authorizer = prawcore.Authorizer(authenticator)
+    authorizer = prawcore.Authorizer(authenticator=authenticator)
     authorizer.authorize(params["code"])
 
     send_message(client, f"Refresh token: {authorizer.refresh_token}")

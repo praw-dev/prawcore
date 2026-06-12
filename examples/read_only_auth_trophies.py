@@ -20,15 +20,15 @@ def main():
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor(user_agent="prawcore_read_only_example"),
-        os.environ["PRAWCORE_CLIENT_ID"],
-        os.environ["PRAWCORE_CLIENT_SECRET"],
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
+        requestor=prawcore.Requestor(user_agent="prawcore_read_only_example"),
     )
-    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+    authorizer = prawcore.ReadOnlyAuthorizer(authenticator=authenticator)
     authorizer.refresh()
 
     user = sys.argv[1]
-    with prawcore.session(authorizer) as session:
+    with prawcore.session(authorizer=authorizer) as session:
         data = session.request(method="GET", path=f"/api/v1/user/{user}/trophies")
 
     for trophy in data["data"]["trophies"]:
