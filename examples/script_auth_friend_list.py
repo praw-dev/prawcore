@@ -17,7 +17,7 @@ import prawcore
 def main():
     """Provide the program's entry point when directly executed."""
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor("prawcore_script_auth_example"),
+        prawcore.Requestor(user_agent="prawcore_script_auth_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
     )

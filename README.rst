@@ -67,7 +67,7 @@ appropriate values for your application.
     import prawcore
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor("YOUR_VALID_USER_AGENT"),
+        prawcore.Requestor(user_agent="YOUR_VALID_USER_AGENT"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
     )

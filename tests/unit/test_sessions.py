@@ -76,7 +76,7 @@ class TestSession(UnitTest):
         # Handle Auth
         response_dict = {"access_token": "", "expires_in": 99, "scope": ""}
         session_instance.request.return_value = Mock(headers={}, json=lambda: response_dict, status_code=200)
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)")
         authenticator = prawcore.TrustedAuthenticator(
             requestor,
             placeholders.client_id,

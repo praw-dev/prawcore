@@ -44,7 +44,7 @@ def main():
         print(f"Usage: {sys.argv[0]} USERNAME")
         return 1
 
-    caching_requestor = prawcore.Requestor("prawcore_device_id_auth_example", session=CachingSession())
+    caching_requestor = prawcore.Requestor(user_agent="prawcore_device_id_auth_example", session=CachingSession())
     authenticator = prawcore.TrustedAuthenticator(
         caching_requestor,
         os.environ["PRAWCORE_CLIENT_ID"],

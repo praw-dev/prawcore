@@ -26,16 +26,15 @@ class Requestor:
 
     def __init__(
         self,
-        user_agent: str,
+        *,
         oauth_url: str = "https://oauth.reddit.com",
         reddit_url: str = "https://www.reddit.com",
         session: Session | None = None,
         timeout: float = TIMEOUT,
+        user_agent: str,
     ) -> None:
         """Create an instance of the Requestor class.
 
-        :param user_agent: The user-agent for your application. Please follow Reddit's
-            user-agent guidelines: https://github.com/reddit/reddit/wiki/API#rules
         :param oauth_url: The URL used to make OAuth requests to the Reddit site
             (default: ``"https://oauth.reddit.com"``).
         :param reddit_url: The URL used when obtaining access tokens (default:
@@ -44,6 +43,8 @@ class Requestor:
             ``requests.Session()`` (default: ``None``).
         :param timeout: How many seconds to wait for the server to send data before
             giving up (default: ``prawcore.const.TIMEOUT``).
+        :param user_agent: The user-agent for your application. Please follow Reddit's
+            user-agent guidelines: https://github.com/reddit/reddit/wiki/API#rules
 
         """
         # Imported locally to avoid an import cycle, with __init__

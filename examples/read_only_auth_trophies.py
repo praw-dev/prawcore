@@ -20,7 +20,7 @@ def main():
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor("prawcore_read_only_example"),
+        prawcore.Requestor(user_agent="prawcore_read_only_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
     )

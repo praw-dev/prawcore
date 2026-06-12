@@ -25,7 +25,7 @@ class TestRequestor(UnitTest):
     def test_initialize__failures(self):
         for agent in [None, "shorty"]:
             with pytest.raises(prawcore.InvalidInvocation):
-                prawcore.Requestor(agent)
+                prawcore.Requestor(user_agent=agent)
 
     def test_pickle(self, requestor):
         for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
@@ -34,14 +34,14 @@ class TestRequestor(UnitTest):
     def test_request__default_timeout(self):
         attrs = {"headers": {}, "request.return_value": "response"}
         session = Mock(**attrs)
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
         requestor.request("get", "https://reddit.com")
         assert session.request.call_args.kwargs["timeout"] == TIMEOUT
 
     def test_request__explicit_timeout(self):
         attrs = {"headers": {}, "request.return_value": "response"}
         session = Mock(**attrs)
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
         requestor.request("get", "https://reddit.com", timeout=5)
         assert session.request.call_args.kwargs["timeout"] == 5
 
@@ -56,7 +56,7 @@ class TestRequestor(UnitTest):
         attrs = {"request.return_value": override, "headers": headers}
         session = Mock(**attrs)
 
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
 
         assert requestor._http.headers["User-Agent"] == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
         assert requestor._http.headers["session_header"] == custom_header
@@ -68,7 +68,7 @@ class TestRequestor(UnitTest):
         exception = Exception("prawcore wrap_request_exceptions")
         session_instance = mock_session.return_value
         session_instance.request.side_effect = exception
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)")
         with pytest.raises(prawcore.RequestException) as exception_info:
             requestor.request("get", "http://a.b", data="bar")
         assert isinstance(exception_info.value, RequestException)

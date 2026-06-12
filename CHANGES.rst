@@ -10,6 +10,8 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
 
 **Changed**
 
+- Make the parameters of :class:`.Requestor` keyword-only, so that callers must pass
+  ``user_agent`` (and any other arguments) by name.
 - Make the parameters of :meth:`.Session.request` keyword-only, so that callers must
   pass ``method`` and ``path`` (and any other arguments) by name.
 

@@ -47,7 +47,7 @@ def main():
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor("prawcore_refresh_token_example"),
+        prawcore.Requestor(user_agent="prawcore_refresh_token_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
         "http://localhost:8080",

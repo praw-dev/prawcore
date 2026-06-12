@@ -19,7 +19,7 @@ def main():
         return 1
 
     authenticator = prawcore.UntrustedAuthenticator(
-        prawcore.Requestor("prawcore_device_id_auth_example"),
+        prawcore.Requestor(user_agent="prawcore_device_id_auth_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
     )
     authorizer = prawcore.DeviceIDAuthorizer(authenticator)

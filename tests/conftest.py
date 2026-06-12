@@ -22,7 +22,7 @@ def patch_sleep(monkeypatch):
 @pytest.fixture
 def requestor():
     """Return path to image."""
-    return Requestor("prawcore:test (by /u/bboe)")
+    return Requestor(user_agent="prawcore:test (by /u/bboe)")
 
 
 @pytest.fixture
