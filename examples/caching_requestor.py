@@ -9,6 +9,7 @@ Demonstrates the use of custom sessions with :class:`.Requestor`. It's an adapta
 
 import os
 import sys
+from typing import ClassVar
 
 import requests
 
@@ -23,7 +24,7 @@ class CachingSession(requests.Session):
 
     """
 
-    get_cache = {}
+    get_cache: ClassVar = {}
 
     def request(self, method, url, params=None, **kwargs):
         """Perform a request, or return a cached response if available."""

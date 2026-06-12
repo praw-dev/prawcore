@@ -65,7 +65,7 @@ class BaseAuthenticator(ABC):
             raise ResponseException(response)
         return response
 
-    def authorize_url(self, duration: str, scopes: list[str], state: str, implicit: bool = False) -> str:
+    def authorize_url(self, duration: str, scopes: list[str], state: str, *, implicit: bool = False) -> str:
         """Return the URL used out-of-band to grant access to your application.
 
         :param duration: Either ``"permanent"`` or ``"temporary"``. ``"temporary"``
@@ -292,7 +292,7 @@ class Authorizer(BaseAuthorizer):
         if self._post_refresh_callback:
             self._post_refresh_callback(self)
 
-    def revoke(self, only_access: bool = False) -> None:
+    def revoke(self, *, only_access: bool = False) -> None:
         """Revoke the current Authorization.
 
         :param only_access: When explicitly set to ``True``, do not evict the refresh

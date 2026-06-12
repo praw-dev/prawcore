@@ -107,7 +107,7 @@ class Session:
         requests.exceptions.ConnectionError,
         requests.exceptions.ReadTimeout,
     )
-    RETRY_STATUSES = {
+    RETRY_STATUSES: ClassVar = {
         520,
         522,
         codes["bad_gateway"],
@@ -116,7 +116,7 @@ class Session:
         codes["request_timeout"],
         codes["service_unavailable"],
     }
-    STATUS_EXCEPTIONS = {
+    STATUS_EXCEPTIONS: ClassVar = {
         codes["bad_gateway"]: ServerError,
         codes["bad_request"]: BadRequest,
         codes["conflict"]: Conflict,
@@ -138,7 +138,7 @@ class Session:
         520: ServerError,
         522: ServerError,
     }
-    SUCCESS_STATUSES = {codes["accepted"], codes["created"], codes["ok"]}
+    SUCCESS_STATUSES: ClassVar = {codes["accepted"], codes["created"], codes["ok"]}
 
     @property
     def authorizer(self) -> BaseAuthorizer:

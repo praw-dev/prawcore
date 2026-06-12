@@ -100,11 +100,8 @@ ignore = [
   "DOC402", # `yield` not documented in docstring
   "DOC501", # `raise` not documented in docstring
   "E501", # line-length
-  "FBT001", # boolean-typed positional argument
-  "FBT002", # boolean default positional argument
   "ISC001", # single-line implicit string concatenation (conflicts with the formatter)
   "PLR0913", # too many arguments
-  "RUF012", # mutable default value for class attribute
   "RUF067", # `__init__` module should only contain docstrings and re-exports
   "SLF001" # private member accessed (pyright's reportPrivateUsage covers source)
 ]
