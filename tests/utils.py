@@ -37,7 +37,8 @@ def filter_access_token(response):  # pragma: no cover
         except (KeyError, TypeError, ValueError):
             continue
         response["body"]["string"] = response["body"]["string"].replace(
-            token.encode("utf-8"), f"<{token_key.upper()}_TOKEN>".encode()
+            token.encode("utf-8"),
+            f"<{token_key.upper()}_TOKEN>".encode(),
         )
         _placeholders[f"{token_key}_token"] = token
     return response
@@ -62,8 +63,7 @@ class CustomPersister(FilesystemPersister):
     def load_cassette(cls, cassette_path, serializer):
         """Load cassette."""
         try:
-            with Path(cassette_path).open() as f:
-                cassette_content = f.read()
+            cassette_content = Path(cassette_path).read_text()
         except OSError as error:  # pragma: no cover
             msg = "Cassette not found."
             raise ValueError(msg) from error
@@ -85,8 +85,7 @@ class CustomPersister(FilesystemPersister):
         dirname = cassette_path.parent
         if dirname and not dirname.exists():
             dirname.mkdir(parents=True)
-        with cassette_path.open("w") as f:
-            f.write(data)
+        cassette_path.write_text(data)
 
 
 class CustomSerializer:

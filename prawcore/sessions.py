@@ -9,15 +9,15 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from pprint import pformat
-from typing import IO, TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any, ClassVar
 from urllib.parse import urljoin
 
-from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
+import requests.exceptions
 from requests.status_codes import codes
 
-from .auth import BaseAuthorizer
-from .const import TIMEOUT, WINDOW_SIZE
-from .exceptions import (
+from prawcore.auth import BaseAuthorizer
+from prawcore.const import TIMEOUT, WINDOW_SIZE
+from prawcore.exceptions import (
     BadJSON,
     BadRequest,
     Conflict,
@@ -33,8 +33,8 @@ from .exceptions import (
     UnavailableForLegalReasons,
     URITooLong,
 )
-from .rate_limit import RateLimiter
-from .util import authorization_error_class
+from prawcore.rate_limit import RateLimiter
+from prawcore.util import authorization_error_class
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from requests.models import Response
     from typing_extensions import Self
 
-    from .requestor import Requestor
+    from prawcore.requestor import Requestor
 
 log = logging.getLogger(__package__)
 
@@ -70,8 +70,7 @@ class RetryStrategy(ABC):
 
     def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
-        sleep_seconds = self._sleep_seconds()
-        if sleep_seconds is not None:
+        if (sleep_seconds := self._sleep_seconds()) is not None:
             message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to retry"
             log.debug(message)
             time.sleep(sleep_seconds)
@@ -81,7 +80,7 @@ class RetryStrategy(ABC):
 class FiniteRetryStrategy(RetryStrategy):
     """A :class:`.RetryStrategy` that retries requests a finite number of times."""
 
-    DEFAULT_RETRIES = 2
+    DEFAULT_RETRIES: ClassVar[int] = 2
 
     retries: int = DEFAULT_RETRIES
 
@@ -103,8 +102,12 @@ class FiniteRetryStrategy(RetryStrategy):
 class Session:
     """The low-level connection interface to Reddit's API."""
 
-    RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
-    RETRY_STATUSES = {
+    RETRY_EXCEPTIONS = (
+        requests.exceptions.ChunkedEncodingError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ReadTimeout,
+    )
+    RETRY_STATUSES: ClassVar = {
         520,
         522,
         codes["bad_gateway"],
@@ -113,7 +116,7 @@ class Session:
         codes["request_timeout"],
         codes["service_unavailable"],
     }
-    STATUS_EXCEPTIONS = {
+    STATUS_EXCEPTIONS: ClassVar = {
         codes["bad_gateway"]: ServerError,
         codes["bad_request"]: BadRequest,
         codes["conflict"]: Conflict,
@@ -135,7 +138,7 @@ class Session:
         520: ServerError,
         522: ServerError,
     }
-    SUCCESS_STATUSES = {codes["accepted"], codes["created"], codes["ok"]}
+    SUCCESS_STATUSES: ClassVar = {codes["accepted"], codes["created"], codes["ok"]}
 
     @property
     def authorizer(self) -> BaseAuthorizer:
@@ -213,11 +216,11 @@ class Session:
             retry_strategy_state=retry_strategy_state.consume_available_retry(),
             timeout=timeout,
             url=url,
-            # noqa: E501
         )
 
     def _make_request(
         self,
+        *,
         data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
         files: dict[str, IO[Any]] | None,
         json: dict[str, object] | list[object] | None,
@@ -278,8 +281,9 @@ class Session:
                 url=url,
             )
         except RequestException as exception:
-            if retry_strategy_state.should_retry_on_failure() and isinstance(  # noqa: E501
-                exception.original_exception, self.RETRY_EXCEPTIONS
+            if retry_strategy_state.should_retry_on_failure() and isinstance(
+                exception.original_exception,
+                self.RETRY_EXCEPTIONS,
             ):
                 return self._do_retry(
                     data=data,
@@ -340,24 +344,25 @@ class Session:
 
     def request(
         self,
-        method: str,
-        path: str,
+        *,
         data: dict[str, object] | bytes | IO[Any] | str | None = None,
         files: dict[str, IO[Any]] | None = None,
         json: dict[str, object] | list[object] | None = None,
+        method: str,
         params: Mapping[str, object] | None = None,
+        path: str,
         timeout: float = TIMEOUT,
     ) -> dict[str, object] | str | None:
         """Return the json content from the resource at ``path``.
 
-        :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
-        :param path: The path of the request. This path will be combined with the
-            ``oauth_url`` of the Requestor.
         :param data: Dictionary, bytes, or file-like object to send in the body of the
             request.
         :param files: Dictionary, mapping ``filename`` to file-like object.
         :param json: Object to be serialized to JSON in the body of the request.
+        :param method: The request verb. E.g., ``"GET"``, ``"POST"``, ``"PUT"``.
         :param params: The query parameters to send with the request.
+        :param path: The path of the request. This path will be combined with the
+            ``oauth_url`` of the Requestor.
         :param timeout: Specifies a particular timeout, in seconds.
 
         Automatically refreshes the access token if it becomes invalid and a refresh

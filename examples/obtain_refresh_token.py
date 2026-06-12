@@ -47,14 +47,14 @@ def main():
         return 1
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor("prawcore_refresh_token_example"),
+        prawcore.Requestor(user_agent="prawcore_refresh_token_example"),
         os.environ["PRAWCORE_CLIENT_ID"],
         os.environ["PRAWCORE_CLIENT_SECRET"],
         "http://localhost:8080",
     )
 
-    state = str(random.randint(0, 65000))  # noqa: S311
-    url = authenticator.authorize_url("permanent", sys.argv[1:], state)
+    state = str(random.randint(0, 65000))
+    url = authenticator.authorize_url(duration="permanent", scopes=sys.argv[1:], state=state)
     print(url)
 
     client = receive_connection()

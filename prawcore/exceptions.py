@@ -138,7 +138,7 @@ class Redirect(ResponseException):
 
         """
         path = urlparse(response.headers["location"]).path
-        self.path = path[:-5] if path.endswith(".json") else path
+        self.path = path.removesuffix(".json")
         self.response = response
         msg = f"Redirect to {self.path}"
         msg += (

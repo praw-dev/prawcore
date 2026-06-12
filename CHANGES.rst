@@ -8,6 +8,17 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+**Changed**
+
+- Make the parameters of :meth:`.BaseAuthenticator.authorize_url` keyword-only, so that
+  callers must pass ``duration``, ``scopes``, and ``state`` (and any other arguments) by
+  name.
+- Make the ``only_access`` argument of :meth:`.Authorizer.revoke` keyword-only.
+- Make the parameters of :class:`.Requestor` keyword-only, so that callers must pass
+  ``user_agent`` (and any other arguments) by name.
+- Make the parameters of :meth:`.Session.request` keyword-only, so that callers must
+  pass ``method`` and ``path`` (and any other arguments) by name.
+
 ********************
  3.2.1 (2026/06/10)
 ********************

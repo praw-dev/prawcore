@@ -4,7 +4,7 @@ import logging
 from unittest.mock import Mock, patch
 
 import pytest
-from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
+import requests.exceptions
 
 import prawcore
 from prawcore.exceptions import RequestException
@@ -22,7 +22,7 @@ class InvalidAuthorizer(prawcore.Authorizer):
                 requestor,
                 placeholders.client_id,
                 placeholders.client_secret,
-            )
+            ),
         )
 
     def is_valid(self):
@@ -63,7 +63,11 @@ class TestSession(UnitTest):
     @patch("requests.Session")
     @pytest.mark.parametrize(
         "exception",
-        [ChunkedEncodingError(), ConnectionError(), ReadTimeout()],
+        [
+            requests.exceptions.ChunkedEncodingError(),
+            requests.exceptions.ConnectionError(),
+            requests.exceptions.ReadTimeout(),
+        ],
         ids=["ChunkedEncodingError", "ConnectionError", "ReadTimeout"],
     )
     def test_request__retry(self, mock_session, exception, caplog):
@@ -72,7 +76,7 @@ class TestSession(UnitTest):
         # Handle Auth
         response_dict = {"access_token": "", "expires_in": 99, "scope": ""}
         session_instance.request.return_value = Mock(headers={}, json=lambda: response_dict, status_code=200)
-        requestor = prawcore.Requestor("prawcore:test (by /u/bboe)")
+        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)")
         authenticator = prawcore.TrustedAuthenticator(
             requestor,
             placeholders.client_id,
@@ -85,7 +89,7 @@ class TestSession(UnitTest):
         session_instance.request.side_effect = exception
 
         with pytest.raises(RequestException) as exception_info:
-            prawcore.Session(authorizer).request("GET", "/")
+            prawcore.Session(authorizer).request(method="GET", path="/")
         assert (
             "prawcore",
             logging.WARNING,
@@ -98,7 +102,7 @@ class TestSession(UnitTest):
     def test_request__with_invalid_authorizer(self, requestor):
         session = prawcore.Session(InvalidAuthorizer(requestor))
         with pytest.raises(prawcore.InvalidInvocation):
-            session.request("get", "/")
+            session.request(method="get", path="/")
 
 
 class TestSessionFunction(UnitTest):

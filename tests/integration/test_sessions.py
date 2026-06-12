@@ -32,7 +32,7 @@ class TestSession(IntegrationTest):
     def test_request__accepted(self, script_authorizer, caplog):
         caplog.set_level(logging.DEBUG)
         session = prawcore.Session(script_authorizer)
-        session.request("POST", "api/read_all_messages")
+        session.request(method="POST", path="api/read_all_messages")
         found_message = False
         for package, level, message in caplog.record_tuples:
             if package == "prawcore" and level == logging.DEBUG and "Response: 202 (2 bytes)" in message:
@@ -42,31 +42,31 @@ class TestSession(IntegrationTest):
     def test_request__bad_gateway(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 502
 
     def test_request__bad_json(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.BadJSON) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert len(exception_info.value.response.content) == 92
 
     def test_request__bad_request(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.BadRequest) as exception_info:
-            session.request("PUT", "/api/v1/me/friends/spez", data='{"note": "prawcore"}')
+            session.request(method="PUT", path="/api/v1/me/friends/spez", data='{"note": "prawcore"}')
         assert "reason" in exception_info.value.response.json()
 
     def test_request__cloudflare_connection_timed_out(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 522
 
     def test_request__cloudflare_unknown_error(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 520
 
     def test_request__conflict(self, script_authorizer):
@@ -74,8 +74,8 @@ class TestSession(IntegrationTest):
         previous = "f0214574-430d-11e7-84ca-1201093304fa"
         with pytest.raises(prawcore.Conflict) as exception_info:
             session.request(
-                "POST",
-                "/r/ThirdRealm/api/wiki/edit",
+                method="POST",
+                path="/r/ThirdRealm/api/wiki/edit",
                 data={
                     "content": "New text",
                     "page": "index",
@@ -86,24 +86,24 @@ class TestSession(IntegrationTest):
 
     def test_request__created(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
-        response = session.request("PUT", "/api/v1/me/friends/spez", data="{}")
+        response = session.request(method="PUT", path="/api/v1/me/friends/spez", data="{}")
         assert "name" in response
 
     def test_request__forbidden(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.Forbidden):
-            session.request("GET", "/user/spez/gilded/given")
+            session.request(method="GET", path="/user/spez/gilded/given")
 
     def test_request__gateway_timeout(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 504
 
     def test_request__get(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         params = {"limit": 100}
-        response = session.request("GET", "/", params=params)
+        response = session.request(method="GET", path="/", params=params)
         assert isinstance(response, dict)
         assert len(params) == 1
         assert response["kind"] == "Listing"
@@ -111,31 +111,31 @@ class TestSession(IntegrationTest):
     def test_request__internal_server_error(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 500
 
     def test_request__no_content(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
-        response = session.request("DELETE", "/api/v1/me/friends/spez")
+        response = session.request(method="DELETE", path="/api/v1/me/friends/spez")
         assert response is None
 
     def test_request__not_found(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.NotFound):
-            session.request("GET", "/r/reddit_api_test/wiki/invalid")
+            session.request(method="GET", path="/r/reddit_api_test/wiki/invalid")
 
     def test_request__okay_with_0_byte_content(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         data = {"model": dumps({"name": "redditdev"})}
         path = f"/api/multi/user/{placeholders.username}/m/praw_x5g968f66a/r/redditdev"
-        response = session.request("DELETE", path, data=data)
+        response = session.request(method="DELETE", path=path, data=data)
         assert response == ""
 
     @pytest.mark.recorder_kwargs(match_on=["method", "uri", "body"])
     def test_request__patch(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         json = {"lang": "ja", "num_comments": 123}
-        response = session.request("PATCH", "/api/v1/me/prefs", json=json)
+        response = session.request(method="PATCH", path="/api/v1/me/prefs", json=json)
         assert response["lang"] == "ja"
         assert response["num_comments"] == 123
 
@@ -148,7 +148,7 @@ class TestSession(IntegrationTest):
             "title": "A Test from PRAWCORE.",
         }
         key_count = len(data)
-        response = session.request("POST", "/api/submit", data=data)
+        response = session.request(method="POST", path="/api/submit", data=data)
         assert "a_test_from_prawcore" in response["json"]["data"]["url"]
         assert key_count == len(data)  # Ensure data is untouched
 
@@ -158,8 +158,8 @@ class TestSession(IntegrationTest):
         with Path("tests/integration/files/white-square.png").open("rb") as fp:
             files = {"file": fp}
             response = session.request(
-                "POST",
-                "/r/reddit_api_test/api/upload_sr_img",
+                method="POST",
+                path="/r/reddit_api_test/api/upload_sr_img",
                 data=data,
                 files=files,
             )
@@ -168,34 +168,34 @@ class TestSession(IntegrationTest):
     def test_request__raw_json(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         response = session.request(
-            "GET",
-            "/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
+            method="GET",
+            path="/r/reddit_api_test/comments/45xjdr/want_raw_json_test/",
         )
         assert response[0]["data"]["children"][0]["data"]["title"] == "WANT_RAW_JSON test: < > &"
 
     def test_request__redirect(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.Redirect) as exception_info:
-            session.request("GET", "/r/random")
+            session.request(method="GET", path="/r/random")
         assert exception_info.value.path.startswith("/r/")
 
     def test_request__redirect_301(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.Redirect) as exception_info:
-            session.request("GET", "t/bird")
+            session.request(method="GET", path="t/bird")
         assert exception_info.value.path == "/r/t:bird/"
 
     def test_request__service_unavailable(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.ServerError) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 503
 
     def test_request__too__many_requests__with_retry_headers(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         session.requestor._http.headers.update({"User-Agent": "python-requests/2.25.1"})
         with pytest.raises(prawcore.TooManyRequests) as exception_info:
-            session.request("GET", "/api/v1/me")
+            session.request(method="GET", path="/api/v1/me")
         assert exception_info.value.response.status_code == 429
         assert exception_info.value.response.headers.get("retry-after")
         assert exception_info.value.response.reason == "Too Many Requests"
@@ -209,7 +209,7 @@ class TestSession(IntegrationTest):
                 requestor,
                 placeholders.client_id,
                 placeholders.client_secret,
-            )
+            ),
         )
         with pytest.raises(prawcore.exceptions.ResponseException) as exception_info:
             authorizer.refresh()
@@ -228,8 +228,8 @@ class TestSession(IntegrationTest):
             files = {"file": fp}
             with pytest.raises(prawcore.TooLarge) as exception_info:
                 session.request(
-                    "POST",
-                    "/r/reddit_api_test/api/upload_sr_img",
+                    method="POST",
+                    path="/r/reddit_api_test/api/upload_sr_img",
                     data=data,
                     files=files,
                 )
@@ -238,13 +238,13 @@ class TestSession(IntegrationTest):
     def test_request__unavailable_for_legal_reasons(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         with pytest.raises(prawcore.UnavailableForLegalReasons) as exception_info:
-            session.request("GET", "/")
+            session.request(method="GET", path="/")
         assert exception_info.value.response.status_code == 451
 
     def test_request__unexpected_status_code(self, script_authorizer):
         session = prawcore.Session(script_authorizer)
         with pytest.raises(prawcore.ResponseException) as exception_info:
-            session.request("DELETE", "/api/v1/me/friends/spez")
+            session.request(method="DELETE", path="/api/v1/me/friends/spez")
         assert exception_info.value.response.status_code == 205
 
     def test_request__unsupported_media_type(self, script_authorizer):
@@ -254,16 +254,15 @@ class TestSession(IntegrationTest):
             "page": "config/automoderator",
         }
         with pytest.raises(prawcore.SpecialError) as exception_info:
-            session.request("POST", "r/ttft/api/wiki/edit/", data=data)
+            session.request(method="POST", path="r/ttft/api/wiki/edit/", data=data)
         assert exception_info.value.response.status_code == 415
 
     def test_request__uri_too_long(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         path_start = "/api/morechildren?link_id=t3_n7r3uz&children="
-        with Path("tests/integration/files/comment_ids.txt").open() as fp:
-            ids = fp.read()
+        ids = Path("tests/integration/files/comment_ids.txt").read_text()
         with pytest.raises(prawcore.URITooLong) as exception_info:
-            session.request("GET", (path_start + ids)[:9996])
+            session.request(method="GET", path=(path_start + ids)[:9996])
         assert exception_info.value.response.status_code == 414
 
     def test_request__with_insufficient_scope(self, trusted_authenticator):
@@ -272,8 +271,8 @@ class TestSession(IntegrationTest):
         session = prawcore.Session(authorizer)
         with pytest.raises(prawcore.InsufficientScope):
             session.request(
-                "GET",
-                "/api/v1/me",
+                method="GET",
+                path="/api/v1/me",
             )
 
     def test_request__with_invalid_access_token(self, untrusted_authenticator):
@@ -281,10 +280,10 @@ class TestSession(IntegrationTest):
         session = prawcore.Session(authorizer)
         session._authorizer.access_token = "invalid"
         with pytest.raises(prawcore.InvalidToken):
-            session.request("get", "/")
+            session.request(method="get", path="/")
 
     def test_request__with_invalid_access_token__retry(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         session._authorizer.access_token += "invalid"
-        response = session.request("GET", "/")
+        response = session.request(method="GET", path="/")
         assert isinstance(response, dict)
