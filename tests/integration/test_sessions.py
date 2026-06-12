@@ -209,7 +209,7 @@ class TestSession(IntegrationTest):
                 requestor,
                 placeholders.client_id,
                 placeholders.client_secret,
-            )
+            ),
         )
         with pytest.raises(prawcore.exceptions.ResponseException) as exception_info:
             authorizer.refresh()
@@ -260,8 +260,7 @@ class TestSession(IntegrationTest):
     def test_request__uri_too_long(self, readonly_authorizer):
         session = prawcore.Session(readonly_authorizer)
         path_start = "/api/morechildren?link_id=t3_n7r3uz&children="
-        with Path("tests/integration/files/comment_ids.txt").open() as fp:
-            ids = fp.read()
+        ids = Path("tests/integration/files/comment_ids.txt").read_text()
         with pytest.raises(prawcore.URITooLong) as exception_info:
             session.request("GET", (path_start + ids)[:9996])
         assert exception_info.value.response.status_code == 414

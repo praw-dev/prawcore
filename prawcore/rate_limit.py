@@ -100,5 +100,5 @@ class RateLimiter:
                 ),
                 10,
             )
-            * NANOSECONDS
+            * NANOSECONDS,
         )

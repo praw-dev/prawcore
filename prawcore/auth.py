@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, Any, cast
 from requests import Request
 from requests.status_codes import codes
 
-from . import const
-from .exceptions import InvalidInvocation, OAuthException, ResponseException
+from prawcore import const
+from prawcore.exceptions import InvalidInvocation, OAuthException, ResponseException
 
 if TYPE_CHECKING:
     from collections.abc import Callable

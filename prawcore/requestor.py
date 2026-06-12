@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 
-from .const import TIMEOUT
-from .exceptions import InvalidInvocation, RequestException
+from prawcore.const import TIMEOUT
+from prawcore.exceptions import InvalidInvocation, RequestException
 
 if TYPE_CHECKING:
     from requests import Response, Session
@@ -47,7 +47,7 @@ class Requestor:
 
         """
         # Imported locally to avoid an import cycle, with __init__
-        from . import __version__  # noqa: PLC0415
+        from prawcore import __version__  # noqa: PLC0415
 
         # ``user_agent`` is typed ``str``, but validate at runtime for untyped callers.
         if (

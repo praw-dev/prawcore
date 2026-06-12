@@ -5,7 +5,7 @@ from datetime import datetime
 sys.path.insert(0, ".")
 sys.path.insert(1, "..")
 
-from prawcore import __version__  # noqa: E402
+from prawcore import __version__
 
 always_use_bars_union = True
 autodoc_typehints = "description"

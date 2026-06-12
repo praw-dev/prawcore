@@ -9,15 +9,15 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from pprint import pformat
-from typing import IO, TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any, ClassVar
 from urllib.parse import urljoin
 
-from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
+import requests.exceptions
 from requests.status_codes import codes
 
-from .auth import BaseAuthorizer
-from .const import TIMEOUT, WINDOW_SIZE
-from .exceptions import (
+from prawcore.auth import BaseAuthorizer
+from prawcore.const import TIMEOUT, WINDOW_SIZE
+from prawcore.exceptions import (
     BadJSON,
     BadRequest,
     Conflict,
@@ -33,8 +33,8 @@ from .exceptions import (
     UnavailableForLegalReasons,
     URITooLong,
 )
-from .rate_limit import RateLimiter
-from .util import authorization_error_class
+from prawcore.rate_limit import RateLimiter
+from prawcore.util import authorization_error_class
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from requests.models import Response
     from typing_extensions import Self
 
-    from .requestor import Requestor
+    from prawcore.requestor import Requestor
 
 log = logging.getLogger(__package__)
 
@@ -70,8 +70,7 @@ class RetryStrategy(ABC):
 
     def sleep(self) -> None:
         """Sleep until we are ready to attempt the request."""
-        sleep_seconds = self._sleep_seconds()
-        if sleep_seconds is not None:
+        if (sleep_seconds := self._sleep_seconds()) is not None:
             message = f"Sleeping: {sleep_seconds:0.2f} seconds prior to retry"
             log.debug(message)
             time.sleep(sleep_seconds)
@@ -81,7 +80,7 @@ class RetryStrategy(ABC):
 class FiniteRetryStrategy(RetryStrategy):
     """A :class:`.RetryStrategy` that retries requests a finite number of times."""
 
-    DEFAULT_RETRIES = 2
+    DEFAULT_RETRIES: ClassVar[int] = 2
 
     retries: int = DEFAULT_RETRIES
 
@@ -103,7 +102,11 @@ class FiniteRetryStrategy(RetryStrategy):
 class Session:
     """The low-level connection interface to Reddit's API."""
 
-    RETRY_EXCEPTIONS = (ChunkedEncodingError, ConnectionError, ReadTimeout)
+    RETRY_EXCEPTIONS = (
+        requests.exceptions.ChunkedEncodingError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ReadTimeout,
+    )
     RETRY_STATUSES = {
         520,
         522,
@@ -213,10 +216,9 @@ class Session:
             retry_strategy_state=retry_strategy_state.consume_available_retry(),
             timeout=timeout,
             url=url,
-            # noqa: E501
         )
 
-    def _make_request(
+    def _make_request(  # noqa: PLR0917
         self,
         data: list[tuple[str, object]] | bytes | IO[Any] | str | None,
         files: dict[str, IO[Any]] | None,
@@ -278,8 +280,9 @@ class Session:
                 url=url,
             )
         except RequestException as exception:
-            if retry_strategy_state.should_retry_on_failure() and isinstance(  # noqa: E501
-                exception.original_exception, self.RETRY_EXCEPTIONS
+            if retry_strategy_state.should_retry_on_failure() and isinstance(
+                exception.original_exception,
+                self.RETRY_EXCEPTIONS,
             ):
                 return self._do_retry(
                     data=data,
@@ -338,7 +341,7 @@ class Session:
         """Close the session and perform any clean up."""
         self.requestor.close()
 
-    def request(
+    def request(  # noqa: PLR0917
         self,
         method: str,
         path: str,

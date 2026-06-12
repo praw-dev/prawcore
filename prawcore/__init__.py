@@ -2,8 +2,8 @@
 
 import logging
 
-from . import exceptions
-from .auth import (
+from prawcore import exceptions
+from prawcore.auth import (
     Authorizer,
     DeviceIDAuthorizer,
     ImplicitAuthorizer,
@@ -12,9 +12,9 @@ from .auth import (
     TrustedAuthenticator,
     UntrustedAuthenticator,
 )
-from .exceptions import *  # noqa: F403
-from .requestor import Requestor
-from .sessions import Session, session
+from prawcore.exceptions import *  # noqa: F403
+from prawcore.requestor import Requestor
+from prawcore.sessions import Session, session
 
 logging.getLogger(__package__).addHandler(logging.NullHandler())
 

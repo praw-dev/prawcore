@@ -4,7 +4,7 @@ import logging
 from unittest.mock import Mock, patch
 
 import pytest
-from requests.exceptions import ChunkedEncodingError, ConnectionError, ReadTimeout
+import requests.exceptions
 
 import prawcore
 from prawcore.exceptions import RequestException
@@ -22,7 +22,7 @@ class InvalidAuthorizer(prawcore.Authorizer):
                 requestor,
                 placeholders.client_id,
                 placeholders.client_secret,
-            )
+            ),
         )
 
     def is_valid(self):
@@ -63,7 +63,11 @@ class TestSession(UnitTest):
     @patch("requests.Session")
     @pytest.mark.parametrize(
         "exception",
-        [ChunkedEncodingError(), ConnectionError(), ReadTimeout()],
+        [
+            requests.exceptions.ChunkedEncodingError(),
+            requests.exceptions.ConnectionError(),
+            requests.exceptions.ReadTimeout(),
+        ],
         ids=["ChunkedEncodingError", "ConnectionError", "ReadTimeout"],
     )
     def test_request__retry(self, mock_session, exception, caplog):
