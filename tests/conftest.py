@@ -29,16 +29,16 @@ def requestor():
 def trusted_authenticator(requestor):
     """Return a TrustedAuthenticator instance."""
     return TrustedAuthenticator(
-        requestor,
-        placeholders.client_id,
-        placeholders.client_secret,
+        client_id=placeholders.client_id,
+        client_secret=placeholders.client_secret,
+        requestor=requestor,
     )
 
 
 @pytest.fixture
 def untrusted_authenticator(requestor):
     """Return an UntrustedAuthenticator instance."""
-    return UntrustedAuthenticator(requestor, placeholders.client_id)
+    return UntrustedAuthenticator(client_id=placeholders.client_id, requestor=requestor)
 
 
 def env_default(key):

@@ -42,7 +42,7 @@ class InvalidInvocation(PrawcoreException):
 class OAuthException(PrawcoreException):
     """Indicate that there was an OAuth2 related error with the request."""
 
-    def __init__(self, response: requests.Response, error: str, description: str | None = None) -> None:
+    def __init__(self, response: requests.Response, /, error: str, description: str | None = None) -> None:
         """Initialize a OAuthException instance.
 
         :param response: A :class:`requests.Response` instance.
@@ -84,7 +84,7 @@ class RequestException(PrawcoreException):
 class ResponseException(PrawcoreException):
     """Indicate that there was an error with the completed HTTP request."""
 
-    def __init__(self, response: requests.Response) -> None:
+    def __init__(self, response: requests.Response, /) -> None:
         """Initialize a ResponseException instance.
 
         :param response: A :class:`requests.Response` instance.
@@ -130,7 +130,7 @@ class Redirect(ResponseException):
 
     """
 
-    def __init__(self, response: requests.Response) -> None:
+    def __init__(self, response: requests.Response, /) -> None:
         """Initialize a Redirect exception instance.
 
         :param response: A :class:`requests.Response` instance containing a location
@@ -156,7 +156,7 @@ class ServerError(ResponseException):
 class SpecialError(ResponseException):
     """Indicate syntax or spam-prevention issues."""
 
-    def __init__(self, response: requests.Response) -> None:
+    def __init__(self, response: requests.Response, /) -> None:
         """Initialize a SpecialError exception instance.
 
         :param response: A :class:`requests.Response` instance containing a message and
@@ -179,7 +179,7 @@ class TooLarge(ResponseException):
 class TooManyRequests(ResponseException):
     """Indicate that the user has sent too many requests in a given amount of time."""
 
-    def __init__(self, response: requests.Response) -> None:
+    def __init__(self, response: requests.Response, /) -> None:
         """Initialize a TooManyRequests exception instance.
 
         :param response: A :class:`requests.Response` instance that may contain a

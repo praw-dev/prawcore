@@ -18,10 +18,10 @@ from . import UnitTest
 class InvalidAuthorizer(prawcore.Authorizer):
     def __init__(self, requestor):
         super().__init__(
-            prawcore.TrustedAuthenticator(
-                requestor,
-                placeholders.client_id,
-                placeholders.client_secret,
+            authenticator=prawcore.TrustedAuthenticator(
+                client_id=placeholders.client_id,
+                client_secret=placeholders.client_secret,
+                requestor=requestor,
             ),
         )
 
@@ -32,33 +32,35 @@ class InvalidAuthorizer(prawcore.Authorizer):
 class TestSession(UnitTest):
     @pytest.fixture
     def readonly_authorizer(self, trusted_authenticator):
-        return prawcore.ReadOnlyAuthorizer(trusted_authenticator)
+        return prawcore.ReadOnlyAuthorizer(authenticator=trusted_authenticator)
 
     def test_accessors(self, requestor, trusted_authenticator):
-        authorizer = prawcore.ReadOnlyAuthorizer(trusted_authenticator)
-        session = prawcore.Session(authorizer)
+        authorizer = prawcore.ReadOnlyAuthorizer(authenticator=trusted_authenticator)
+        session = prawcore.Session(authorizer=authorizer)
         assert session.authorizer is authorizer
         assert isinstance(session.rate_limiter, RateLimiter)
         assert session.requestor is requestor
 
     def test_close(self, readonly_authorizer):
-        prawcore.Session(readonly_authorizer).close()
+        prawcore.Session(authorizer=readonly_authorizer).close()
 
     def test_context_manager(self, readonly_authorizer):
-        with prawcore.Session(readonly_authorizer) as session:
+        with prawcore.Session(authorizer=readonly_authorizer) as session:
             assert isinstance(session, prawcore.Session)
 
     def test_init__with_device_id_authorizer(self, untrusted_authenticator):
-        authorizer = prawcore.DeviceIDAuthorizer(untrusted_authenticator)
-        prawcore.Session(authorizer)
+        authorizer = prawcore.DeviceIDAuthorizer(authenticator=untrusted_authenticator)
+        prawcore.Session(authorizer=authorizer)
 
     def test_init__with_implicit_authorizer(self, untrusted_authenticator):
-        authorizer = prawcore.ImplicitAuthorizer(untrusted_authenticator, None, 0, "")
-        prawcore.Session(authorizer)
+        authorizer = prawcore.ImplicitAuthorizer(
+            access_token=None, authenticator=untrusted_authenticator, expires_in=0, scope=""
+        )
+        prawcore.Session(authorizer=authorizer)
 
     def test_init__without_authenticator(self):
         with pytest.raises(prawcore.InvalidInvocation):
-            prawcore.Session(None)
+            prawcore.Session(authorizer=None)
 
     @patch("requests.Session")
     @pytest.mark.parametrize(
@@ -78,18 +80,18 @@ class TestSession(UnitTest):
         session_instance.request.return_value = Mock(headers={}, json=lambda: response_dict, status_code=200)
         requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)")
         authenticator = prawcore.TrustedAuthenticator(
-            requestor,
-            placeholders.client_id,
-            placeholders.client_secret,
+            client_id=placeholders.client_id,
+            client_secret=placeholders.client_secret,
+            requestor=requestor,
         )
-        authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+        authorizer = prawcore.ReadOnlyAuthorizer(authenticator=authenticator)
         authorizer.refresh()
         session_instance.request.reset_mock()
         # Fail on subsequent request
         session_instance.request.side_effect = exception
 
         with pytest.raises(RequestException) as exception_info:
-            prawcore.Session(authorizer).request(method="GET", path="/")
+            prawcore.Session(authorizer=authorizer).request(method="GET", path="/")
         assert (
             "prawcore",
             logging.WARNING,
@@ -100,14 +102,14 @@ class TestSession(UnitTest):
         assert session_instance.request.call_count == 3
 
     def test_request__with_invalid_authorizer(self, requestor):
-        session = prawcore.Session(InvalidAuthorizer(requestor))
+        session = prawcore.Session(authorizer=InvalidAuthorizer(requestor))
         with pytest.raises(prawcore.InvalidInvocation):
             session.request(method="get", path="/")
 
 
 class TestSessionFunction(UnitTest):
     def test_session(self, requestor):
-        assert isinstance(prawcore.session(InvalidAuthorizer(requestor)), prawcore.Session)
+        assert isinstance(prawcore.session(authorizer=InvalidAuthorizer(requestor)), prawcore.Session)
 
 
 class TestFiniteRetryStrategy(UnitTest):

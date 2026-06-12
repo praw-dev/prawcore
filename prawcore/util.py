@@ -18,6 +18,7 @@ _auth_error_mapping = {
 
 def authorization_error_class(
     response: Response,
+    /,
 ) -> InvalidToken | (Forbidden | InsufficientScope):
     """Return an exception instance that maps to the OAuth Error.
 

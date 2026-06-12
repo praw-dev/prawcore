@@ -67,15 +67,15 @@ appropriate values for your application.
     import prawcore
 
     authenticator = prawcore.TrustedAuthenticator(
-        prawcore.Requestor(user_agent="YOUR_VALID_USER_AGENT"),
-        os.environ["PRAWCORE_CLIENT_ID"],
-        os.environ["PRAWCORE_CLIENT_SECRET"],
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
+        requestor=prawcore.Requestor(user_agent="YOUR_VALID_USER_AGENT"),
     )
-    authorizer = prawcore.ReadOnlyAuthorizer(authenticator)
+    authorizer = prawcore.ReadOnlyAuthorizer(authenticator=authenticator)
     authorizer.refresh()
 
-    with prawcore.session(authorizer) as session:
-        pprint.pprint(session.request("GET", "/api/v1/user/bboe/trophies"))
+    with prawcore.session(authorizer=authorizer) as session:
+        pprint.pprint(session.request(method="GET", path="/api/v1/user/bboe/trophies"))
 
 Save the above as ``trophies.py`` and then execute via:
 

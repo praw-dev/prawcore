@@ -19,14 +19,14 @@ def main():
         return 1
 
     authenticator = prawcore.UntrustedAuthenticator(
-        prawcore.Requestor(user_agent="prawcore_device_id_auth_example"),
-        os.environ["PRAWCORE_CLIENT_ID"],
+        client_id=os.environ["PRAWCORE_CLIENT_ID"],
+        requestor=prawcore.Requestor(user_agent="prawcore_device_id_auth_example"),
     )
-    authorizer = prawcore.DeviceIDAuthorizer(authenticator)
+    authorizer = prawcore.DeviceIDAuthorizer(authenticator=authenticator)
     authorizer.refresh()
 
     user = sys.argv[1]
-    with prawcore.session(authorizer) as session:
+    with prawcore.session(authorizer=authorizer) as session:
         data = session.request(method="GET", path=f"/api/v1/user/{user}/trophies")
 
     for trophy in data["data"]["trophies"]:
