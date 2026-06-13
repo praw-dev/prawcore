@@ -140,11 +140,6 @@ class Session:
     }
     SUCCESS_STATUSES: ClassVar = {codes["accepted"], codes["created"], codes["ok"]}
 
-    @property
-    def authorizer(self) -> BaseAuthorizer:
-        """Return the :class:`.BaseAuthorizer` used to authorize requests."""
-        return self._authorizer
-
     @staticmethod
     def _log_request(
         *,
@@ -156,6 +151,11 @@ class Session:
         log.debug("Fetching: %s %s at %s", method, url, time.monotonic())
         log.debug("Data: %s", pformat(data))
         log.debug("Params: %s", pformat(params))
+
+    @property
+    def authorizer(self) -> BaseAuthorizer:
+        """Return the :class:`.BaseAuthorizer` used to authorize requests."""
+        return self._authorizer
 
     @property
     def rate_limiter(self) -> RateLimiter:
