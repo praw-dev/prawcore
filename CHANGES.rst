@@ -8,6 +8,10 @@ prawcore follows `semantic versioning <https://semver.org/>`_.
  Unreleased
 ************
 
+********************
+ 4.0.0 (2026/06/13)
+********************
+
 **Changed**
 
 - Make every public parameter either keyword-only or positional-only. The ``requestor``,
