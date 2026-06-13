@@ -4,6 +4,10 @@
 
 prawcore follows `semantic versioning <https://semver.org/>`_.
 
+************
+ Unreleased
+************
+
 ********************
  4.0.0 (2026/06/13)
 ********************
