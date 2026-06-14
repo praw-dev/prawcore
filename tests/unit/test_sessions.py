@@ -29,6 +29,28 @@ class InvalidAuthorizer(prawcore.Authorizer):
         return False
 
 
+class TestFiniteRetryStrategy(UnitTest):
+    @patch("time.sleep")
+    def test_strategy(self, mock_sleep):
+        strategy = FiniteRetryStrategy()
+        assert strategy.should_retry_on_failure()
+        strategy.sleep()
+        mock_sleep.assert_not_called()
+
+        strategy = strategy.consume_available_retry()
+        assert strategy.should_retry_on_failure()
+        strategy.sleep()
+        assert len(calls := mock_sleep.mock_calls) == 1
+        assert 0 < calls[0].args[0] < 2
+        mock_sleep.reset_mock()
+
+        strategy = strategy.consume_available_retry()
+        assert not strategy.should_retry_on_failure()
+        strategy.sleep()
+        assert len(calls := mock_sleep.mock_calls) == 1
+        assert 2 < calls[0].args[0] < 4
+
+
 class TestSession(UnitTest):
     @pytest.fixture
     def readonly_authorizer(self, trusted_authenticator):
@@ -54,7 +76,10 @@ class TestSession(UnitTest):
 
     def test_init__with_implicit_authorizer(self, untrusted_authenticator):
         authorizer = prawcore.ImplicitAuthorizer(
-            access_token=None, authenticator=untrusted_authenticator, expires_in=0, scope=""
+            access_token=None,
+            authenticator=untrusted_authenticator,
+            expires_in=0,
+            scope="",
         )
         prawcore.Session(authorizer=authorizer)
 
@@ -110,25 +135,3 @@ class TestSession(UnitTest):
 class TestSessionFunction(UnitTest):
     def test_session(self, requestor):
         assert isinstance(prawcore.session(authorizer=InvalidAuthorizer(requestor)), prawcore.Session)
-
-
-class TestFiniteRetryStrategy(UnitTest):
-    @patch("time.sleep")
-    def test_strategy(self, mock_sleep):
-        strategy = FiniteRetryStrategy()
-        assert strategy.should_retry_on_failure()
-        strategy.sleep()
-        mock_sleep.assert_not_called()
-
-        strategy = strategy.consume_available_retry()
-        assert strategy.should_retry_on_failure()
-        strategy.sleep()
-        assert len(calls := mock_sleep.mock_calls) == 1
-        assert 0 < calls[0].args[0] < 2
-        mock_sleep.reset_mock()
-
-        strategy = strategy.consume_available_retry()
-        assert not strategy.should_retry_on_failure()
-        strategy.sleep()
-        assert len(calls := mock_sleep.mock_calls) == 1
-        assert 2 < calls[0].args[0] < 4

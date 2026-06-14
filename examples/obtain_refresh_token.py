@@ -18,28 +18,6 @@ import sys
 import prawcore
 
 
-def receive_connection():
-    """Wait for and then return a connected socket..
-
-    Opens a TCP connection on port 8080, and waits for a single client.
-
-    """
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind(("localhost", 8080))
-    server.listen(1)
-    client = server.accept()[0]
-    server.close()
-    return client
-
-
-def send_message(client, message):
-    """Send message to client and close the connection."""
-    print(message)
-    client.send(f"HTTP/1.1 200 OK\r\n\r\n{message}".encode())
-    client.close()
-
-
 def main():
     """Provide the program's entry point when directly executed."""
     if len(sys.argv) < 2:
@@ -77,6 +55,28 @@ def main():
 
     send_message(client, f"Refresh token: {authorizer.refresh_token}")
     return 0
+
+
+def receive_connection():
+    """Wait for and then return a connected socket..
+
+    Opens a TCP connection on port 8080, and waits for a single client.
+
+    """
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind(("localhost", 8080))
+    server.listen(1)
+    client = server.accept()[0]
+    server.close()
+    return client
+
+
+def send_message(client, message):
+    """Send message to client and close the connection."""
+    print(message)
+    client.send(f"HTTP/1.1 200 OK\r\n\r\n{message}".encode())
+    client.close()
 
 
 if __name__ == "__main__":

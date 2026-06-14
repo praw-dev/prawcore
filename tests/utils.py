@@ -49,6 +49,24 @@ class CustomPersister(FilesystemPersister):
 
     additional_placeholders = {}
 
+    @staticmethod
+    def save_cassette(cassette_path, cassette_dict, serializer):  # pragma: no cover
+        """Save cassette."""
+        cassette_path = Path(cassette_path)
+        data = serialize(cassette_dict, serializer)
+        for replacement, value in [
+            (f"<{k.upper()}>", v)
+            for k, v in {
+                **CustomPersister.additional_placeholders,
+                **_placeholders,
+            }.items()
+        ]:
+            data = data.replace(value, replacement)
+        dirname = cassette_path.parent
+        if dirname and not dirname.exists():
+            dirname.mkdir(parents=True)
+        cassette_path.write_text(data)
+
     @classmethod
     def add_additional_placeholders(cls, placeholders: dict[str, str]):  # pragma: no cover
         """Add additional placeholders."""
@@ -72,20 +90,6 @@ class CustomPersister(FilesystemPersister):
         ]:
             cassette_content = cassette_content.replace(value, replacement)
         return deserialize(cassette_content, serializer)
-
-    @staticmethod
-    def save_cassette(cassette_path, cassette_dict, serializer):  # pragma: no cover
-        """Save cassette."""
-        cassette_path = Path(cassette_path)
-        data = serialize(cassette_dict, serializer)
-        for replacement, value in [
-            (f"<{k.upper()}>", v) for k, v in {**CustomPersister.additional_placeholders, **_placeholders}.items()
-        ]:
-            data = data.replace(value, replacement)
-        dirname = cassette_path.parent
-        if dirname and not dirname.exists():
-            dirname.mkdir(parents=True)
-        cassette_path.write_text(data)
 
 
 class CustomSerializer:
