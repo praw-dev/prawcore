@@ -23,8 +23,8 @@ class TestSession(IntegrationTest):
     def script_authorizer(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
             authenticator=trusted_authenticator,
-            username=placeholders.username,
             password=placeholders.password,
+            username=placeholders.username,
         )
         authorizer.refresh()
         return authorizer
@@ -54,7 +54,7 @@ class TestSession(IntegrationTest):
     def test_request__bad_request(self, script_authorizer):
         session = prawcore.Session(authorizer=script_authorizer)
         with pytest.raises(prawcore.BadRequest) as exception_info:
-            session.request(method="PUT", path="/api/v1/me/friends/spez", data='{"note": "prawcore"}')
+            session.request(data='{"note": "prawcore"}', method="PUT", path="/api/v1/me/friends/spez")
         assert "reason" in exception_info.value.response.json()
 
     def test_request__cloudflare_connection_timed_out(self, readonly_authorizer):
@@ -74,19 +74,19 @@ class TestSession(IntegrationTest):
         previous = "f0214574-430d-11e7-84ca-1201093304fa"
         with pytest.raises(prawcore.Conflict) as exception_info:
             session.request(
-                method="POST",
-                path="/r/ThirdRealm/api/wiki/edit",
                 data={
                     "content": "New text",
                     "page": "index",
                     "previous": previous,
                 },
+                method="POST",
+                path="/r/ThirdRealm/api/wiki/edit",
             )
         assert exception_info.value.response.status_code == 409
 
     def test_request__created(self, script_authorizer):
         session = prawcore.Session(authorizer=script_authorizer)
-        response = session.request(method="PUT", path="/api/v1/me/friends/spez", data="{}")
+        response = session.request(data="{}", method="PUT", path="/api/v1/me/friends/spez")
         assert "name" in response
 
     def test_request__forbidden(self, script_authorizer):
@@ -103,7 +103,7 @@ class TestSession(IntegrationTest):
     def test_request__get(self, readonly_authorizer):
         session = prawcore.Session(authorizer=readonly_authorizer)
         params = {"limit": 100}
-        response = session.request(method="GET", path="/", params=params)
+        response = session.request(method="GET", params=params, path="/")
         assert isinstance(response, dict)
         assert len(params) == 1
         assert response["kind"] == "Listing"
@@ -128,14 +128,14 @@ class TestSession(IntegrationTest):
         session = prawcore.Session(authorizer=script_authorizer)
         data = {"model": dumps({"name": "redditdev"})}
         path = f"/api/multi/user/{placeholders.username}/m/praw_x5g968f66a/r/redditdev"
-        response = session.request(method="DELETE", path=path, data=data)
+        response = session.request(data=data, method="DELETE", path=path)
         assert response == ""
 
     @pytest.mark.recorder_kwargs(match_on=["method", "uri", "body"])
     def test_request__patch(self, script_authorizer):
         session = prawcore.Session(authorizer=script_authorizer)
         json = {"lang": "ja", "num_comments": 123}
-        response = session.request(method="PATCH", path="/api/v1/me/prefs", json=json)
+        response = session.request(json=json, method="PATCH", path="/api/v1/me/prefs")
         assert response["lang"] == "ja"
         assert response["num_comments"] == 123
 
@@ -148,7 +148,7 @@ class TestSession(IntegrationTest):
             "title": "A Test from PRAWCORE.",
         }
         key_count = len(data)
-        response = session.request(method="POST", path="/api/submit", data=data)
+        response = session.request(data=data, method="POST", path="/api/submit")
         assert "a_test_from_prawcore" in response["json"]["data"]["url"]
         assert key_count == len(data)  # Ensure data is untouched
 
@@ -158,10 +158,10 @@ class TestSession(IntegrationTest):
         with Path("tests/integration/files/white-square.png").open("rb") as fp:
             files = {"file": fp}
             response = session.request(
-                method="POST",
-                path="/r/reddit_api_test/api/upload_sr_img",
                 data=data,
                 files=files,
+                method="POST",
+                path="/r/reddit_api_test/api/upload_sr_img",
             )
         assert "img_src" in response
 
@@ -217,8 +217,8 @@ class TestSession(IntegrationTest):
         assert not exception_info.value.response.headers.get("retry-after")
         assert exception_info.value.response.reason == "Too Many Requests"
         assert exception_info.value.response.json() == {
-            "message": "Too Many Requests",
             "error": 429,
+            "message": "Too Many Requests",
         }
 
     def test_request__too_large(self, script_authorizer):
@@ -228,10 +228,10 @@ class TestSession(IntegrationTest):
             files = {"file": fp}
             with pytest.raises(prawcore.TooLarge) as exception_info:
                 session.request(
-                    method="POST",
-                    path="/r/reddit_api_test/api/upload_sr_img",
                     data=data,
                     files=files,
+                    method="POST",
+                    path="/r/reddit_api_test/api/upload_sr_img",
                 )
         assert exception_info.value.response.status_code == 413
 
@@ -254,7 +254,7 @@ class TestSession(IntegrationTest):
             "page": "config/automoderator",
         }
         with pytest.raises(prawcore.SpecialError) as exception_info:
-            session.request(method="POST", path="r/ttft/api/wiki/edit/", data=data)
+            session.request(data=data, method="POST", path="r/ttft/api/wiki/edit/")
         assert exception_info.value.response.status_code == 415
 
     def test_request__uri_too_long(self, readonly_authorizer):

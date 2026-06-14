@@ -191,8 +191,8 @@ class TestScriptAuthorizer(IntegrationTest):
     def test_refresh(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
             authenticator=trusted_authenticator,
-            username=placeholders.username,
             password=placeholders.password,
+            username=placeholders.username,
         )
         assert authorizer.access_token is None
         assert authorizer.scopes is None
@@ -206,9 +206,9 @@ class TestScriptAuthorizer(IntegrationTest):
     def test_refresh__with_invalid_otp(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
             authenticator=trusted_authenticator,
-            username=placeholders.username,
             password=placeholders.password,
             two_factor_callback=lambda: "fake",
+            username=placeholders.username,
         )
         with pytest.raises(prawcore.OAuthException):
             authorizer.refresh()
@@ -216,7 +216,7 @@ class TestScriptAuthorizer(IntegrationTest):
 
     def test_refresh__with_invalid_username_or_password(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
-            authenticator=trusted_authenticator, username=placeholders.username, password="invalidpassword"
+            authenticator=trusted_authenticator, password="invalidpassword", username=placeholders.username
         )
         with pytest.raises(prawcore.OAuthException):
             authorizer.refresh()
@@ -226,9 +226,9 @@ class TestScriptAuthorizer(IntegrationTest):
         scope_list = {"adsedit", "adsread", "creddits", "history"}
         authorizer = prawcore.ScriptAuthorizer(
             authenticator=trusted_authenticator,
-            username=placeholders.username,
             password=placeholders.password,
             scopes=scope_list,
+            username=placeholders.username,
         )
         authorizer.refresh()
 
@@ -239,9 +239,9 @@ class TestScriptAuthorizer(IntegrationTest):
     def test_refresh__with_valid_otp(self, trusted_authenticator):
         authorizer = prawcore.ScriptAuthorizer(
             authenticator=trusted_authenticator,
-            username=placeholders.username,
             password=placeholders.password,
             two_factor_callback=lambda: "000000",
+            username=placeholders.username,
         )
         assert authorizer.access_token is None
         assert authorizer.scopes is None

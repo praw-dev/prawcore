@@ -196,45 +196,6 @@ class BaseAuthorizer:
         self._clear_access_token()
 
 
-class TrustedAuthenticator(BaseAuthenticator):
-    """Store OAuth2 authentication credentials for web, or script type apps."""
-
-    RESPONSE_TYPE: str = "code"
-
-    def __init__(
-        self,
-        *,
-        client_id: str,
-        client_secret: str,
-        redirect_uri: str | None = None,
-        requestor: Requestor,
-    ) -> None:
-        """Represent a single authentication to Reddit's API.
-
-        :param client_id: The OAuth2 client ID to use with the session.
-        :param client_secret: The OAuth2 client secret to use with the session.
-        :param redirect_uri: The redirect URI exactly as specified in your OAuth
-            application settings on Reddit. This parameter is required if you want to
-            use the :meth:`~.Authorizer.authorize_url` method, or the
-            :meth:`~.Authorizer.authorize` method of the :class:`.Authorizer` class
-            (default: ``None``).
-        :param requestor: An instance of :class:`.Requestor`.
-
-        """
-        super().__init__(client_id=client_id, redirect_uri=redirect_uri, requestor=requestor)
-        self.client_secret = client_secret
-
-    def _auth(self) -> tuple[str, str]:
-        return self.client_id, self.client_secret
-
-
-class UntrustedAuthenticator(BaseAuthenticator):
-    """Store OAuth2 authentication credentials for installed applications."""
-
-    def _auth(self) -> tuple[str, str]:
-        return self.client_id, ""
-
-
 class Authorizer(BaseAuthorizer):
     """Manages OAuth2 authorization tokens and scopes."""
 
@@ -312,37 +273,36 @@ class Authorizer(BaseAuthorizer):
             self.refresh_token = None
 
 
-class ImplicitAuthorizer(BaseAuthorizer):
-    """Manages implicit installed-app type authorizations."""
+class TrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for web, or script type apps."""
 
-    AUTHENTICATOR_CLASS = UntrustedAuthenticator
+    RESPONSE_TYPE: str = "code"
 
     def __init__(
         self,
         *,
-        access_token: str,
-        authenticator: UntrustedAuthenticator,
-        expires_in: int,
-        scope: str,
+        client_id: str,
+        client_secret: str,
+        redirect_uri: str | None = None,
+        requestor: Requestor,
     ) -> None:
-        """Represent a single implicit authorization to Reddit's API.
+        """Represent a single authentication to Reddit's API.
 
-        :param access_token: The ``access_token`` obtained from Reddit via callback to
-            the authenticator's ``redirect_uri``.
-        :param authenticator: An instance of :class:`.UntrustedAuthenticator`.
-        :param expires_in: The number of seconds the ``access_token`` is valid for. The
-            origin of this value was returned from Reddit via callback to the
-            authenticator's redirect uri. Note, you may need to subtract an offset
-            before passing in this number to account for a delay between when Reddit
-            prepared the response, and when you make this function call.
-        :param scope: A space-delimited string of Reddit OAuth2 scope names as returned
-            from Reddit in the callback to the authenticator's redirect uri.
+        :param client_id: The OAuth2 client ID to use with the session.
+        :param client_secret: The OAuth2 client secret to use with the session.
+        :param redirect_uri: The redirect URI exactly as specified in your OAuth
+            application settings on Reddit. This parameter is required if you want to
+            use the :meth:`~.Authorizer.authorize_url` method, or the
+            :meth:`~.Authorizer.authorize` method of the :class:`.Authorizer` class
+            (default: ``None``).
+        :param requestor: An instance of :class:`.Requestor`.
 
         """
-        super().__init__(authenticator=authenticator)
-        self._expiration_timestamp_ns = time.monotonic_ns() + expires_in * const.NANOSECONDS
-        self.access_token = access_token
-        self.scopes = set(scope.split(" "))
+        super().__init__(client_id=client_id, redirect_uri=redirect_uri, requestor=requestor)
+        self.client_secret = client_secret
+
+    def _auth(self) -> tuple[str, str]:
+        return self.client_id, self.client_secret
 
 
 class ReadOnlyAuthorizer(Authorizer):
@@ -425,10 +385,17 @@ class ScriptAuthorizer(Authorizer):
             additional_kwargs["otp"] = two_factor_code
         self._request_token(
             grant_type="password",
-            username=self._username,
             password=self._password,
+            username=self._username,
             **additional_kwargs,
         )
+
+
+class UntrustedAuthenticator(BaseAuthenticator):
+    """Store OAuth2 authentication credentials for installed applications."""
+
+    def _auth(self) -> tuple[str, str]:
+        return self.client_id, ""
 
 
 class DeviceIDAuthorizer(BaseAuthorizer):
@@ -473,7 +440,40 @@ class DeviceIDAuthorizer(BaseAuthorizer):
             additional_kwargs["scope"] = " ".join(self._scopes)
         grant_type = "https://oauth.reddit.com/grants/installed_client"
         self._request_token(
-            grant_type=grant_type,
             device_id=self._device_id,
+            grant_type=grant_type,
             **additional_kwargs,
         )
+
+
+class ImplicitAuthorizer(BaseAuthorizer):
+    """Manages implicit installed-app type authorizations."""
+
+    AUTHENTICATOR_CLASS = UntrustedAuthenticator
+
+    def __init__(
+        self,
+        *,
+        access_token: str,
+        authenticator: UntrustedAuthenticator,
+        expires_in: int,
+        scope: str,
+    ) -> None:
+        """Represent a single implicit authorization to Reddit's API.
+
+        :param access_token: The ``access_token`` obtained from Reddit via callback to
+            the authenticator's ``redirect_uri``.
+        :param authenticator: An instance of :class:`.UntrustedAuthenticator`.
+        :param expires_in: The number of seconds the ``access_token`` is valid for. The
+            origin of this value was returned from Reddit via callback to the
+            authenticator's redirect uri. Note, you may need to subtract an offset
+            before passing in this number to account for a delay between when Reddit
+            prepared the response, and when you make this function call.
+        :param scope: A space-delimited string of Reddit OAuth2 scope names as returned
+            from Reddit in the callback to the authenticator's redirect uri.
+
+        """
+        super().__init__(authenticator=authenticator)
+        self._expiration_timestamp_ns = time.monotonic_ns() + expires_in * const.NANOSECONDS
+        self.access_token = access_token
+        self.scopes = set(scope.split(" "))

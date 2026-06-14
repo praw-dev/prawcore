@@ -22,8 +22,8 @@ class TestRateLimiter(UnitTest):
     def _headers(remaining, used, reset):
         return {
             "x-ratelimit-remaining": str(float(remaining)),
-            "x-ratelimit-used": str(used),
             "x-ratelimit-reset": str(reset),
+            "x-ratelimit-used": str(used),
         }
 
     @patch("time.monotonic_ns")

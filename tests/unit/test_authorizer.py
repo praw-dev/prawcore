@@ -102,4 +102,4 @@ class TestReadOnlyAuthorizer(UnitTest):
 class TestScriptAuthorizer(UnitTest):
     def test_initialize__with_untrusted_authenticator(self, untrusted_authenticator):
         with pytest.raises(prawcore.InvalidInvocation):
-            prawcore.ScriptAuthorizer(authenticator=untrusted_authenticator, username=None, password=None)
+            prawcore.ScriptAuthorizer(authenticator=untrusted_authenticator, password=None, username=None)
