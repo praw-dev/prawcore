@@ -18,8 +18,6 @@ from prawcore.sessions import Session, session
 
 logging.getLogger(__package__).addHandler(logging.NullHandler())
 
-__version__ = "4.0.1.dev0"
-
 __all__ = [
     "Authorizer",
     "DeviceIDAuthorizer",
@@ -33,3 +31,5 @@ __all__ = [
     "session",
 ]
 __all__ += exceptions.__all__
+
+__version__ = "4.0.1.dev0"

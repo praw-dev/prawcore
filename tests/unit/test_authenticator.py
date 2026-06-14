@@ -25,7 +25,7 @@ class TestTrustedAuthenticator(UnitTest):
     def test_authorize_url__fail_with_implicit(self, trusted_authenticator):
         with pytest.raises(prawcore.InvalidInvocation):
             trusted_authenticator.authorize_url(
-                duration="temporary", scopes=["identity", "read"], state="a_state", implicit=True
+                duration="temporary", implicit=True, scopes=["identity", "read"], state="a_state"
             )
 
     def test_authorize_url__fail_without_redirect_uri(self, trusted_authenticator):
@@ -56,9 +56,9 @@ class TestUntrustedAuthenticator(UnitTest):
         with pytest.raises(prawcore.InvalidInvocation):
             untrusted_authenticator.authorize_url(
                 duration="permanent",
+                implicit=True,
                 scopes=["identity", "read"],
                 state="a_state",
-                implicit=True,
             )
 
     def test_authorize_url__fail_without_redirect_uri(self, untrusted_authenticator):
@@ -72,7 +72,7 @@ class TestUntrustedAuthenticator(UnitTest):
 
     def test_authorize_url__token(self, untrusted_authenticator):
         url = untrusted_authenticator.authorize_url(
-            duration="temporary", scopes=["identity", "read"], state="a_state", implicit=True
+            duration="temporary", implicit=True, scopes=["identity", "read"], state="a_state"
         )
         assert f"client_id={placeholders.client_id}" in url
         assert "duration=temporary" in url

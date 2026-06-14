@@ -34,14 +34,14 @@ class TestRequestor(UnitTest):
     def test_request__default_timeout(self):
         attrs = {"headers": {}, "request.return_value": "response"}
         session = Mock(**attrs)
-        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(session=session, user_agent="prawcore:test (by /u/bboe)")
         requestor.request("get", "https://reddit.com")
         assert session.request.call_args.kwargs["timeout"] == TIMEOUT
 
     def test_request__explicit_timeout(self):
         attrs = {"headers": {}, "request.return_value": "response"}
         session = Mock(**attrs)
-        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(session=session, user_agent="prawcore:test (by /u/bboe)")
         requestor.request("get", "https://reddit.com", timeout=5)
         assert session.request.call_args.kwargs["timeout"] == 5
 
@@ -53,10 +53,10 @@ class TestRequestor(UnitTest):
         override = "REQUEST OVERRIDDEN"
         custom_header = "CUSTOM SESSION HEADER"
         headers = {"session_header": custom_header}
-        attrs = {"request.return_value": override, "headers": headers}
+        attrs = {"headers": headers, "request.return_value": override}
         session = Mock(**attrs)
 
-        requestor = prawcore.Requestor(user_agent="prawcore:test (by /u/bboe)", session=session)
+        requestor = prawcore.Requestor(session=session, user_agent="prawcore:test (by /u/bboe)")
 
         assert requestor._http.headers["User-Agent"] == f"prawcore:test (by /u/bboe) prawcore/{prawcore.__version__}"
         assert requestor._http.headers["session_header"] == custom_header

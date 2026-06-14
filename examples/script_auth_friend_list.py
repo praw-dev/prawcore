@@ -23,8 +23,8 @@ def main():
     )
     authorizer = prawcore.ScriptAuthorizer(
         authenticator=authenticator,
-        username=os.environ["PRAWCORE_USERNAME"],
         password=os.environ["PRAWCORE_PASSWORD"],
+        username=os.environ["PRAWCORE_USERNAME"],
     )
     authorizer.refresh()
 

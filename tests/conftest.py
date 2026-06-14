@@ -9,6 +9,23 @@ import pytest
 from prawcore import Requestor, TrustedAuthenticator, UntrustedAuthenticator
 
 
+class Placeholders:
+    access_token: str
+    basic_auth: str
+    client_id: str
+    client_secret: str
+    password: str
+    permanent_grant_code: str
+    redirect_uri: str
+    refresh_token: str
+    temporary_grant_code: str
+    user_agent: str
+    username: str
+
+    def __init__(self, _dict):
+        self.__dict__ = _dict
+
+
 @pytest.fixture(autouse=True)
 def patch_sleep(monkeypatch):
     """Auto patch sleep to speed up tests."""
@@ -49,28 +66,6 @@ def env_default(key):
     )
 
 
-def pytest_configure(config):
-    config.addinivalue_line("markers", "cassette_name: Name of cassette to use for test.")
-    config.addinivalue_line("markers", "recorder_kwargs: Arguments to pass to the recorder.")
-
-
-class Placeholders:
-    access_token: str
-    basic_auth: str
-    client_id: str
-    client_secret: str
-    password: str
-    permanent_grant_code: str
-    redirect_uri: str
-    refresh_token: str
-    temporary_grant_code: str
-    user_agent: str
-    username: str
-
-    def __init__(self, _dict):
-        self.__dict__ = _dict
-
-
 placeholder_values = {
     x: env_default(x)
     for x in [
@@ -85,6 +80,12 @@ placeholder_values = {
         "username",
     ]
 }
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "cassette_name: Name of cassette to use for test.")
+    config.addinivalue_line("markers", "recorder_kwargs: Arguments to pass to the recorder.")
+
 
 if (
     placeholder_values["client_id"] != "fake_client_id" and placeholder_values["client_secret"] == "fake_client_secret"

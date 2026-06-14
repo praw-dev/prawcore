@@ -16,13 +16,36 @@ import requests
 import prawcore
 
 
+class CachingSession(requests.Session):
+    """Cache GETs in memory.
+
+    Toy example of custom session to showcase the ``session`` parameter of
+    :class:`.Requestor`.
+
+    """
+
+    get_cache: ClassVar = {}
+
+    def request(self, method, url, params=None, **kwargs):
+        """Perform a request, or return a cached response if available."""
+        params_key = tuple(params.items()) if params else ()
+        if method.upper() == "GET" and (url, params_key) in self.get_cache:
+            print("Returning cached response for:", method, url, params)
+            return self.get_cache[url, params_key]
+        result = super().request(method, url, params, **kwargs)
+        if method.upper() == "GET":
+            self.get_cache[url, params_key] = result
+            print("Adding entry to the cache:", method, url, params)
+        return result
+
+
 def main():
     """Provide the program's entry point when directly executed."""
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} USERNAME")
         return 1
 
-    caching_requestor = prawcore.Requestor(user_agent="prawcore_device_id_auth_example", session=CachingSession())
+    caching_requestor = prawcore.Requestor(session=CachingSession(), user_agent="prawcore_device_id_auth_example")
     authenticator = prawcore.TrustedAuthenticator(
         client_id=os.environ["PRAWCORE_CLIENT_ID"],
         client_secret=os.environ["PRAWCORE_CLIENT_SECRET"],
@@ -57,29 +80,6 @@ def main():
     )
 
     return 0
-
-
-class CachingSession(requests.Session):
-    """Cache GETs in memory.
-
-    Toy example of custom session to showcase the ``session`` parameter of
-    :class:`.Requestor`.
-
-    """
-
-    get_cache: ClassVar = {}
-
-    def request(self, method, url, params=None, **kwargs):
-        """Perform a request, or return a cached response if available."""
-        params_key = tuple(params.items()) if params else ()
-        if method.upper() == "GET" and (url, params_key) in self.get_cache:
-            print("Returning cached response for:", method, url, params)
-            return self.get_cache[url, params_key]
-        result = super().request(method, url, params, **kwargs)
-        if method.upper() == "GET":
-            self.get_cache[url, params_key] = result
-            print("Adding entry to the cache:", method, url, params)
-        return result
 
 
 if __name__ == "__main__":
