@@ -4,7 +4,7 @@ concurrency:
 jobs:
   ci:
     name: CI
-    uses: praw-dev/.github/.github/workflows/ci.yml@aa63811572338b6343772c542574909f1cbd8d78 # v1.5.0
+    uses: praw-dev/.github/.github/workflows/ci.yml@ec3a733628adc5bd596def5294dae9fb4eb1e501 # v1.6.0
     with:
       min_python: "3.10"
       python_versions: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
@@ -14,4 +14,5 @@ on:
   push:
     branches: ["main"]
   pull_request:
-permissions: read-all
+permissions:
+  contents: read
