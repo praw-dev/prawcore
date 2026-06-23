@@ -29,7 +29,7 @@ class BaseAuthenticator(ABC):
 
     @property
     def requestor(self) -> Requestor:
-        """Return the :class:`.Requestor` used to issue HTTP requests."""
+        """The :class:`.Requestor` used to issue HTTP requests."""
         return self._requestor
 
     def __init__(
@@ -135,7 +135,7 @@ class BaseAuthorizer:
 
     @property
     def authenticator(self) -> BaseAuthenticator:
-        """Return the :class:`.BaseAuthenticator` used to authenticate requests."""
+        """The :class:`.BaseAuthenticator` used to authenticate requests."""
         return self._authenticator
 
     def __init__(self, *, authenticator: BaseAuthenticator) -> None:
