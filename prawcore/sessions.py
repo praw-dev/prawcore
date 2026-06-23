@@ -154,17 +154,17 @@ class Session:
 
     @property
     def authorizer(self) -> BaseAuthorizer:
-        """Return the :class:`.BaseAuthorizer` used to authorize requests."""
+        """The :class:`.BaseAuthorizer` used to authorize requests."""
         return self._authorizer
 
     @property
     def rate_limiter(self) -> RateLimiter:
-        """Return the :class:`.RateLimiter` that throttles requests."""
+        """The :class:`.RateLimiter` that throttles requests."""
         return self._rate_limiter
 
     @property
     def requestor(self) -> Requestor:
-        """Return the :class:`.Requestor` used to issue HTTP requests."""
+        """The :class:`.Requestor` used to issue HTTP requests."""
         return self._authorizer.authenticator.requestor
 
     def __enter__(self) -> Self:
