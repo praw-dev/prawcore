@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-class PrawcoreException(Exception):  # noqa: N818
+class PrawcoreException(Exception):  # ruff:ignore[error-suffix-on-exception-name]
     """Base exception class for exceptions that occur within this package."""
 
 

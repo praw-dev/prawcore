@@ -12,7 +12,7 @@ from prawcore.auth import (
     TrustedAuthenticator,
     UntrustedAuthenticator,
 )
-from prawcore.exceptions import *  # noqa: F403
+from prawcore.exceptions import *  # ruff:ignore[undefined-local-with-import-star]
 from prawcore.requestor import Requestor
 from prawcore.sessions import Session, session
 

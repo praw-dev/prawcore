@@ -48,7 +48,7 @@ class Requestor:
 
         """
         # Imported locally to avoid an import cycle, with __init__
-        from prawcore import __version__  # noqa: PLC0415
+        from prawcore import __version__  # ruff:ignore[import-outside-top-level]
 
         # ``user_agent`` is typed ``str``, but validate at runtime for untyped callers.
         if (
@@ -73,5 +73,5 @@ class Requestor:
         """Issue the HTTP request capturing any errors that may occur."""
         try:
             return self._http.request(*args, timeout=timeout or self.timeout, **kwargs)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:  # ruff:ignore[blind-except]
             raise RequestException(exc, args, kwargs) from None
