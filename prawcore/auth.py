@@ -192,7 +192,7 @@ class BaseAuthorizer:
             msg = "no token available to revoke"
             raise InvalidInvocation(msg)
 
-        self._authenticator.revoke_token(self.access_token, token_type="access_token")  # noqa: S106
+        self._authenticator.revoke_token(self.access_token, token_type="access_token")  # ruff:ignore[hardcoded-password-func-arg]
         self._clear_access_token()
 
 
@@ -268,7 +268,7 @@ class Authorizer(BaseAuthorizer):
         if only_access or self.refresh_token is None:
             super().revoke()
         else:
-            self._authenticator.revoke_token(self.refresh_token, token_type="refresh_token")  # noqa: S106
+            self._authenticator.revoke_token(self.refresh_token, token_type="refresh_token")  # ruff:ignore[hardcoded-password-func-arg]
             self._clear_access_token()
             self.refresh_token = None
 
